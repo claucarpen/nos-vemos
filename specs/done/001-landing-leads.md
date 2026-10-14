@@ -149,7 +149,7 @@ PASS C4 validación, honeypot, fuente y duplicados (Vitest)
      |       Tests  12 passed (12)
 PASS C5 migración: forma y seguridad
 PASS C6 sin secretos en el repo
-PASS C7 sprites con licencia CC0 (11 sprites, 2 licencias)
+PASS C7 sprites con licencia CC0 (10 sprites, 2 licencias)
 PASS C8 375px sin scroll horizontal y botón visible
 PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
 PASS C11 README con las cuatro secciones
