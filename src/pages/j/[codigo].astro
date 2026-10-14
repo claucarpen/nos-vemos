@@ -1,0 +1,76 @@
+---
+// Una juntada. Sin sesión: lo público y "Entrá con Google para votar". Con sesión: se une y vota.
+import App from '../../layouts/App.astro';
+import Juntada from '../../components/app/Juntada.astro';
+import JuntadaPublica from '../../components/app/JuntadaPublica.astro';
+import { esCodigo } from '../../lib/codigo';
+import { claveDeError, textoDeError } from '../../lib/errores';
+import type { Detalle, Publica } from '../../lib/juntada';
+import { supabaseServidor } from '../../lib/supabase';
+
+export const prerender = false;
+
+const { codigo } = Astro.params;
+const ruta = `/j/${codigo}`;
+const url = new URL(ruta, Astro.url.origin).href;
+
+let estado: 'no_existe' | 'publica' | 'detalle' | 'falla' = 'no_existe';
+let publica: Publica | null = null;
+let detalle: Detalle | null = null;
+let conSesion = false;
+let error: string | null = null;
+let motivo: string | null = null;
+
+if (esCodigo(codigo)) {
+  const supabase = supabaseServidor(Astro.request, Astro.cookies);
+  const { data: { user } } = await supabase.auth.getUser();
+  conSesion = !!user;
+  if (!user && Astro.url.searchParams.get('login') === 'error') motivo = textoDeError({ message: 'login' });
+
+  if (user && Astro.request.method === 'POST') {
+    const form = await Astro.request.formData();
+    const accion = form.get('accion');
+    const r = accion === 'cancelar'
+      ? await supabase.rpc('cancelar', { codigo })
+      : await supabase.rpc('votar', { codigo, opciones_ids: form.getAll('opcion').map(String) });
+    if (!r.error) return Astro.redirect(ruta, 303);
+    error = textoDeError(r.error);
+  }
+
+  if (user) {
+    let r = await supabase.rpc('detalle_juntada', { codigo });
+    if (claveDeError(r.error) === 'no_participante') {
+      const u = await supabase.rpc('unirse', { codigo });
+      if (!u.error) r = await supabase.rpc('detalle_juntada', { codigo });
+      else if (claveDeError(u.error) !== 'no_existe') motivo = textoDeError(u.error);
+    }
+    if (!r.error) { estado = 'detalle'; detalle = r.data as Detalle; }
+    else if (claveDeError(r.error) !== 'no_existe' && claveDeError(r.error) !== 'no_participante') estado = 'falla';
+  }
+
+  if (estado === 'no_existe') {
+    const p = await supabase.rpc('juntada_publica', { codigo });
+    if (p.error) estado = 'falla';
+    else if (Array.isArray(p.data) && p.data.length > 0) { estado = 'publica'; publica = p.data[0] as Publica; }
+  }
+}
+
+if (estado === 'no_existe') Astro.response.status = 404;
+if (estado === 'falla') Astro.response.status = 503;
+---
+<App titulo={detalle?.titulo ?? publica?.titulo ?? 'Juntada'}>
+  {estado === 'detalle' && detalle && <Juntada d={detalle} url={url} error={error} />}
+  {estado === 'publica' && publica && <JuntadaPublica j={publica} next={ruta} conSesion={conSesion} motivo={motivo} />}
+  {estado === 'no_existe' && (
+    <section class="panel">
+      <h1 class="app-title">Esta juntada no existe</h1>
+      <p class="lead">Revisá el link que te pasaron.</p>
+    </section>
+  )}
+  {estado === 'falla' && (
+    <section class="panel">
+      <h1 class="app-title">GAME OVER… algo falló</h1>
+      <p class="lead">No pudimos cargar la juntada. Probá de nuevo en un rato.</p>
+    </section>
+  )}
+</App>

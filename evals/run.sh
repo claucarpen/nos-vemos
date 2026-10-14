@@ -151,8 +151,95 @@ c16_readme_keys() {
   if [ -z "$miss" ]; then ok "C16 README pide la publishable key y prohíbe la secret"; else ko "C16 README:$miss"; fi
 }
 
+# --- Spec 003: v1 — crear juntada, votar y cierre por quórum ---------------------------------
+
+MIG2=supabase/migrations/002_juntadas.sql
+TABLAS3="tipos_evento perfiles juntadas opciones participantes disponibilidad movimientos"
+FUNCS3="asegurar_perfil crear_juntada juntada_publica unirse detalle_juntada votar cancelar"
+
+# Sentencias SQL de la migración, una por línea, en minúsculas y sin comentarios.
+sql_statements() { sed 's/--.*$//' "$1" | tr '\n' ' ' | tr -s ' ' | tr 'A-Z' 'a-z' | sed 's/;/;\n/g'; }
+
+s3_c0_paso0() {
+  local out
+  if out=$(npx vitest run --config vitest.db.config.ts tests/db/shim.test.ts 2>&1); then ok "003·C0 Postgres embebido con shim de Supabase (paso 0)"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "003·C0 paso 0"; ev "$(printf '%s' "$out" | tail -12)"; fi
+}
+
+s3_c1_build() {
+  local miss="" cfg=.vercel/output/config.json
+  [ -f "$BUILT" ] || miss="$miss landing-no-prerenderizada"
+  for r in '\^/nueva' '\^/j/' '\^/auth/callback' '\^/auth/login'; do grep -q "\"src\": \"$r" "$cfg" 2>/dev/null || miss="$miss ruta[$r]"; done
+  ! grep -qE 'href="/(nueva|j/)' "$BUILT" 2>/dev/null || miss="$miss landing-enlaza-a-la-v1"
+  if [ -z "$miss" ]; then ok "003·C1 compila con las rutas de la v1; la landing sigue prerenderizada y no enlaza a la v1"; else ko "003·C1:$miss"; fi
+}
+
+s3_c2_migration() {
+  local miss="" st t f
+  [ -f "$MIG2" ] || { ko "003·C2 falta $MIG2"; return; }
+  st=$(sql_statements "$MIG2")
+  for t in $TABLAS3; do
+    printf '%s\n' "$st" | grep -qE "^ ?create table public\.$t \(" || miss="$miss tabla[$t]"
+    printf '%s\n' "$st" | grep -qE "^ ?alter table public\.$t enable row level security;" || miss="$miss rls[$t]"
+  done
+  for f in $FUNCS3; do
+    printf '%s\n' "$st" | awk -v f="create function public.$f(" 'index($0, f) { found=1; if (index($0, "security definer") && index($0, "set search_path")) good=1 } END { exit !(found && good) }' \
+      || miss="$miss funcion[$f]"
+  done
+  ! printf '%s\n' "$st" | grep -E '^ ?create policy' | grep -qE 'for (insert|update|delete|all) .*to authenticated' || miss="$miss politica-de-escritura"
+  ! printf '%s\n' "$st" | grep -E '^ ?(alter|drop|create policy)' | grep -qE '(public\.)?leads\b' || miss="$miss toca-leads"
+  if [ -z "$miss" ]; then ok "003·C2 migración: 7 tablas con RLS, 7 funciones security definer con search_path, sin escritura directa, leads intacta"
+  else ko "003·C2 migración:$miss"; fi
+}
+
+s3_c3_db() {
+  local out
+  if out=$(npm run test:db 2>&1); then ok "003·C3 reglas y seguridad en la base (npm run test:db)"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "003·C3 npm run test:db"; ev "$(printf '%s' "$out" | grep -E '✗|×|FAIL|Tests |Error' | head -15)"; fi
+}
+
+s3_c4_unit() {
+  local out
+  if out=$(npx vitest run src/lib/juntadas.test.ts 2>&1); then ok "003·C4 fechas en hora argentina, links de WhatsApp y código (Vitest)"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "003·C4 Vitest"; ev "$(printf '%s' "$out" | tail -12)"; fi
+}
+
+s3_c5_app() {
+  local out
+  if out=$(npx playwright test -c playwright.app.config.ts 2>&1); then ok "003·C5 /nueva y /j/<inexistente> sin sesión, 404 y 375 px sin scroll"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "003·C5 Playwright"; ev "$(printf '%s' "$out" | tail -15)"; fi
+}
+
+s3_c6_no_preview() {
+  local miss=""
+  [ -d .vercel/output ] || miss="$miss sin-build"
+  ! grep -rqi 'vista-previa' .vercel/output 2>/dev/null || miss="$miss vista-previa-en-el-build"
+  [ -f src/dev/vista-previa.astro ] || miss="$miss sin-vista-previa-en-dev"
+  if [ -z "$miss" ]; then ok "003·C6 la vista previa no está en .vercel/output"; else ko "003·C6:$miss"; fi
+}
+
+s3_c7_secrets() {
+  local miss="" hits
+  hits=$(grep -rinE "service_role|sb_secret" src supabase scripts tests 2>/dev/null)
+  [ -z "$hits" ] || miss="$miss [$hits]"
+  ! git ls-files | grep -qE '(^|/)\.env$' || miss="$miss .env-versionado"
+  if [ -z "$miss" ]; then ok "003·C7 sin secretos en src, supabase, scripts y tests; .env sin versionar"; else ko "003·C7:$miss"; fi
+}
+
+s3_c9_readme() {
+  local miss=""
+  for h in 'Login con Google' 'Migración 002' 'Métricas del experimento'; do
+    grep -qE "^#{1,3} $h" README.md 2>/dev/null || miss="$miss [$h]"
+  done
+  if [ -z "$miss" ]; then ok "003·C9 README con Login con Google, Migración 002 y Métricas del experimento"; else ko "003·C9 faltan:$miss"; fi
+}
+
+# 003·C8 es una rúbrica sobre capturas a 375 y 1280 px de la vista previa; no corre acá.
+# Evidencia de 003·C8: specs/done/003-v1-juntadas.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
+s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
 
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"

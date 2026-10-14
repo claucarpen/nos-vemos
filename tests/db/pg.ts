@@ -42,7 +42,7 @@ export async function startDb(migrations: string[]): Promise<Db> {
   await server.start();
 
   const pool = new pg.Pool({ host: '127.0.0.1', port, user: 'postgres', password: 'postgres', database: 'postgres', max: 4 });
-  await pool.query('create role anon nologin noinherit; create role authenticated nologin noinherit; create role service_role nologin noinherit bypassrls;');
+  await pool.query('create role anon nologin noinherit; create role authenticated nologin noinherit;');
   await pool.query(await readFile(join(root, 'tests/db/supabase-shim.sql'), 'utf8'));
   for (const m of migrations) await pool.query(await readFile(join(root, 'supabase/migrations', m), 'utf8'));
 

@@ -214,6 +214,20 @@ test('movimientos registra creo_juntada, se_unio, voto, confirmado y cancelo', a
   expect(c.rowCount).toBe(1);
 });
 
+test('borrar una juntada cerrada (como hace el operador en el panel) borra sus opciones, votos y movimientos', async () => {
+  const { org, codigo, gente, ops } = await conGrupo(1, { quorum: 2, tamano: 2 });
+  await votar(org, codigo, [ops[0]]);
+  await votar(gente[0], codigo, [ops[0]]);
+  const j = await juntada(codigo);
+  await db.q(admin, 'delete from public.juntadas where id = $1', [j.id]);
+  const r = await db.q(admin, `select
+    (select count(*) from public.opciones where juntada_id = $1)::int as opciones,
+    (select count(*) from public.participantes where juntada_id = $1)::int as participantes,
+    (select count(*) from public.disponibilidad where opcion_id = any($2::uuid[]))::int as disponibilidad,
+    (select count(*) from public.movimientos where juntada_id = $1)::int as movimientos`, [j.id, ops]);
+  expect(r.rows[0]).toEqual({ opciones: 0, participantes: 0, disponibilidad: 0, movimientos: 0 });
+});
+
 describe('seguridad', () => {
   test('anon no puede leer ninguna tabla nueva', async () => {
     await conGrupo(1);

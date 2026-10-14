@@ -1,0 +1,56 @@
+---
+// Crear una juntada. Sin sesión: "Entrar con Google". Con sesión: formulario; el POST vuelve acá.
+import App from '../layouts/App.astro';
+import CrearJuntadaForm, { type Inicial } from '../components/app/CrearJuntadaForm.tsx';
+import EntrarConGoogle from '../components/app/EntrarConGoogle.astro';
+import { aLocalArgentina, desdeLocalArgentina } from '../lib/fechas';
+import { textoDeError } from '../lib/errores';
+import { supabaseServidor } from '../lib/supabase';
+
+export const prerender = false;
+
+const supabase = supabaseServidor(Astro.request, Astro.cookies);
+const { data: { user } } = await supabase.auth.getUser();
+
+let inicial: Inicial = { titulo: '', tamano: '', quorum: '4', opciones: [] };
+let error: string | null = null;
+if (!user && Astro.url.searchParams.get('login') === 'error') error = textoDeError({ message: 'login' });
+
+if (user && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const texto = (k: string) => String(form.get(k) ?? '').trim();
+  const opciones = form.getAll('opcion').map((v) => String(v));
+  inicial = { titulo: texto('titulo'), tamano: texto('tamano'), quorum: texto('quorum'), opciones };
+  const inicios = opciones.map(desdeLocalArgentina);
+  if (inicios.some((i) => i === null)) {
+    error = textoDeError({ message: 'fecha_invalida' });
+  } else {
+    const { data, error: e } = await supabase.rpc('crear_juntada', {
+      titulo: inicial.titulo, quorum: Number(inicial.quorum), tamano_grupo: Number(inicial.tamano), inicios,
+    });
+    if (!e && typeof data === 'string') return Astro.redirect(`/j/${data}`, 303);
+    error = textoDeError(e);
+    Astro.response.status = 400;
+  }
+}
+
+const min = aLocalArgentina(new Date());
+---
+<App titulo="Nueva juntada">
+  <section class="panel">
+    <h1 class="app-title">Nueva juntada</h1>
+    {user ? (
+      <>
+        <p class="lead">Proponé fechas, compartí el link y la juntada se cierra sola cuando llegan al quórum.</p>
+        {error && <p class="alerta" role="alert">{error}</p>}
+        <CrearJuntadaForm client:load inicial={inicial} min={min} />
+      </>
+    ) : (
+      <>
+        <p class="lead">Para armar una juntada, entrá con tu cuenta de Google.</p>
+        {error && <p class="alerta" role="alert">{error}</p>}
+        <EntrarConGoogle next="/nueva" />
+      </>
+    )}
+  </section>
+</App>

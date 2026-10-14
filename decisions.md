@@ -68,3 +68,75 @@
 **Por qué**: es lo más simple que cumple "entero o ausente" de 320 a 1920 px sin JavaScript ni tocar `--u`, la paleta o los sprites; el margen de 16 px cubre la barra de scroll, que reduce el ancho del hero sin cambiar el del `@media`. A 1920 px se ven los 28 sprites.
 **Reemplaza a**: la regla de "elementos wide solo desde 640 px" de la decisión del header a todo el ancho (2026-10-13).
 **La invalidaría**: cambiar `--u`, mover o sumar sprites sin actualizar su tier (lo detecta `tests/e2e/hero-clipping.spec.ts`), o que se prefiera un cálculo automático del tier.
+
+## 2026-10-14 · [v1] Postgres embebido con `embedded-postgres` 17 y un shim fiel a los permisos de Supabase
+
+**Qué se decide**: `npm run test:db` levanta un cluster por archivo con `embedded-postgres` 17.x (binarios por npm, sin Docker) y aplica `tests/db/supabase-shim.sql`: roles `anon` y `authenticated`, `auth.users`, `auth.uid()` con la definición de Supabase (`request.jwt.claim.sub` o `request.jwt.claims`), pgcrypto en `extensions` y los privilegios por defecto de Supabase (`grant all` a `anon` y `authenticated` sobre lo nuevo de `public`). `package.json` declara `allowScripts` para el postinstall de `@embedded-postgres/linux-x64`.
+**Por qué**: es el paquete que corre en Linux sin Docker con versión de 2026 y la misma versión mayor que Supabase. Sin los privilegios por defecto el shim daría falsos verdes: en Supabase una tabla nueva sin `revoke` queda legible si se olvida RLS. PGlite se descartó: es Postgres en WASM de un solo usuario y el cambio de rol no se comporta igual. npm 11 bloquea los postinstall sin aprobación y sin él faltan los symlinks de las bibliotecas.
+**La invalidaría**: que Supabase cambie sus privilegios por defecto o la definición de `auth.uid()`, o que `embedded-postgres` deje de publicar binarios.
+
+## 2026-10-14 · [v1] El código de la juntada lo genera la base; su prueba de unicidad corre en `test:db`
+
+**Qué se decide**: `crear_juntada` genera el código con `extensions.gen_random_bytes(16)` en base64url (22 caracteres). La prueba "10.000 códigos sin repetirse, base64url de ≥22" llama 10.000 veces a `crear_juntada` en `tests/db/juntadas.test.ts`, no en `npm test`. En TypeScript solo existe `esCodigo` (`src/lib/codigo.ts`), que reconoce la forma para responder 404 sin consultar la base.
+**Por qué**: la spec fija la firma de `crear_juntada` sin parámetro de código y dice que la función lo genera; C4 pide probarlo en Vitest de `npm test`. Un generador en TypeScript sería código muerto o cambiaría la firma. Probar el generador real es más fuerte que probar una copia.
+**La invalidaría**: que el operador prefiera generar el código en la app y pasarlo a `crear_juntada`.
+
+## 2026-10-14 · [v1] Doble barrera en la base: `revoke` explícitos además de RLS
+
+**Qué se decide**: las 7 tablas nuevas tienen RLS y además `revoke all` para `anon` y `authenticated` (salvo `select` de `perfiles` para `authenticated`, con política de su propia fila). Cada función hace `revoke all … from public, anon, authenticated` y concede `execute` solo a quien corresponde. `metricas_experimento` es `security_invoker` y sin acceso para `public`, `anon` ni `authenticated`.
+**Por qué**: Supabase concede todo por defecto a `anon` y `authenticated`, y Postgres da `execute` a `public`: sin los `revoke`, una política olvidada o una función auxiliar quedarían expuestas por la API. Una vista sin `security_invoker` corre con los permisos de su dueño y saltea RLS.
+**La invalidaría**: que se agregue una tabla o función nueva sin su `revoke`; los tests de seguridad de `tests/db/juntadas.test.ts` lo detectan para las tablas listadas.
+
+## 2026-10-14 · [v1] Reglas de juntada que la spec no cerraba
+
+**Qué se decide**: (1) Votar sin marcar ninguna fecha es válido ("no puedo en ninguna") y cuenta como votante. (2) "Votó" es tener un movimiento `voto`; no hay columna nueva. (3) `unirse` chequea en orden: existe → abierta → ya participante (no hace nada) → cupo. La página pide `detalle_juntada` primero y solo llama a `unirse` si no es participante, así quien ya está ve su juntada cerrada o cancelada. (4) `crear_juntada` y `unirse` llaman a `asegurar_perfil` (idempotente) por si el callback no lo hizo. (5) El cupo de 10 es `maximo`, independiente de `tamano_grupo`. (6) `tasa_voto` = votantes / `tamano_grupo` redondeada a 2 decimales; puede pasar de 1 si se suman más personas que las cargadas. (7) `horas_hasta_cierre` solo existe para cerradas; cancelar no llena `cerrada_en`. (8) El nombre visible es `full_name` de Google, si no `name`, si no la parte local del email. (9) Votar una opción de otra juntada se rechaza (`opcion_ajena`). (10) El número de Player es el orden de `unido_en`; el organizador es Player 1. (11) Los errores de negocio se lanzan como mensajes-clave (`juntada_no_abierta`, …) y `src/lib/errores.ts` los traduce.
+**Por qué**: la spec define las reglas y los rechazos, no estos casos borde; cada uno es la opción más simple compatible con los criterios.
+**La invalidaría**: que la spec o el operador fijen otro comportamiento para alguno de estos casos.
+
+## 2026-10-14 · [v1] Formularios HTML con POST a la propia página; React solo en la isla de crear
+
+**Qué se decide**: `/nueva` y `/j/<código>` reciben POST en su propio frontmatter y redirigen con 303 (votar, cancelar, crear). La grilla de votación es un formulario con checkboxes nativos, sin JS. La isla React `CrearJuntadaForm` solo agrega y quita filas de fecha (2 a 10). No se usan Actions ni se toca `src/actions/index.ts`. Cancelar pide confirmación con `confirm()`.
+**Por qué**: es lo más simple que pasa los evals, funciona sin JavaScript y no toca nada que use la landing. Las Actions obligaban a sumar al mismo archivo que `saveLead`. Astro rechaza POST de otro origen (`checkOrigin`).
+**La invalidaría**: que la grilla necesite actualizarse sin recargar (tiempo real, fuera de alcance).
+
+## 2026-10-14 · [v1] Fechas con `datetime-local` nativo interpretado como hora argentina
+
+**Qué se decide**: cada opción es un `<input type="datetime-local">` con `min` en la hora argentina actual. El servidor interpreta el valor en `America/Argentina/Buenos_Aires` con el offset que da `Intl` (no un `-03:00` fijo) y rechaza fechas imposibles. Todo se muestra como "jueves 23/10, 21:00 h".
+**Por qué**: el control nativo es el más simple y accesible en celular (la spec lo prefiere). Con `Intl` el código sigue bien si Argentina vuelve a tener horario de verano.
+**La invalidaría**: que la rúbrica de C8 falle en algún celular de los grupos de prueba por el control nativo.
+
+## 2026-10-14 · [v1] El tamaño del grupo no tiene valor por defecto; el quórum sí (4)
+
+**Qué se decide**: en `/nueva`, "Personas en el grupo" es obligatorio y empieza vacío; "Quórum" empieza en 4.
+**Por qué**: la tasa de voto del experimento divide por `tamano_grupo`; un valor por defecto que el organizador no corrige la distorsiona. El 4 del quórum lo fija la spec.
+**La invalidaría**: que los organizadores de prueba se traben con el campo vacío.
+
+## 2026-10-14 · [v1] Login: POST a `/auth/login`, PKCE en cookies, vuelta a `next` solo si es ruta interna
+
+**Qué se decide**: "Entrar con Google" es un formulario POST a `/auth/login`, que llama a `signInWithOAuth` de `@supabase/ssr` (el verificador PKCE queda en cookie) y redirige a Google. `/auth/callback` canjea el código, llama a `asegurar_perfil()` y redirige a `next` solo si empieza con `/` y no con `//` ni `/\`. Si falla, vuelve con `?login=error`. La v1 no tiene botón de salir.
+**Por qué**: el flujo SSR oficial de Supabase. Validar `next` evita usar el login como redirección abierta. Salir no está en la spec y la sesión se puede cerrar desde la cuenta de Google.
+**La invalidaría**: que un grupo de prueba comparta dispositivos y necesite salir.
+
+## 2026-10-14 · [v1] Vista previa inyectada solo en `astro dev`
+
+**Qué se decide**: `astro.config.mjs` suma la integración `vista-previa`, que inyecta `/vista-previa/[pantalla]` (`src/dev/vista-previa.astro`) solo si el comando es `dev`. Pantallas: `crear`, `votar`, `cerrada`, `cancelada`, con los mismos componentes que las páginas reales. La barra de herramientas de desarrollo de Astro queda desactivada porque tapaba las capturas.
+**Por qué**: fuera de `src/pages` la ruta no existe en el build; C6 lo verifica con grep sobre `.vercel/output`.
+**La invalidaría**: que Astro empiece a construir rutas inyectadas en `dev` también en `build`.
+
+## 2026-10-14 · [v1] C5 corre contra `astro dev` con un Supabase falso local
+
+**Qué se decide**: `playwright.app.config.ts` levanta `tests/app/stub-supabase.mjs` (responde que ninguna juntada existe) y `astro dev --ignore-lock` con `PUBLIC_SUPABASE_URL` apuntando al stub y una publishable key inventada. Un código mal formado responde 404 sin consultar; uno bien formado consulta `juntada_publica` y responde 404 si viene vacía, o 503 si la base falla.
+**Por qué**: `@astrojs/vercel` no tiene servidor de preview local, y sin stub el código bien formado daría 503 por red. `--ignore-lock` deja `astro dev` en primer plano: Astro 7 lo pasa a segundo plano si detecta un agente y Playwright no podría cerrarlo.
+**La invalidaría**: que el adaptador de Vercel sume un preview local; entonces C5 corre contra el build.
+
+## 2026-10-14 · [v1] Estilos de la app en `app.css`, sin colores fuera de la paleta Atardecer pixel
+
+**Qué se decide**: la app importa `global.css` (sin cambios) y `src/styles/app.css`. Solo usa colores de la paleta: los tokens de la UI y las bandas del cielo del hero (#2d2a5a, #4a3a7e, #7b4a9a, #b5589a, #f29e8e). El checkbox de cada fecha es propio (fondo #16142b, borde #8b84b8; marcado: #c4b5fd con tilde pixelado #1e1b3a) para no mostrar el blanco nativo. Las páginas de la app llevan `noindex`.
+**Por qué**: la landing sale idéntica: mismo `index.*.css`, y el HTML solo cambia en el hash del chunk de `LeadForm` y el `uid` de la isla (React pasó a un chunk compartido). Contrastes medidos: botón #1e1b3a sobre #c4b5fd 8.94; botón secundario y "Player N" #c4b5fd sobre #2c2950 7.39 y sobre #1e1b3a 8.94; "LEVEL CLEAR" #f6b8c8 sobre #4a3a7e 5.74; fecha ganadora #edf2f7 sobre #4a3a7e 8.48; "GAME OVER" #f29e8e sobre #2d2a5a 6.32; alerta #f29e8e sobre #1e1b3a 7.90; "Puedo" #f6b8c8 sobre #2d2a5a 7.93; "No puedo" y votos #a0aec0 sobre #16142b 7.96; borde del checkbox #8b84b8 sobre #16142b 5.21 (mínimos: 4.5 texto, 3 componentes). Los bordes de los banners (#7b4a9a 2.14, #b5589a 3.13 sobre #2c2950) son decorativos: el banner no es interactivo.
+**La invalidaría**: que el operador cambie de paleta o que se use un color fuera de esta lista.
+
+## 2026-10-14 · [v1] Texto de la invitación por WhatsApp
+
+**Qué se decide**: "Invitar al grupo por WhatsApp" abre `https://wa.me/?text=` con "¡Armemos <título>! Entrá y marcá qué días podés: <url>". El aviso de cierre usa el texto exacto de la spec.
+**Por qué**: la spec fija el texto del cierre, no el de la invitación; este es corto, rioplatense y lleva el link.
+**La invalidaría**: que el operador pida otro texto.
