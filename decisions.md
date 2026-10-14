@@ -55,3 +55,9 @@
 **Por qué**: decisión del operador. Contrastes del texto del hero: título #edf2f7 sobre #2d2a5a 11.72 y sobre #4a3a7e 8.48; tagline #f6b8c8 sobre #2d2a5a 7.93 y sobre #4a3a7e 5.74; botón 8.94. Ningún texto toca las bandas violeta, rosa ni durazno (el tagline sobre #7b4a9a daría 3.83 y falla). A 375 px el hero mide 407 px (50 % de 812) y no hay scroll horizontal; a 1280 px mide 464 px.
 **Reemplaza a**: el hero de caja centrada de 320×256 px de la paleta Atardecer pixel.
 **La invalidaría**: que el texto del hero crezca hasta las bandas violeta, o que el operador cambie el hero.
+
+## 2026-10-13 · [landing] Pulido del header: tagline en una sola banda, sin murciélagos, pino completo
+
+**Qué se decide**: el título vive en la banda oscura #2d2a5a y el tagline con el botón en la banda #4a3a7e, cada texto entero dentro de una sola banda. Se sacan los murciélagos (markup y `public/sprites/bat.png`); quedan las estrellas. Todos los árboles son el mismo pino de dos tiles de Tiny Town: copa `town_4` sobre tronco `town_16`.
+**Por qué**: decisión del operador. `town_16` solo es la mitad de abajo de un árbol (con el borde de arriba abierto) y `town_28` es un pino chico distinto; los árboles usados antes mostraban la copa cortada. Contrastes sin cambios: título sobre #2d2a5a 11.72, tagline sobre #4a3a7e 5.74, botón 8.94. A 375 px el hero mide 427 px de 812 (53 %) y a 1280 px mide 484 px.
+**La invalidaría**: que el tagline o el botón crezcan fuera de su banda, o que el operador pida otro tipo de árbol.

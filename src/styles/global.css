@@ -49,16 +49,16 @@ section { padding: 3.5rem 1rem; }
 /* Header a todo el ancho: cielo en bandas planas y suelo de Tiny Town repetido, con escala entera (x3 celular, x4 escritorio) */
 .hero { --u: 48px; position: relative; overflow: hidden; text-align: center; padding: 0; image-rendering: pixelated; }
 @media (min-width: 640px) { .hero { --u: 64px; } }
-.hero-text {
-  position: relative; padding: 2rem 1rem 2.25rem;
-  /* Texto solo sobre las dos bandas oscuras: contrastes en decisions.md */
-  background: linear-gradient(to bottom, #2d2a5a 0 48%, #4a3a7e 48% 100%);
-}
+.hero-text { position: relative; }
+/* Cada texto vive entero dentro de una sola banda oscura */
+.band { padding: 1.75rem 1rem; }
+.band-1 { background: #2d2a5a; padding-bottom: 1.5rem; }
+.band-2 { background: #4a3a7e; padding-top: 1.5rem; padding-bottom: 2rem; }
 .hero-text::before { /* estrellas: cuadrados de 4 px en los costados, lejos del texto */
-  content: ''; position: absolute; left: 4%; top: 14px; width: 4px; height: 4px; background: var(--title);
-  box-shadow: 3vw 38px 0 var(--title), 9vw 12px 0 var(--muted), 78vw 20px 0 var(--title), 90vw 48px 0 var(--muted), 94vw 10px 0 var(--title), 6vw 90px 0 var(--muted), 88vw 96px 0 var(--title);
+  content: ''; z-index: 1; pointer-events: none; position: absolute; left: 4%; top: 14px; width: 4px; height: 4px; background: var(--title);
+  box-shadow: 3vw 38px 0 var(--title), 9vw 12px 0 var(--muted), 78vw 20px 0 var(--title), 90vw 48px 0 var(--muted), 94vw 10px 0 var(--title), 5vw 56px 0 var(--muted), 92vw 62px 0 var(--title);
 }
-.hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--tagline); margin: 1.25rem 0 0; }
+.hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--tagline); margin: 0; }
 .world {
   position: relative; height: calc(var(--u) * 3.5);
   background:

@@ -180,20 +180,18 @@ Ajuste: el borde #4a4672 pedido para los inputs daba 1.56 contra el panel; se us
 
 | Par | Ratio | Mínimo |
 |---|---|---|
-| Título #edf2f7 sobre #2d2a5a | 11.72 | 4.5 |
-| Título #edf2f7 sobre #4a3a7e | 8.48 | 4.5 |
-| Tagline #f6b8c8 sobre #2d2a5a | 7.93 | 4.5 |
-| Tagline #f6b8c8 sobre #4a3a7e | 5.74 | 4.5 |
+| Título #edf2f7 sobre #2d2a5a (banda 1) | 11.72 | 4.5 |
+| Tagline #f6b8c8 sobre #4a3a7e (banda 2) | 5.74 | 4.5 |
 | Botón #1e1b3a sobre lavanda | 8.94 | 4.5 |
 
-Medido en Playwright: a 375 px el hero mide 407 px de 812 (50 %) y `scrollWidth` es 375; a 1280 px el hero mide 464 px y `scrollWidth` es 1280. Los demás contrastes de la tabla anterior no cambiaron.
+Medido en Playwright: a 375 px el hero mide 427 px de 812 (53 %) y `scrollWidth` es 375; a 1280 px el hero mide 484 px y `scrollWidth` es 1280. Los demás contrastes de la tabla anterior no cambiaron.
 
 ### C10 (rúbrica), sobre capturas a 375 y 1280 px
 
 Capturas: `landing_375.png` y `landing_1280.png` (adjuntar al PR).
 
 1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos en fuente del sistema a 17 px.
-2. Mascota y ambiente de Kenney en el hero: PASA. Header a todo el ancho con cielo de atardecer en bandas planas, murciélagos de Tiny Dungeon, suelo de Tiny Town con árboles, flores y hongos, y la mascota original centrada en el camino con cofre y poción.
+2. Mascota y ambiente de Kenney en el hero: PASA. Header a todo el ancho con cielo de atardecer en bandas planas con estrellas, suelo de Tiny Town con pinos completos (copa y tronco), flores y hongos, y la mascota original centrada en el camino con cofre y poción.
 3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y los cubren los tests de C4 (no vistos en captura).
 4. Español rioplatense: PASA ("Anotame", "Sumate", "dejanos", "querés", "vos").
 5. Claridad y contraste: PASA. Dos campos con etiquetas y un botón lavanda "Press Start" con contraste 8.94 (ver tabla).
