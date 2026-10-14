@@ -120,5 +120,6 @@ section { padding: 3.5rem 1rem; }
 .privacy a { color: var(--accent); }
 
 footer { padding: 2rem 1rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+footer a { color: var(--accent); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

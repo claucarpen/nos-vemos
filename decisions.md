@@ -140,3 +140,9 @@
 **Qué se decide**: "Invitar al grupo por WhatsApp" abre `https://wa.me/?text=` con "¡Armemos <título>! Entrá y marcá qué días podés: <url>". El aviso de cierre usa el texto exacto de la spec.
 **Por qué**: la spec fija el texto del cierre, no el de la invitación; este es corto, rioplatense y lleva el link.
 **La invalidaría**: que el operador pida otro texto.
+
+## 2026-10-14 · [privacidad] `/privacidad` es una página propia, indexable, con el layout mínimo de la landing
+
+**Qué se decide**: `privacidad.astro` no usa `App.astro` (que lleva `noindex`) ni el header ilustrado; importa `global.css` y `privacidad.css`, con barra de marca y paneles.
+**Por qué**: Google tiene que poder leer la política; `App.astro` es solo para pantallas privadas. El texto largo necesita un ancho de lectura de 40rem.
+**La invalidaría**: que la app pase a tener páginas públicas indexables que compartan layout.

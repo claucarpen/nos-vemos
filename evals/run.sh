@@ -237,10 +237,69 @@ s3_c9_readme() {
 # 003·C8 es una rúbrica sobre capturas a 375 y 1280 px de la vista previa; no corre acá.
 # Evidencia de 003·C8: specs/done/003-v1-juntadas.md.
 
+# --- Spec 004: página de privacidad -------------------------------------------------------------
+
+PRIV=.vercel/output/static/privacidad/index.html
+
+s4_c1_build() {
+  local miss=""
+  [ -f "$PRIV" ] || miss="$miss sin-html-estatico"
+  [ -f "$BUILT" ] || miss="$miss sin-landing"
+  # El build ya corrió en C1 (npm ci + build con el email centinela); "0 fallan" es el resultado de este run.
+  if [ -z "$miss" ]; then ok "004·C1 /privacidad se prerenderiza (.vercel/output/static/privacidad/index.html)"; else ko "004·C1:$miss"; fi
+}
+
+s4_c2_sections() {
+  local miss="" id t
+  for id in responsable datos uso no-hacemos donde plazo derechos actualizacion; do
+    grep -q "id=\"$id\"" "$PRIV" 2>/dev/null || miss="$miss id[$id]"
+  done
+  for t in 'Claudio Carpentino' 'foto de perfil' 'nunca tu email' 'Supabase' 'Vercel' 'Google'; do
+    grep -q "$t" "$PRIV" 2>/dev/null || miss="$miss texto[$t]"
+  done
+  if [ -z "$miss" ]; then ok "004·C2 las 8 secciones y los textos obligatorios"; else ko "004·C2:$miss"; fi
+}
+
+s4_c3_contact() {
+  local miss=""
+  grep -q "mailto:$SENTINEL_EMAIL" "$PRIV" 2>/dev/null || miss="$miss mailto-del-centinela"
+  grep -q 'PUBLIC_CONTACT_EMAIL' src/pages/privacidad.astro || miss="$miss variable-en-fuente"
+  ! grep -Eq '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' src/pages/privacidad.astro || miss="$miss email-hardcodeado"
+  if [ -z "$miss" ]; then ok "004·C3 el contacto sale de PUBLIC_CONTACT_EMAIL"; else ko "004·C3:$miss"; fi
+}
+
+s4_c4_links() {
+  local miss="" n
+  n=$(grep -o 'href="/privacidad"' "$BUILT" 2>/dev/null | wc -l)
+  [ "$n" = "2" ] || miss="$miss landing-tiene-$n-links"
+  for f in src/components/app/EntrarConGoogle.astro src/components/app/JuntadaPublica.astro; do
+    grep -q 'href="/privacidad"' "$f" || miss="$miss $f"
+  done
+  if [ -z "$miss" ]; then ok "004·C4 /privacidad enlazada en la landing (aviso y footer), el login y la juntada pública"; else ko "004·C4:$miss"; fi
+}
+
+s4_c5_mobile() {
+  local out
+  if out=$(npx playwright test tests/e2e/privacidad.spec.ts 2>&1); then ok "004·C5 /privacidad a 375 px sin scroll horizontal, sin 404 ni errores de consola"
+  else ko "004·C5 Playwright"; ev "$(printf '%s' "$out" | tail -10)"; fi
+}
+
+s4_c6_readme() {
+  local miss=""
+  grep -qE '^#{1,3} Publicar el login de Google' README.md 2>/dev/null || miss="$miss seccion"
+  for u in 'https://nos-vemos-five.vercel.app/privacidad' 'nos-vemos-five.vercel.app'; do grep -qF "$u" README.md || miss="$miss [$u]"; done
+  grep -qE 'https://nos-vemos-five\.vercel\.app([^/a-z]|$)' README.md || miss="$miss pagina-principal"
+  grep -qiE 'sin logo|no subas (un )?logo|no (subas|cargues) ning[uú]n logo' README.md || miss="$miss advertencia-logo"
+  if [ -z "$miss" ]; then ok "004·C6 README: Publicar el login de Google con las tres URLs y la advertencia del logo"; else ko "004·C6:$miss"; fi
+}
+
+# 004·C7 es una rúbrica sobre capturas a 375 y 1280 px; no corre acá.
+# Evidencia de 004·C7: specs/done/004-privacidad.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
-
+s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_readme
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

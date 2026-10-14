@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: [001, 003]
 ---
 
@@ -106,3 +106,14 @@ operador, siguiendo el README, después de que `/privacidad` esté en línea.
 | Banner de cookies | Se agrega analítica o cookies que no sean de sesión |
 | Borrado de cuenta desde la app | Llega el primer pedido de borrado y hacerlo a mano no alcanza |
 | Versión en inglés | Aparece un usuario que no habla español |
+
+## Evidencia
+
+`evals/run.sh`: 30 pasan · 0 fallan (C1–C6 de esta spec como `004·C1`…`004·C6`; las specs 001–003 siguen pasando).
+
+**C7 (rúbrica), sobre capturas a 375 y 1280 px** (`privacidad-375.png`, `privacidad-1280.png`; además `nueva-login-*`, `publica-login-*`, `landing-aviso-*`, `landing-footer-*`):
+
+1. Rioplatense, oraciones cortas, sin jerga legal: cumple. Voseo en todo el texto ("escribile", "podés", "iniciás"); ninguna oración pasa de ~25 palabras; no hay términos legales.
+2. No promete nada que no haga ni cita leyes: cumple. "Nunca tu email" se verifica en `detalle_juntada` (devuelve nombre, número y voto; ningún email); "no publicidad" y "no compartimos" no dependen de código; no se cita ninguna ley.
+3. Datos coinciden con las tablas y el login: cumple. `leads` (nombre, email, fuente), `perfiles` (nombre, email de Google), `juntadas`/`opciones` (juntadas creadas), `disponibilidad` (fechas marcadas), `movimientos` (creó, se unió, votó, confirmado, canceló). La foto la comparte Google y vive en el registro de Supabase Auth; la app no la lee. Dos precisiones que el texto no enuncia, anotadas para el operador: `perfiles.lead_id` vincula el perfil con el lead del mismo email, y Supabase Auth guarda sus propios registros de sesión (p. ej. IP) por fuera de las tablas de la app.
+4. Misma estética que la landing, legible: cumple. Mismos tokens, fuentes y favicon; paneles de la landing; contraste del texto #cbd5e0 sobre #2c2950 y links #c4b5fd sobre #2c2950 (7.39). Salvedad visual: la fuente pixel no tiene "Ú" mayúscula con tilde y el título "Última actualización" se ve con "ú" minúscula; se leyó bien y se dejó el texto que fija la spec.

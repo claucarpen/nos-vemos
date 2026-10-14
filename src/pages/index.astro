@@ -104,12 +104,13 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
               de qué link viniste, para saber qué canal funciona. No los compartimos ni los vendemos.{' '}
               {contactEmail
                 ? <>Si querés que los borremos, escribinos a <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</>
-                : null}
+                : null}{' '}
+              Más detalles en nuestra <a href="/privacidad">política de privacidad</a>.
             </p>
           </div>
         </div>
       </section>
     </main>
-    <footer>Nos Vemos · hecho con pixeles y ganas de verte</footer>
+    <footer>Nos Vemos · hecho con pixeles y ganas de verte · <a href="/privacidad">Privacidad</a></footer>
   </body>
 </html>

@@ -11,8 +11,12 @@ createServer(async (req, res) => {
   const path = normalize(new URL(req.url, 'http://x').pathname).replace(/^(\.\.[/\\])+/, '');
   const file = join(root, path.endsWith('/') ? path + 'index.html' : path);
   try {
-    const body = await readFile(file);
-    res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream' });
+    // Como Vercel: `/privacidad` sirve `privacidad/index.html` (URLs limpias).
+    const body = await readFile(file).catch(async (e) => {
+      if (extname(file)) throw e;
+      return readFile(join(file, 'index.html'));
+    });
+    res.writeHead(200, { 'content-type': types[extname(file) || '.html'] ?? 'application/octet-stream' });
     res.end(body);
   } catch {
     res.writeHead(404).end('not found');

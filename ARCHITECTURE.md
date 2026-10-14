@@ -25,6 +25,7 @@
 | `src/pages/nueva.astro` | Crear juntada. Sin sesión: "Entrar con Google". POST → `crear_juntada` → 303 a `/j/<código>` |
 | `src/pages/j/[codigo].astro` | La juntada. Sin sesión: `juntada_publica`. Con sesión: `detalle_juntada` (si no es participante, `unirse` primero). POST `accion=votar\|cancelar` → 303. 404 si no existe, 503 si la base falla |
 | `src/pages/auth/login.ts`, `src/pages/auth/callback.ts` | POST que arranca el OAuth de Google; callback que canjea el código, llama a `asegurar_perfil` y vuelve a `next` (solo rutas internas) |
+| `src/pages/privacidad.astro`, `src/styles/privacidad.css` | Política de privacidad, prerenderizada, indexable (sin `noindex`), 8 secciones con `id`; el contacto sale de `PUBLIC_CONTACT_EMAIL`. Enlazada desde el aviso y el footer de la landing, `EntrarConGoogle.astro` (prop `aviso`) y `JuntadaPublica.astro` |
 | `src/layouts/App.astro` | Layout de la app: barra con la mascota, `global.css` + `app.css`, `noindex` |
 | `src/components/app/` | `Juntada.astro` (votar / LEVEL CLEAR / GAME OVER), `JuntadaPublica.astro`, `EntrarConGoogle.astro`, isla `CrearJuntadaForm.tsx` (filas de fecha 2-10) |
 | `src/lib/supabase.ts` | Cliente SSR (`createServerClient` con las cookies de Astro) y `rutaSegura` |
@@ -37,7 +38,7 @@
 | `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
 | `public/favicon.png`, `public/favicon.ico` | Favicon: la mascota ×2 por vecino más cercano (32×32); el `.ico` envuelve ese mismo PNG. Se regeneran con `node scripts/make-favicon.mjs`; `index.astro` declara `<link rel="icon" href="/favicon.png">` |
 | `public/fonts/` | Press Start 2P (OFL) y su licencia |
-| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon`) y tests Playwright: `mobile.spec.ts` (375 px), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px) |
+| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px) |
 
 ## Escenario del hero
 
