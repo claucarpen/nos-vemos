@@ -41,3 +41,10 @@
 **Por qué**: decisión del operador. Los contrastes WCAG medidos: botón 6.81, texto en panel 8.10, títulos sobre fondo 10.11, etiquetas y títulos en panel 6.58, tagline oro sobre fondo 6.20, aviso de privacidad 6.27, texto del input 13.65, borde del input 6.58 (mínimos: 4.5 texto, 3 elementos gráficos). El oro sobre panel da 4.04 y falla para texto chico: por eso el oro solo se usa sobre el fondo y en el botón.
 **Reemplaza a**: la paleta solo-Tiny Dungeon del 2026-10-13 (botón naranja #e19a65, contraste 7.73).
 **La invalidaría**: que el operador cambie de paleta o que el oro se use como texto sobre el panel.
+
+## 2026-10-13 · [landing] Paleta Atardecer pixel (lavanda), por decisión del operador
+
+**Qué se decide**: la UI usa fondo #1e1b3a, paneles #2c2950 con borde de 1 px #4a4672 y radio de 6 px, títulos #edf2f7, texto #cbd5e0, texto atenuado #a0aec0, tagline #f6b8c8 y un único acento lavanda #c4b5fd (h3, etiquetas, enlaces y botón con texto #1e1b3a). El borde de los inputs es #8b84b8, no #4a4672. El hero muestra un atardecer: cielo en cinco bandas planas (#2d2a5a, #4a3a7e, #7b4a9a, #b5589a, #f29e8e) sobre el suelo de Tiny Town, con la mascota, el cofre y la poción. La idea de paleta se inspira en el aspecto de pixellab.ai; no se usó ni copió ninguna de sus obras.
+**Por qué**: decisión del operador: UI casi neutra con un acento, y todo el color en el hero. #4a3a7e de borde de input daba 1.56:1 contra el panel y 2.06:1 contra el fondo del input (mínimo 3:1 para componentes de interfaz); #8b84b8 da 3.95:1 y 5.21:1.
+**Reemplaza a**: la paleta RPG clásico del mismo día (fondo bosque, paneles de madera, botón oro).
+**La invalidaría**: que el operador cambie de paleta.

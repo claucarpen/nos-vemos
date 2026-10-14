@@ -17,9 +17,9 @@
 | `src/actions/index.ts` | Action `saveLead`: arma el cliente de Supabase y llama a `processLead` |
 | `src/lib/leads.ts` | Lógica pura (validación, honeypot, `fuente`, duplicados) con cliente inyectable |
 | `src/lib/leads.test.ts` | Vitest con cliente falso |
-| `src/styles/global.css` | Estilos retro y paleta "RPG clásico" (bosque, madera, oro) |
+| `src/styles/global.css` | Estilos retro y paleta "Atardecer pixel" (índigo, un acento lavanda; el cielo del hero en bandas planas) |
 | `supabase/migrations/001_leads.sql` | Tabla `leads` y política de insert para `anon` |
-| `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`) y Tiny Town (`town_*`: pasto, camino, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
+| `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
 | `public/fonts/` | Press Start 2P (OFL) y su licencia |
 | `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático y test Playwright de 375 px |
 

@@ -139,7 +139,7 @@ recién después de que exista el email de contacto (`PUBLIC_CONTACT_EMAIL`).
 
 ## Evidencia de implementación
 
-Comando: `evals/run.sh` (2026-10-13, tras la enmienda de paleta y hero exterior).
+Comando: `evals/run.sh` (2026-10-13, tras la enmienda a la paleta Atardecer pixel).
 
 ```
 PASS C1 el proyecto compila
@@ -149,36 +149,42 @@ PASS C4 validación, honeypot, fuente y duplicados (Vitest)
      |       Tests  12 passed (12)
 PASS C5 migración: forma y seguridad
 PASS C6 sin secretos en el repo
-PASS C7 sprites con licencia CC0 (11 sprites, 2 licencias)
+PASS C7 sprites con licencia CC0 (9 sprites, 2 licencias)
 PASS C8 375px sin scroll horizontal y botón visible
 PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
 PASS C11 README con las cuatro secciones
 10 pasan · 0 fallan
 ```
 
-### Contrastes WCAG (paleta RPG clásico)
+### Contrastes WCAG (paleta Atardecer pixel)
 
 | Par | Ratio | Mínimo |
 |---|---|---|
-| Texto del botón #2a1d0e sobre oro #c8a24a | 6.81 | 4.5 |
-| Texto #f1ead6 sobre panel #5a3e2b | 8.10 | 4.5 |
-| Títulos #e6d3a3 sobre fondo #1f2a1c | 10.11 | 4.5 |
-| Etiquetas y h3 #e6d3a3 sobre panel | 6.58 | 4.5 |
-| Tagline oro sobre fondo | 6.20 | 4.5 |
-| Aviso de privacidad #d9cfb3 sobre panel | 6.27 | 4.5 |
-| Texto del input #f1ead6 sobre #2a1d0e | 13.65 | 4.5 |
-| Borde del input #e6d3a3 sobre panel | 6.58 | 3 |
-| Oro sobre panel (no se usa como texto) | 4.04 | 4.5 |
+| Texto del botón #1e1b3a sobre lavanda #c4b5fd | 8.94 | 4.5 |
+| Títulos #edf2f7 sobre fondo #1e1b3a | 14.65 | 4.5 |
+| Texto #cbd5e0 sobre panel #2c2950 | 9.18 | 4.5 |
+| Texto #cbd5e0 sobre fondo | 11.10 | 4.5 |
+| Tagline #f6b8c8 sobre fondo | 9.90 | 4.5 |
+| h3, etiquetas y enlaces lavanda sobre panel | 7.39 | 4.5 |
+| Texto atenuado #a0aec0 (privacidad) sobre panel | 6.05 | 4.5 |
+| Texto atenuado #a0aec0 (pie) sobre fondo | 7.31 | 4.5 |
+| Mensaje de éxito #f6b8c8 sobre panel | 8.19 | 4.5 |
+| Texto del input #edf2f7 sobre #16142b | 15.95 | 4.5 |
+| Borde del input #8b84b8 sobre panel | 3.95 | 3 |
+| Borde del input #8b84b8 sobre fondo del input | 5.21 | 3 |
+| Foco lavanda sobre panel | 7.39 | 3 |
+
+Ajuste: el borde #4a4672 pedido para los inputs daba 1.56 contra el panel; se usó #8b84b8. #4a4672 queda solo en los bordes de panel, que son decorativos.
 
 ### C10 (rúbrica), sobre capturas a 375 y 1280 px
 
 Capturas: `landing_375.png` y `landing_1280.png` (adjuntar al PR).
 
 1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos en fuente del sistema a 17 px.
-2. Mascota y ambiente de Kenney en el hero: PASA. Tile 98 original sobre un camino de tierra entre pasto y árboles (Tiny Town), con cofre y poción de Tiny Dungeon.
+2. Mascota y ambiente de Kenney en el hero: PASA. Tile 98 original sobre tierra y pasto de Tiny Town con árboles, cofre y poción, bajo un cielo de atardecer en bandas planas.
 3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y los cubren los tests de C4 (no vistos en captura).
 4. Español rioplatense: PASA ("Anotame", "Sumate", "dejanos", "querés", "vos").
-5. Claridad y contraste: PASA. Dos campos con etiquetas y un botón "Press Start" dorado con contraste 6.81 (ver tabla).
+5. Claridad y contraste: PASA. Dos campos con etiquetas y un botón lavanda "Press Start" con contraste 8.94 (ver tabla).
 6. Cuatro promesas sin jerga: PASA. "Cierra solo", "Insiste por vos", "Se repite", "Con premios".
 
 Pendiente fuera de los evals: el operador prueba el envío real tras Supabase y Vercel (README).
