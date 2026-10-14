@@ -69,6 +69,20 @@ URL de Vercel (`https://tu-proyecto.vercel.app`) y el *project ref* de Supabase 
 6. Probá: abrí `https://tu-proyecto.vercel.app/nueva`, tocá **Entrar con Google** y volvés al
    formulario de nueva juntada.
 
+## Publicar el login de Google
+
+Mientras la app esté en modo **Testing**, cada participante tiene que estar cargado a mano como
+usuario de prueba. Para abrirla a cualquiera hay que publicar el login. Hacelo después de que
+`/privacidad` esté en línea.
+
+1. En Google Cloud: **Google Auth Platform → Información de la marca** (*Branding*):
+   - **Página principal de la aplicación**: `https://nos-vemos-five.vercel.app`
+   - **Vínculo a la política de privacidad**: `https://nos-vemos-five.vercel.app/privacidad`
+   - **Dominios autorizados**: `nos-vemos-five.vercel.app`
+   - **Sin logo**: no subas ningún logo. Subir uno dispara la verificación de marca de Google, que
+     demora semanas.
+2. **Google Auth Platform → Público** (*Audience*): **Publicar app**.
+
 ## Migración 002
 
 Crea las tablas de la v1 (`tipos_evento`, `perfiles`, `juntadas`, `opciones`, `participantes`,

@@ -140,3 +140,15 @@
 **Qué se decide**: "Invitar al grupo por WhatsApp" abre `https://wa.me/?text=` con "¡Armemos <título>! Entrá y marcá qué días podés: <url>". El aviso de cierre usa el texto exacto de la spec.
 **Por qué**: la spec fija el texto del cierre, no el de la invitación; este es corto, rioplatense y lleva el link.
 **La invalidaría**: que el operador pida otro texto.
+
+## 2026-10-14 · [privacidad] `/privacidad` es una página propia, indexable, con el layout mínimo de la landing
+
+**Qué se decide**: `privacidad.astro` no usa `App.astro` (que lleva `noindex`) ni el header ilustrado; importa `global.css` y `privacidad.css`, con barra de marca y paneles.
+**Por qué**: Google tiene que poder leer la política; `App.astro` es solo para pantallas privadas. El texto largo necesita un ancho de lectura de 40rem.
+**La invalidaría**: que la app pase a tener páginas públicas indexables que compartan layout.
+
+## 2026-10-14 · [privacidad] `#datos` declara los datos técnicos (IP) que registran Supabase y Vercel
+
+**Qué se decide**: `#datos` suma un cuarto ítem, "Datos técnicos": Supabase y Vercel registran datos técnicos de las visitas y los inicios de sesión (por ejemplo la dirección IP) por seguridad; no se usan para nada más. 004·C2 exige "dirección IP".
+**Por qué**: la revisión de lo guardado encontró que Supabase Auth registra la IP de las sesiones fuera de las tablas de la app; la política no podía omitirlo para ser honesta. Lo decidió el operador.
+**La invalidaría**: que se agregue analítica propia o se use ese registro para otra cosa; habría que declararlo.

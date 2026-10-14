@@ -21,8 +21,9 @@ const { j, next, conSesion, motivo } = Astro.props;
   {!conSesion && (
     <>
       <p class="lead">{j.estado === 'abierta' ? 'Entrá con Google para votar.' : 'Entrá con Google para ver el detalle.'}</p>
-      <EntrarConGoogle next={next} />
+      <EntrarConGoogle next={next} aviso={false} />
       <p class="nota">El grupo ve solo tu nombre; tu email no se lo mostramos a nadie del grupo.</p>
+      <p class="nota">Al entrar aceptás nuestra <a href="/privacidad">política de privacidad</a>.</p>
     </>
   )}
 </section>

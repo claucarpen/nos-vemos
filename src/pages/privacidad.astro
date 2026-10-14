@@ -1,0 +1,101 @@
+---
+import '../styles/global.css';
+import '../styles/privacidad.css';
+
+const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
+---
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Política de privacidad — Nos Vemos</title>
+    <meta name="description" content="Qué datos guarda Nos Vemos, para qué, dónde y cómo pedir que se borren." />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/fonts/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <header class="priv-bar">
+      <img src="/sprites/mascot.png" alt="" width="32" height="32" />
+      <a class="priv-brand" href="/">NOS VEMOS</a>
+    </header>
+    <main class="priv">
+      <h1>Política de privacidad</h1>
+      <p class="priv-intro">Acá te contamos, sin vueltas, qué datos guarda Nos Vemos y qué hacemos con ellos.</p>
+
+      <section id="responsable">
+        <h2>Quién está a cargo</h2>
+        <p>Claudio Carpentino es el responsable de Nos Vemos.</p>
+        <p>
+          {contactEmail
+            ? <>Para cualquier consulta, escribile a <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</>
+            : <>Para cualquier consulta, escribile por el contacto del sitio.</>}
+        </p>
+      </section>
+
+      <section id="datos">
+        <h2>Qué datos guardamos</h2>
+        <ul>
+          <li><strong>Si te anotás en la lista:</strong> tu nombre, tu email y de qué link llegaste (la fuente).</li>
+          <li>
+            <strong>Si entrás con Google:</strong> tu nombre, tu email y tu foto de perfil, que Google comparte
+            cuando iniciás sesión. La foto queda en el registro de inicio de sesión. Nos Vemos no la muestra.
+          </li>
+          <li>
+            <strong>Si usás una juntada:</strong> las juntadas que creás, las fechas en las que marcás que podés
+            y un historial de participación: te uniste, votaste, quedaste confirmado.
+          </li>
+          <li>
+            <strong>Datos técnicos:</strong> como cualquier sitio, Supabase y Vercel registran datos técnicos de las
+            visitas y de los inicios de sesión (por ejemplo, la dirección IP) por seguridad. No los usamos para nada más.
+          </li>
+        </ul>
+      </section>
+
+      <section id="uso">
+        <h2>Para qué los usamos</h2>
+        <ul>
+          <li>Para avisarte cuando Nos Vemos esté listo.</li>
+          <li>Para que funcionen las juntadas: mostrar tu nombre a tu grupo, contar los votos y cerrar cuando se llega al quórum.</li>
+          <li>Para medir cómo se usa el producto, con números agregados. Por ejemplo, cuántos votan en cada juntada.</li>
+        </ul>
+      </section>
+
+      <section id="no-hacemos">
+        <h2>Lo que no hacemos</h2>
+        <ul>
+          <li>No vendemos ni compartimos tus datos con nadie.</li>
+          <li>Las demás personas de una juntada ven tu nombre y tus votos, <strong>nunca tu email</strong>.</li>
+          <li>No te mandamos publicidad.</li>
+        </ul>
+      </section>
+
+      <section id="donde">
+        <h2>Dónde se guardan</h2>
+        <p>Los datos se guardan en Supabase, que es nuestra base de datos. El sitio corre en Vercel. El inicio de sesión lo hace Google.</p>
+      </section>
+
+      <section id="plazo">
+        <h2>Cuánto tiempo</h2>
+        <p>Los guardamos hasta que pidas borrarlos, o hasta que Nos Vemos deje de funcionar, lo que pase primero.</p>
+      </section>
+
+      <section id="derechos">
+        <h2>Tus derechos</h2>
+        <p>
+          Podés pedir que te mostremos, corrijamos o borremos tus datos.{' '}
+          {contactEmail
+            ? <>Escribinos a <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</>
+            : <>Escribinos al contacto del sitio.</>}
+        </p>
+      </section>
+
+      <section id="actualizacion">
+        <h2>Última actualización</h2>
+        <p>14 de octubre de 2026.</p>
+      </section>
+
+      <p class="priv-volver"><a href="/">Volver a Nos Vemos</a></p>
+    </main>
+  </body>
+</html>
