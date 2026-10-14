@@ -69,7 +69,17 @@ section { padding: 3.5rem 1rem; }
 }
 .world { background-size: var(--u) var(--u), var(--u) var(--u), 100% 100%; }
 .sp { position: absolute; width: var(--u); height: var(--u); left: calc(50% + var(--x) * var(--u)); top: calc(var(--y) * var(--u)); image-rendering: pixelated; }
-@media (max-width: 639px) { .sp.wide { display: none; } }
+/* Un sprite se muestra solo si entra entero en el viewport: cada clase wN es el ancho mínimo (ancho del sprite
+   más el borde, ×2 por simetría, más 16 px de margen por la barra de scroll). El par izquierdo y derecho comparten
+   clase; copa y tronco de un pino también. Sin clase: siempre visible. */
+.sp[class*=' w'] { display: none; }
+@media (min-width: 362px) { .sp.w362 { display: block; } }
+@media (min-width: 448px) { .sp.w448 { display: block; } }
+@media (min-width: 733px) { .sp.w733 { display: block; } }
+@media (min-width: 848px) { .sp.w848 { display: block; } }
+@media (min-width: 912px) { .sp.w912 { display: block; } }
+@media (min-width: 1117px) { .sp.w1117 { display: block; } }
+@media (min-width: 1360px) { .sp.w1360 { display: block; } }
 .cta-link {
   display: inline-block; margin-top: 1.25rem; padding: 0.9rem 1.2rem;
   font-family: var(--pixel); font-size: 0.75rem; text-decoration: none;
