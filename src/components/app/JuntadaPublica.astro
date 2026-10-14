@@ -1,0 +1,28 @@
+---
+// Lo que ve quien no tiene sesión, o quien no puede unirse (cerrada, cancelada o llena).
+import type { Publica } from '../../lib/juntada';
+import EntrarConGoogle from './EntrarConGoogle.astro';
+
+interface Props { j: Publica; next: string; conSesion: boolean; motivo?: string | null }
+const { j, next, conSesion, motivo } = Astro.props;
+---
+<section class="panel">
+  <p class="eyebrow">Organiza {j.organizador}</p>
+  <h1 class="app-title">{j.titulo}</h1>
+
+  {j.estado === 'cerrada' && (
+    <div class="banner banner-clear" role="status"><p class="banner-title">¡Quórum alcanzado! LEVEL CLEAR</p></div>
+  )}
+  {j.estado === 'cancelada' && (
+    <div class="banner banner-over" role="status"><p class="banner-title">GAME OVER: la juntada se canceló</p></div>
+  )}
+  {motivo && <p class="alerta" role="alert">{motivo}</p>}
+
+  {!conSesion && (
+    <>
+      <p class="lead">{j.estado === 'abierta' ? 'Entrá con Google para votar.' : 'Entrá con Google para ver el detalle.'}</p>
+      <EntrarConGoogle next={next} />
+      <p class="nota">El grupo ve solo tu nombre; tu email no se lo mostramos a nadie del grupo.</p>
+    </>
+  )}
+</section>

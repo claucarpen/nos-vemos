@@ -1,0 +1,9 @@
+---
+// Botón de login: POST a /auth/login, que redirige a Google vía Supabase y vuelve a `next`.
+interface Props { next: string; texto?: string }
+const { next, texto = 'Entrar con Google' } = Astro.props;
+---
+<form method="post" action="/auth/login" class="login">
+  <input type="hidden" name="next" value={next} />
+  <button type="submit" class="btn-start btn-block">{texto}</button>
+</form>

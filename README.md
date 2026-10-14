@@ -1,9 +1,12 @@
-# Nos Vemos — landing con captura de leads
+# Nos Vemos — landing y v1 de juntadas
 
-Landing retro gaming (Astro + React) que cuenta el problema, presenta la solución y guarda
-nombre y email en una tabla de Supabase que el público solo puede llenar, nunca leer.
+- Landing retro gaming (Astro + React) en `/`: cuenta el problema, presenta la solución y guarda
+  nombre y email en una tabla de Supabase que el público solo puede llenar, nunca leer.
+- v1, por invitación (la landing no la enlaza): `/nueva` crea una juntada con varias fechas,
+  `/j/<código>` es el link que se comparte. Cada uno entra con Google y marca cuándo puede; cuando
+  una fecha llega al quórum la juntada se cierra sola y el organizador avisa por WhatsApp.
 
-Spec: `specs/001-landing-leads.md`. Los chequeos de cada criterio: `evals/run.sh`.
+Specs: `specs/done/`. Los chequeos de cada criterio: `evals/run.sh`.
 
 ## Desarrollo local
 
@@ -11,10 +14,15 @@ Spec: `specs/001-landing-leads.md`. Los chequeos de cada criterio: `evals/run.sh
 npm ci
 cp .env.example .env   # y completá los valores
 npm run dev            # http://localhost:4321
-npm test               # Vitest: lógica de saveLead con un cliente de Supabase falso
+npm test               # Vitest: lógica pura (leads, fechas, WhatsApp)
+npm run test:db        # Vitest contra un Postgres embebido (sin Docker) con las migraciones
 npm run build          # construye en .vercel/output
 evals/run.sh           # todos los chequeos de las specs
 ```
+
+Con `npm run dev`, la vista previa de diseño con datos de ejemplo está en
+`/vista-previa/crear`, `/vista-previa/votar`, `/vista-previa/cerrada` y `/vista-previa/cancelada`.
+Solo existe en desarrollo: el build de producción no la incluye.
 
 ## Supabase
 
@@ -31,6 +39,69 @@ evals/run.sh           # todos los chequeos de las specs
    `service_role`: las dos se saltean RLS.
 
 Los leads se leen desde el panel de Supabase (**Table Editor**), con tu cuenta.
+
+## Login con Google
+
+La v1 pide entrar con Google. Se configura una vez, en Google Cloud y en Supabase. Necesitás la
+URL de Vercel (`https://tu-proyecto.vercel.app`) y el *project ref* de Supabase (lo que va antes de
+`.supabase.co` en la Project URL).
+
+1. En <https://console.cloud.google.com> creá un proyecto (gratis), por ejemplo "Nos Vemos".
+2. **APIs y servicios → Pantalla de consentimiento de OAuth** (o **Google Auth Platform →
+   Branding**): tipo **Externo**, nombre "Nos Vemos", tu email de soporte. Los permisos que usa
+   Supabase (email, perfil, openid) no requieren verificación de Google.
+   - Mientras la app esté en modo **Testing**, solo pueden entrar los emails que cargues en
+     **Test users** (hasta 100). Para el experimento alcanza: cargá los Gmail de los grupos de
+     prueba. Si no querés cargarlos, pasala a **In production**.
+3. **APIs y servicios → Credenciales → Crear credenciales → ID de cliente de OAuth**, tipo
+   **Aplicación web**:
+   - **Orígenes de JavaScript autorizados**: `https://tu-proyecto.vercel.app` y
+     `http://localhost:4321`.
+   - **URIs de redireccionamiento autorizados**: `https://<project-ref>.supabase.co/auth/v1/callback`
+     (Google vuelve a Supabase, no a la app).
+   - Copiá el **Client ID** y el **Client secret**.
+4. En Supabase: **Authentication → Sign In / Providers → Google**: activalo y pegá el Client ID y
+   el Client secret. Ese secret de Google vive solo ahí: nunca en el repo, en `.env` ni en Vercel.
+5. En Supabase: **Authentication → URL Configuration**:
+   - **Site URL**: `https://tu-proyecto.vercel.app`.
+   - **Redirect URLs**: agregá `https://tu-proyecto.vercel.app/auth/callback` y
+     `http://localhost:4321/auth/callback`.
+6. Probá: abrí `https://tu-proyecto.vercel.app/nueva`, tocá **Entrar con Google** y volvés al
+   formulario de nueva juntada.
+
+## Migración 002
+
+Crea las tablas de la v1 (`tipos_evento`, `perfiles`, `juntadas`, `opciones`, `participantes`,
+`disponibilidad`, `movimientos`), sus funciones y la vista `metricas_experimento`. No toca `leads`.
+
+1. Con la `001_leads.sql` ya corrida: **SQL Editor → New query**, pegá el contenido de
+   `supabase/migrations/002_juntadas.sql` y ejecutalo una sola vez.
+2. Verificá en **Table Editor** que las 7 tablas dicen "RLS enabled".
+3. Verificá en **Database → Functions** que existen `asegurar_perfil`, `crear_juntada`,
+   `juntada_publica`, `unirse`, `detalle_juntada`, `votar` y `cancelar`.
+4. Verificá en **Authentication → Policies** que la única política nueva es la de lectura de
+   `perfiles` ("cada uno lee su perfil"); las juntadas se leen y escriben solo por funciones.
+
+No hacen falta variables nuevas: la v1 usa las mismas `PUBLIC_SUPABASE_URL` y
+`PUBLIC_SUPABASE_ANON_KEY`.
+
+## Métricas del experimento
+
+La vista `metricas_experimento` no la puede leer el público ni los usuarios con sesión; la lee el
+operador desde el panel. En **SQL Editor**:
+
+```sql
+select * from metricas_experimento order by creada_en desc;
+```
+
+| Columna | Qué es |
+|---|---|
+| `codigo`, `titulo`, `creada_en` | Para reconocer la juntada |
+| `tamano_grupo` | Lo que cargó el organizador al crearla |
+| `votantes` | Personas distintas que votaron al menos una vez (votar "no puedo" en todo también cuenta) |
+| `tasa_voto` | `votantes / tamano_grupo`, redondeada a 2 decimales. La meta del experimento: ≥ 0.75 (6 de 8) |
+| `estado` | `abierta`, `cerrada` o `cancelada` |
+| `horas_hasta_cierre` | Horas desde que se creó hasta que llegó al quórum; vacío si no se cerró |
 
 ## Variables de entorno
 
@@ -65,6 +136,10 @@ Las variables se leen al construir: si las cambiás en Vercel, hay que volver a 
 - [ ] Borraste de la tabla tus filas de prueba.
 - [ ] Abriste la página en el celular y se ve bien.
 - [ ] Revisaste que el aviso de privacidad cumple lo que exige tu país para guardar datos personales.
+- [ ] v1: la migración `002_juntadas.sql` está corrida y las 7 tablas muestran RLS activado.
+- [ ] v1: el login con Google está configurado (sección de arriba) y probaste entrar en `/nueva` desde el celular.
+- [ ] v1: creaste una juntada de prueba, la votaste desde dos cuentas, llegó al quórum y el botón "Avisar al grupo por WhatsApp" abrió WhatsApp con el texto.
+- [ ] v1: borraste las juntadas de prueba (en **Table Editor**, borrar la fila de `juntadas` borra sus opciones, participantes, votos y movimientos).
 
 ## Licencias
 

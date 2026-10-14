@@ -1,0 +1,28 @@
+---
+// Layout de la app (v1): misma paleta y tipografías que la landing, más `app.css`.
+import '../styles/global.css';
+import '../styles/app.css';
+
+interface Props { titulo: string }
+const { titulo } = Astro.props;
+---
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{titulo} — Nos Vemos</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/fonts/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body class="app">
+    <header class="app-bar">
+      <img src="/sprites/mascot.png" alt="" width="32" height="32" />
+      <span class="app-brand">NOS VEMOS</span>
+    </header>
+    <main class="app-main">
+      <slot />
+    </main>
+  </body>
+</html>

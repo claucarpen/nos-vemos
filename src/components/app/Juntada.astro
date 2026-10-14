@@ -1,0 +1,83 @@
+---
+// Lo que ve un participante: votar (abierta), LEVEL CLEAR (cerrada) o GAME OVER (cancelada).
+import { formatearInicio } from '../../lib/fechas';
+import { faltanParaQuorum, type Detalle } from '../../lib/juntada';
+import { linkCierre, linkInvitacion } from '../../lib/whatsapp';
+
+interface Props { d: Detalle; url: string; error?: string | null; aviso?: string | null }
+const { d, url, error, aviso } = Astro.props;
+
+const ganadora = d.opciones.find((o) => o.id === d.opcion_ganadora_id) ?? null;
+const faltan = faltanParaQuorum(d);
+const votaron = d.participantes.filter((p) => p.voto).length;
+const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
+---
+<section class="panel">
+  <p class="eyebrow">Organiza {d.organizador}</p>
+  <h1 class="app-title">{d.titulo}</h1>
+
+  {error && <p class="alerta" role="alert">{error}</p>}
+  {aviso && <p class="aviso" role="status">{aviso}</p>}
+
+  {d.estado === 'cerrada' && ganadora && (
+    <div class="banner banner-clear" role="status">
+      <p class="banner-title">¡Quórum alcanzado! LEVEL CLEAR</p>
+      <p class="ganadora">{formatearInicio(ganadora.inicio)}</p>
+      <p class="banner-sub">{plural(ganadora.votos, 'persona puede', 'personas pueden')} ir.</p>
+      <a class="btn-start btn-block" href={linkCierre(d.titulo, ganadora.inicio, url)} target="_blank" rel="noopener">Avisar al grupo por WhatsApp</a>
+    </div>
+  )}
+
+  {d.estado === 'cancelada' && (
+    <div class="banner banner-over" role="status">
+      <p class="banner-title">GAME OVER: la juntada se canceló</p>
+    </div>
+  )}
+
+  {d.estado === 'abierta' && (
+    <form method="post" class="grilla">
+      <input type="hidden" name="accion" value="votar" />
+      <p class="quorum">
+        {faltan === 1 ? 'Falta' : 'Faltan'} <strong>{plural(faltan, 'voto', 'votos')}</strong> en una misma fecha para el quórum de {d.quorum}.
+      </p>
+      <fieldset>
+        <legend>Marcá las fechas en las que podés</legend>
+        {d.opciones.map((o) => (
+          <label class="opcion">
+            <input type="checkbox" name="opcion" value={o.id} checked={o.mia} />
+            <span class="opcion-fecha">{formatearInicio(o.inicio)}</span>
+            <span class="opcion-estado" aria-hidden="true"><span class="si">Puedo</span><span class="no">No puedo</span></span>
+            <span class="opcion-votos">{o.votos}/{d.quorum} votos</span>
+          </label>
+        ))}
+      </fieldset>
+      <button type="submit" class="btn-start btn-block">{d.yo_vote ? 'Actualizar mi voto' : 'Confirmar mi voto'}</button>
+    </form>
+  )}
+</section>
+
+<section class="panel">
+  <h2 class="app-h2">Jugadores</h2>
+  <p class="votaron">Votaron {votaron} de {d.participantes.length}. El grupo es de {d.tamano_grupo}.</p>
+  <ul class="log">
+    {d.participantes.map((p) => (
+      <li>
+        <span class="log-player">Player {p.numero} se unió</span>
+        <span class="log-nombre">{p.nombre}{p.soy_yo && ' (vos)'}</span>
+        <span class={p.voto ? 'log-voto si' : 'log-voto'}>{p.voto ? 'votó' : 'falta votar'}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+{d.soy_organizador && d.estado === 'abierta' && (
+  <section class="panel">
+    <h2 class="app-h2">Organizás vos</h2>
+    <p>Compartí el link con el grupo. La juntada se cierra sola cuando una fecha llega al quórum.</p>
+    <a class="btn-start btn-block" href={linkInvitacion(d.titulo, url)} target="_blank" rel="noopener">Invitar al grupo por WhatsApp</a>
+    <form method="post" class="cancelar" onsubmit="return confirm('¿Cancelar la juntada? No se puede deshacer.')">
+      <input type="hidden" name="accion" value="cancelar" />
+      <button type="submit" class="btn-secundario btn-block">Cancelar juntada</button>
+    </form>
+  </section>
+)}

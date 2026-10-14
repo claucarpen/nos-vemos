@@ -1,0 +1,100 @@
+/* App v1 (/nueva, /j/…): usa los tokens de global.css y solo colores de la paleta "Atardecer pixel"
+   (UI + bandas del cielo del hero). Contrastes medidos en decisions.md. */
+
+.app-bar {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+  background: #2d2a5a; border-bottom: 4px solid #4a3a7e; image-rendering: pixelated;
+}
+.app-brand { font-family: var(--pixel); font-size: 0.85rem; color: var(--title); }
+
+.app-main { max-width: 36rem; margin: 0 auto; padding: 1.25rem 1rem 3rem; display: grid; gap: 1rem; }
+
+.app-title { font-size: clamp(1.05rem, 5vw, 1.4rem); line-height: 1.5; margin: 0 0 1rem; color: var(--title); overflow-wrap: anywhere; }
+.app-h2 { font-size: 0.85rem; line-height: 1.6; margin: 0 0 0.75rem; color: var(--accent); }
+.eyebrow { margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--muted); }
+.lead { color: var(--text); }
+.nota, .ayuda { font-size: 0.85rem; color: var(--muted); margin: 0.75rem 0 0; }
+
+.btn-block { display: block; width: 100%; min-height: 48px; text-align: center; text-decoration: none; line-height: 1.5; }
+a.btn-start { color: var(--bg); }
+a.btn-start:hover { background: var(--title); }
+.btn-secundario {
+  margin-top: 0.75rem; padding: 0.8rem 1rem; min-height: 48px; cursor: pointer;
+  font-family: var(--pixel); font-size: 0.75rem; line-height: 1.5;
+  color: var(--accent); background: transparent; border: 2px solid var(--accent); border-radius: 6px;
+}
+.btn-secundario:hover { color: var(--bg); background: var(--accent); }
+.btn-start:focus-visible, .btn-secundario:focus-visible, .btn-quitar:focus-visible,
+.app input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.alerta { padding: 0.75rem; border: 2px solid #f29e8e; border-radius: 6px; color: #f29e8e; background: var(--bg); }
+.aviso { color: var(--tagline); }
+
+/* Banners de estado: bandas del cielo del hero */
+.banner { margin: 0 0 0.5rem; padding: 1.25rem 1rem; border-radius: 6px; text-align: center; }
+.banner p { margin: 0 0 0.75rem; }
+.banner-title { font-family: var(--pixel); font-size: 0.85rem; line-height: 1.8; }
+.banner-clear { background: #4a3a7e; border: 2px solid #7b4a9a; }
+.banner-clear .banner-title { color: var(--tagline); }
+.banner-clear .ganadora { font-family: var(--pixel); font-size: clamp(0.85rem, 4vw, 1.05rem); line-height: 1.7; color: var(--title); }
+.banner-clear .banner-sub { color: var(--text); }
+.banner-over { background: #2d2a5a; border: 2px solid #b5589a; }
+.banner-over .banner-title { color: #f29e8e; margin: 0; }
+
+/* Votación */
+.quorum { margin: 0 0 1rem; padding: 0.75rem; background: var(--bg); border-radius: 6px; color: var(--text); }
+.quorum strong { color: var(--tagline); font-family: var(--pixel); font-size: 0.8rem; font-weight: 400; }
+.grilla fieldset, .crear fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.grilla legend, .crear legend { font-family: var(--pixel); font-size: 0.7rem; line-height: 1.8; color: var(--accent); margin-bottom: 0.5rem; padding: 0; }
+.opcion {
+  display: grid; grid-template-columns: 28px 1fr auto; grid-template-areas: 'check fecha estado' 'check votos estado';
+  align-items: center; column-gap: 0.75rem; min-height: 56px; margin-bottom: 0.5rem; padding: 0.6rem 0.75rem;
+  font-family: var(--body); font-size: 1rem; color: var(--text); cursor: pointer;
+  background: var(--bg-input); border: 2px solid var(--border-input); border-radius: 6px;
+}
+.opcion:has(input:checked) { border-color: var(--accent); background: #2d2a5a; }
+.opcion input {
+  grid-area: check; appearance: none; width: 24px; height: 24px; margin: 0; cursor: pointer;
+  background: var(--bg-input); border: 2px solid var(--border-input); border-radius: 4px;
+}
+/* Tilde pixelado en el color del fondo, sobre el acento: sin colores fuera de la paleta. */
+.opcion input:checked {
+  border-color: var(--accent);
+  background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' shape-rendering='crispEdges'%3E%3Cpath fill='%231e1b3a' d='M1 5h2v1H1zM2 6h2v1H2zM3 7h2v1H3zM4 6h2v1H4zM5 5h2v1H5zM6 4h2v1H6zM7 3h2v1H7z'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+.opcion-fecha { grid-area: fecha; color: var(--title); }
+.opcion-votos { grid-area: votos; font-size: 0.85rem; color: var(--muted); }
+.opcion-estado { grid-area: estado; font-family: var(--pixel); font-size: 0.6rem; }
+.opcion-estado .si { display: none; color: var(--tagline); }
+.opcion-estado .no { color: var(--muted); }
+.opcion:has(input:checked) .opcion-estado .si { display: inline; }
+.opcion:has(input:checked) .opcion-estado .no { display: none; }
+
+/* Jugadores: log retro */
+.votaron { color: var(--text); }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.log li { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; align-items: baseline; padding: 0.5rem 0.75rem; background: var(--bg); border-radius: 6px; }
+.log-player { font-family: var(--pixel); font-size: 0.6rem; line-height: 1.8; color: var(--accent); }
+.log-nombre { color: var(--title); overflow-wrap: anywhere; }
+.log-voto { margin-left: auto; font-size: 0.85rem; color: var(--muted); }
+.log-voto.si { color: var(--tagline); }
+
+.cancelar { margin: 0; }
+
+/* Crear */
+.crear { display: grid; gap: 0.5rem; }
+.crear label { font-size: 0.7rem; line-height: 1.8; color: var(--accent); margin-top: 0.5rem; display: block; }
+.crear input {
+  width: 100%; min-height: 48px; padding: 0.7rem; font: inherit; font-size: 1rem; color: var(--title); color-scheme: dark;
+  background: var(--bg-input); border: 2px solid var(--border-input); border-radius: 6px;
+}
+.crear-numeros { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; align-items: end; }
+.fecha-fila { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+.fecha-fila input { flex: 1; min-width: 0; }
+.btn-quitar {
+  flex: none; width: 48px; min-height: 48px; cursor: pointer; font-size: 1rem;
+  color: var(--accent); background: transparent; border: 2px solid var(--accent); border-radius: 6px;
+}
+.btn-quitar:hover { color: var(--bg); background: var(--accent); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.login { margin-top: 1rem; }

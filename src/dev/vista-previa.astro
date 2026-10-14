@@ -1,0 +1,61 @@
+---
+// Vista previa de diseño (solo `astro dev`; ver astro.config.mjs): las pantallas con datos de ejemplo.
+// /vista-previa/crear · /vista-previa/votar · /vista-previa/cerrada · /vista-previa/cancelada
+import App from '../layouts/App.astro';
+import CrearJuntadaForm from '../components/app/CrearJuntadaForm.tsx';
+import Juntada from '../components/app/Juntada.astro';
+import type { Detalle } from '../lib/juntada';
+
+export const prerender = false;
+
+const pantalla = Astro.params.pantalla;
+const url = new URL('/j/Xk3pQ9vR2mT7wY1zA4bC6d', Astro.url.origin).href;
+
+const base: Detalle = {
+  codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d',
+  titulo: 'Cena del jueves en lo de Sofi',
+  estado: 'abierta',
+  quorum: 4,
+  tamano_grupo: 8,
+  maximo: 10,
+  organizador: 'Clau',
+  soy_organizador: true,
+  yo_vote: true,
+  opcion_ganadora_id: null,
+  opciones: [
+    { id: 'a', inicio: '2026-10-23T00:00:00Z', votos: 3, mia: true },
+    { id: 'b', inicio: '2026-10-24T00:30:00Z', votos: 1, mia: false },
+    { id: 'c', inicio: '2026-10-31T23:00:00Z', votos: 2, mia: true },
+  ],
+  participantes: [
+    { numero: 1, nombre: 'Clau', voto: true, soy_yo: true },
+    { numero: 2, nombre: 'Sofi', voto: true, soy_yo: false },
+    { numero: 3, nombre: 'Martín Fernández', voto: true, soy_yo: false },
+    { numero: 4, nombre: 'Ñata', voto: false, soy_yo: false },
+  ],
+};
+
+const detalles: Record<string, Detalle> = {
+  votar: base,
+  cerrada: {
+    ...base, estado: 'cerrada', opcion_ganadora_id: 'a',
+    opciones: base.opciones.map((o) => (o.id === 'a' ? { ...o, votos: 4 } : o)),
+    participantes: base.participantes.map((p) => ({ ...p, voto: true })),
+  },
+  cancelada: { ...base, estado: 'cancelada' },
+};
+
+const titulos: Record<string, string> = { crear: 'Nueva juntada', votar: 'Votar', cerrada: 'Cerrada', cancelada: 'Cancelada' };
+if (!pantalla || !(pantalla in titulos)) return new Response('Pantallas: crear, votar, cerrada, cancelada', { status: 404 });
+---
+<App titulo={`Vista previa: ${titulos[pantalla]}`}>
+  {pantalla === 'crear' ? (
+    <section class="panel">
+      <h1 class="app-title">Nueva juntada</h1>
+      <p class="lead">Proponé fechas, compartí el link y la juntada se cierra sola cuando llegan al quórum.</p>
+      <CrearJuntadaForm client:load min="2026-10-14T00:00" inicial={{ titulo: 'Cena del jueves', tamano: '8', quorum: '4', opciones: ['2026-10-22T21:00', '2026-10-23T21:30', ''] }} />
+    </section>
+  ) : (
+    <Juntada d={detalles[pantalla]} url={url} />
+  )}
+</App>
