@@ -139,7 +139,7 @@ recién después de que exista el email de contacto (`PUBLIC_CONTACT_EMAIL`).
 
 ## Evidencia de implementación
 
-Comando: `evals/run.sh` (2026-10-13).
+Comando: `evals/run.sh` (2026-10-13, tras la enmienda de paleta y hero exterior).
 
 ```
 PASS C1 el proyecto compila
@@ -149,22 +149,36 @@ PASS C4 validación, honeypot, fuente y duplicados (Vitest)
      |       Tests  12 passed (12)
 PASS C5 migración: forma y seguridad
 PASS C6 sin secretos en el repo
-PASS C7 sprites con licencia CC0 (7 sprites)
+PASS C7 sprites con licencia CC0 (11 sprites, 2 licencias)
 PASS C8 375px sin scroll horizontal y botón visible
 PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
 PASS C11 README con las cuatro secciones
 10 pasan · 0 fallan
 ```
 
+### Contrastes WCAG (paleta RPG clásico)
+
+| Par | Ratio | Mínimo |
+|---|---|---|
+| Texto del botón #2a1d0e sobre oro #c8a24a | 6.81 | 4.5 |
+| Texto #f1ead6 sobre panel #5a3e2b | 8.10 | 4.5 |
+| Títulos #e6d3a3 sobre fondo #1f2a1c | 10.11 | 4.5 |
+| Etiquetas y h3 #e6d3a3 sobre panel | 6.58 | 4.5 |
+| Tagline oro sobre fondo | 6.20 | 4.5 |
+| Aviso de privacidad #d9cfb3 sobre panel | 6.27 | 4.5 |
+| Texto del input #f1ead6 sobre #2a1d0e | 13.65 | 4.5 |
+| Borde del input #e6d3a3 sobre panel | 6.58 | 3 |
+| Oro sobre panel (no se usa como texto) | 4.04 | 4.5 |
+
 ### C10 (rúbrica), sobre capturas a 375 y 1280 px
 
 Capturas: `landing_375.png` y `landing_1280.png` (adjuntar al PR).
 
-1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos y formulario en fuente del sistema a 17 px.
-2. Mascota y ambiente de Kenney en el hero: PASA. Tile 98 con colores originales sobre muro y suelo de mazmorra, con puerta, cofre, poción y fantasma.
-3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y salen al enviar el formulario (cubiertos por los tests de C4; no vistos en captura).
+1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos en fuente del sistema a 17 px.
+2. Mascota y ambiente de Kenney en el hero: PASA. Tile 98 original sobre un camino de tierra entre pasto y árboles (Tiny Town), con cofre y poción de Tiny Dungeon.
+3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y los cubren los tests de C4 (no vistos en captura).
 4. Español rioplatense: PASA ("Anotame", "Sumate", "dejanos", "querés", "vos").
-5. Claridad y contraste: PASA. El formulario pide dos campos con etiquetas y un botón "Press Start" naranja `#e19a65` con texto `#181425`, contraste 7.73:1 (AA exige 4.5:1).
+5. Claridad y contraste: PASA. Dos campos con etiquetas y un botón "Press Start" dorado con contraste 6.81 (ver tabla).
 6. Cuatro promesas sin jerga: PASA. "Cierra solo", "Insiste por vos", "Se repite", "Con premios".
 
-Pendiente fuera de alcance de los evals: el operador prueba el envío real tras Supabase y Vercel (README).
+Pendiente fuera de los evals: el operador prueba el envío real tras Supabase y Vercel (README).

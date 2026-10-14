@@ -65,4 +65,4 @@ Las variables se leen al construir: si las cambiás en Vercel, hay que volver a 
 ## Licencias
 
 - Fuente Press Start 2P: SIL Open Font License 1.1 (`public/fonts/OFL-PressStart2P.txt`).
-- Sprites: pack Tiny Dungeon de Kenney, CC0 (`public/sprites/`, con el archivo de licencia del pack).
+- Sprites: packs Tiny Dungeon y Tiny Town de Kenney, CC0 (`public/sprites/`, con el archivo de licencia de cada pack).

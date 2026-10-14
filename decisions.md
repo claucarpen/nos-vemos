@@ -34,3 +34,10 @@
 **Qué se decide**: se acepta `npm audit` con 1 vulnerabilidad alta (`path-to-regexp` 4.0.0-6.2.2, GHSA-9wv6-86v2-598j) que llega por `@astrojs/vercel`. No se aplica `npm audit fix --force`.
 **Por qué**: el fix baja el adaptador a la v8, un cambio incompatible con Astro 7. Es una dependencia del adaptador, no de código propio.
 **La invalidaría**: que `@astrojs/vercel` publique una versión que la actualice; entonces se actualiza y se borra esta deuda.
+
+## 2026-10-13 · [landing] Paleta RPG clásico + Tiny Town para el hero exterior, por decisión del operador
+
+**Qué se decide**: la UI usa la paleta "RPG clásico" (fondo #1f2a1c, pasto #3f6b35, paneles #5a3e2b, contorno #2a1d0e, oro #c8a24a, pergamino #e6d3a3, texto #f1ead6, más #d9cfb3 para texto secundario). El hero es exterior: pasto, camino y árboles de Tiny Town (Kenney, CC0, 16×16), con la mascota (tile 98 original) y el cofre y la poción de Tiny Dungeon. Cada pack lleva su licencia en `public/sprites/`.
+**Por qué**: decisión del operador. Los contrastes WCAG medidos: botón 6.81, texto en panel 8.10, títulos sobre fondo 10.11, etiquetas y títulos en panel 6.58, tagline oro sobre fondo 6.20, aviso de privacidad 6.27, texto del input 13.65, borde del input 6.58 (mínimos: 4.5 texto, 3 elementos gráficos). El oro sobre panel da 4.04 y falla para texto chico: por eso el oro solo se usa sobre el fondo y en el botón.
+**Reemplaza a**: la paleta solo-Tiny Dungeon del 2026-10-13 (botón naranja #e19a65, contraste 7.73).
+**La invalidaría**: que el operador cambie de paleta o que el oro se use como texto sobre el panel.

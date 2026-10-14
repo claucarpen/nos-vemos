@@ -76,9 +76,13 @@ c6_secrets() {
 }
 
 c7_sprites() {
-  local n; n=$(find public/sprites -maxdepth 1 -name '*.png' 2>/dev/null | wc -l)
-  if [ "$n" -ge 1 ] && grep -qs 'CC0' public/sprites/*[Ll]icense*; then ok "C7 sprites con licencia CC0 ($n sprites)"
-  else ko "C7 sprites con licencia (sprites: $n)"; fi
+  local n lic bad=""
+  n=$(find public/sprites -maxdepth 1 -name '*.png' 2>/dev/null | wc -l)
+  lic=$(find public/sprites -maxdepth 1 -iname '*license*' 2>/dev/null)
+  [ -n "$lic" ] || bad=" sin-licencia"
+  for f in $lic; do grep -q 'CC0' "$f" || bad="$bad $f"; done
+  if [ "$n" -ge 1 ] && [ -z "$bad" ]; then ok "C7 sprites con licencia CC0 ($n sprites, $(printf '%s' "$lic" | wc -w) licencias)"
+  else ko "C7 sprites con licencia (sprites: $n;$bad)"; fi
 }
 
 c8_mobile() {

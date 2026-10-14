@@ -7,15 +7,15 @@
 }
 
 :root {
-  /* Paleta original del pack Tiny Dungeon (Kenney) */
-  --bg: #262b44;
-  --bg-panel: #3a4466;
-  --outline: #181425;
-  --text: #f4f6fb;
-  --text-soft: #c0cbdc;
-  --accent: #e19a65;
-  --steel: #c0cbdc;
-  --sand: #f7c282;
+  /* Paleta B "RPG clásico": bosque, madera y oro */
+  --bg: #1f2a1c;
+  --grass: #3f6b35;
+  --bg-panel: #5a3e2b;
+  --outline: #2a1d0e;
+  --gold: #c8a24a;
+  --title: #e6d3a3;
+  --text: #f1ead6;
+  --text-soft: #d9cfb3;
   --pixel: 'Press Start 2P', 'Courier New', monospace;
   --body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
@@ -35,9 +35,9 @@ body {
 
 h1, h2, h3, .btn-start, label { font-family: var(--pixel); font-weight: 400; }
 
-h1 { font-size: clamp(1.5rem, 8vw, 2.75rem); line-height: 1.25; margin: 0; color: var(--sand); text-shadow: 4px 4px 0 var(--outline); }
-h2 { font-size: clamp(1rem, 4.5vw, 1.5rem); line-height: 1.5; margin: 0 0 1.25rem; color: var(--steel); }
-h3 { font-size: 0.8rem; line-height: 1.6; margin: 0 0 0.5rem; color: var(--sand); }
+h1 { font-size: clamp(1.5rem, 8vw, 2.75rem); line-height: 1.25; margin: 0; color: var(--title); text-shadow: 4px 4px 0 var(--outline); }
+h2 { font-size: clamp(1rem, 4.5vw, 1.5rem); line-height: 1.5; margin: 0 0 1.25rem; color: var(--title); }
+h3 { font-size: 0.8rem; line-height: 1.6; margin: 0 0 0.5rem; color: var(--title); }
 
 p { margin: 0 0 1rem; }
 
@@ -45,23 +45,19 @@ section { padding: 3.5rem 1rem; }
 .wrap { max-width: 44rem; margin: 0 auto; }
 
 .hero { text-align: center; padding-top: 2.5rem; }
-.hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--accent); margin: 1.5rem 0 0; }
+.hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--gold); margin: 1.5rem 0 0; }
 .hero .scene { display: flex; justify-content: center; margin: 1.5rem 0; }
 /* Escena del hero: sprites de 16 px escalados x4 sin suavizado */
 .scene-art {
   position: relative; width: 320px; height: 256px; max-width: 100%;
   border: 4px solid var(--outline); box-shadow: 6px 6px 0 var(--outline);
-  image-rendering: pixelated;
-  overflow: hidden;
+  image-rendering: pixelated; overflow: hidden; background: var(--grass);
 }
-.scene-art::before, .scene-art::after { content: ''; position: absolute; left: 0; right: 0; }
-.scene-art::before { top: 0; height: 128px; background: url('/sprites/wall.png') 0 0 / 64px 64px repeat; }
-.scene-art::after { top: 128px; bottom: 0; background: url('/sprites/floor.png') 0 0 / 64px 64px repeat; }
-.scene-art img { position: absolute; width: 64px; height: 64px; image-rendering: pixelated; z-index: 1; }
+.scene-art img { position: absolute; width: 64px; height: 64px; image-rendering: pixelated; }
 .cta-link {
   display: inline-block; margin-top: 1.5rem; padding: 0.9rem 1.2rem;
   font-family: var(--pixel); font-size: 0.75rem; text-decoration: none;
-  color: var(--outline); background: var(--steel); border: 4px solid var(--outline); box-shadow: 4px 4px 0 var(--outline);
+  color: var(--outline); background: var(--gold); border: 4px solid var(--outline); box-shadow: 4px 4px 0 var(--outline);
 }
 
 .panel { background: var(--bg-panel); border: 4px solid var(--outline); box-shadow: 6px 6px 0 var(--outline); padding: 1.25rem; }
@@ -73,28 +69,28 @@ section { padding: 3.5rem 1rem; }
 .promises p { margin: 0; color: var(--text-soft); }
 
 .lead-form { display: grid; gap: 0.5rem; }
-.lead-form label { font-size: 0.7rem; color: var(--sand); margin-top: 0.5rem; }
+.lead-form label { font-size: 0.7rem; color: var(--title); margin-top: 0.5rem; }
 .lead-form input[type='text'], .lead-form input[type='email'] {
   width: 100%; padding: 0.8rem; font: inherit; font-size: 1rem; color: var(--text);
-  background: var(--outline); border: 4px solid var(--text-soft); border-radius: 0;
+  background: var(--outline); border: 4px solid var(--title); border-radius: 0;
 }
-.lead-form input:focus-visible, .btn-start:focus-visible, .cta-link:focus-visible { outline: 4px solid var(--sand); outline-offset: 2px; }
+.lead-form input:focus-visible, .btn-start:focus-visible, .cta-link:focus-visible { outline: 4px solid var(--title); outline-offset: 2px; }
 .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
 .btn-start {
   margin-top: 1rem; padding: 1rem; font-size: 0.9rem; cursor: pointer;
-  color: var(--outline); background: var(--accent); border: 4px solid var(--outline); border-radius: 0; box-shadow: 4px 4px 0 var(--outline);
+  color: var(--outline); background: var(--gold); border: 4px solid var(--outline); border-radius: 0; box-shadow: 4px 4px 0 var(--outline);
 }
-.btn-start:hover:not(:disabled) { background: var(--sand); }
+.btn-start:hover:not(:disabled) { background: var(--title); }
 .btn-start:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: none; }
 .btn-start:disabled { opacity: 0.7; cursor: wait; }
 
 .feedback { min-height: 1.6rem; margin: 0.5rem 0 0; font-family: var(--pixel); font-size: 0.7rem; line-height: 1.8; }
-.feedback.ok { color: var(--steel); }
-.feedback.error { color: var(--sand); }
+.feedback.ok { color: var(--title); }
+.feedback.error { color: var(--text); }
 
 .privacy { font-size: 0.85rem; color: var(--text-soft); margin-top: 1.25rem; }
-.privacy a { color: var(--steel); }
+.privacy a { color: var(--title); }
 
 footer { padding: 2rem 1rem; text-align: center; font-size: 0.8rem; color: var(--text-soft); }
 
