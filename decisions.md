@@ -61,3 +61,10 @@
 **Qué se decide**: el título vive en la banda oscura #2d2a5a y el tagline con el botón en la banda #4a3a7e, cada texto entero dentro de una sola banda. Se sacan los murciélagos (markup y `public/sprites/bat.png`); quedan las estrellas. Todos los árboles son el mismo pino de dos tiles de Tiny Town: copa `town_4` sobre tronco `town_16`.
 **Por qué**: decisión del operador. `town_16` solo es la mitad de abajo de un árbol (con el borde de arriba abierto) y `town_28` es un pino chico distinto; los árboles usados antes mostraban la copa cortada. Contrastes sin cambios: título sobre #2d2a5a 11.72, tagline sobre #4a3a7e 5.74, botón 8.94. A 375 px el hero mide 427 px de 812 (53 %) y a 1280 px mide 484 px.
 **La invalidaría**: que el tagline o el botón crezcan fuera de su banda, o que el operador pida otro tipo de árbol.
+
+## 2026-10-14 · [landing] Escenario del hero por tiers de ancho mínimo, solo CSS
+
+**Qué se decide**: cada sprite de `.world` lleva una clase `wN` (`w362`, `w448`, `w733`, `w848`, `w912`, `w1117`, `w1360`) y se muestra con `@media (min-width: Npx)`; N = ceil(2 × `--u` × extensión del lado derecho del par) + 16. Reemplaza a la clase `.wide` y su corte único en 640 px. Se esconde, nunca se mueve; los pares izquierda/derecha y copa/tronco comparten tier; la flor en x=9.5 y el pino en x=-9.2 comparten el tier 1360.
+**Por qué**: es lo más simple que cumple "entero o ausente" de 320 a 1920 px sin JavaScript ni tocar `--u`, la paleta o los sprites; el margen de 16 px cubre la barra de scroll, que reduce el ancho del hero sin cambiar el del `@media`. A 1920 px se ven los 28 sprites.
+**Reemplaza a**: la regla de "elementos wide solo desde 640 px" de la decisión del header a todo el ancho (2026-10-13).
+**La invalidaría**: cambiar `--u`, mover o sumar sprites sin actualizar su tier (lo detecta `tests/e2e/hero-clipping.spec.ts`), o que se prefiera un cálculo automático del tier.

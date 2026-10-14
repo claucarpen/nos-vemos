@@ -23,8 +23,12 @@ evals/run.sh           # todos los chequeos de las specs
    `supabase/migrations/001_leads.sql` y ejecutalo.
 3. Verificá en **Table Editor** que existe `leads` con RLS activado ("RLS enabled") y en
    **Authentication → Policies** que hay una única política: `INSERT` para `anon`.
-4. En **Project Settings → API** copiá la **Project URL** y la clave **anon public**.
-   Nunca uses ni pegues la clave `service_role` en este proyecto.
+4. Copiá la **Project URL** y la **publishable key** (`sb_publishable_…`). Las ves en el diálogo
+   **Connect** del proyecto o en **Settings → API Keys**. Es la sucesora de la clave `anon` (mismo
+   rol `anon`, y es segura en el navegador porque RLS limita lo que puede hacer); las claves
+   legacy `anon` y `service_role` dejan de existir a fines de 2026.
+   Nunca uses ni pegues en este proyecto la **secret key** (`sb_secret_…`) ni la legacy
+   `service_role`: las dos se saltean RLS.
 
 Los leads se leen desde el panel de Supabase (**Table Editor**), con tu cuenta.
 
@@ -33,7 +37,7 @@ Los leads se leen desde el panel de Supabase (**Table Editor**), con tu cuenta.
 | Variable | Qué es |
 |---|---|
 | `PUBLIC_SUPABASE_URL` | Project URL del paso anterior |
-| `PUBLIC_SUPABASE_ANON_KEY` | Clave `anon public` (segura porque la tabla solo deja insertar) |
+| `PUBLIC_SUPABASE_ANON_KEY` | La publishable key `sb_publishable_…` (el nombre de la variable no cambia; segura porque la tabla solo deja insertar) |
 | `PUBLIC_CONTACT_EMAIL` | Email al que escriben quienes piden borrar sus datos; aparece en el aviso de privacidad |
 
 Local: van en `.env` (está en `.gitignore`; no lo subas). En producción: en Vercel, ver abajo.

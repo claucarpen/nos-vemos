@@ -1,5 +1,5 @@
 ---
-status: en curso
+status: implementada
 depends_on: [001]
 ---
 
@@ -117,4 +117,35 @@ mergea y Vercel redespliega.
 
 ## Evidencia de implementación
 
-<!-- La completa el implementador: salida de evals/run.sh y de los tests nuevos. -->
+```
+PASS C1 el proyecto compila
+PASS C2 las tres secciones y el formulario existen
+PASS C3 campos del formulario
+PASS C4 validación, honeypot, fuente y duplicados (Vitest)
+     |       Tests  12 passed (12)
+PASS C5 migración: forma y seguridad
+PASS C6 sin secretos en el repo
+PASS C7 sprites con licencia CC0 (10 sprites, 2 licencias)
+PASS C8 375px sin scroll horizontal y botón visible
+PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
+PASS C11 README con las cuatro secciones
+PASS C12 favicon: mascota x2, ico y <link rel=icon>
+PASS C13 la página carga sin 404 ni errores de consola
+PASS C14 ningún sprite del header cortado de 320 a 1920 px
+PASS C15 28 sprites enteros a 1920 px; mascota, cofre y poción siempre
+PASS C16 README pide la publishable key y prohíbe la secret
+15 pasan · 0 fallan
+```
+
+C8 corre ahora solo `tests/e2e/mobile.spec.ts`; C12-C15 corren cada uno su test (`-g C12`, etc.).
+`favicon.png` y `favicon.ico` los genera `scripts/make-favicon.mjs` (sin dependencias).
+
+Comprobación de que C14 detecta el problema: con el CSS anterior falla (320 px: `town_1` en x=-3.5 y el pino
+en x=2.6 cortados, entre otros).
+
+Sprites visibles en `.world` (de 28), por ancho:
+
+| Ancho | 320 | 375 | 640 | 880 | 1280 | 1920 |
+|---|---|---|---|---|---|---|
+| Visibles | 7 | 11 | 13 | 19 | 25 | 28 |
+

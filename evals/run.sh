@@ -87,7 +87,7 @@ c7_sprites() {
 
 c8_mobile() {
   local out
-  if out=$(npx playwright test 2>&1); then ok "C8 375px sin scroll horizontal y botón visible"
+  if out=$(npx playwright test tests/e2e/mobile.spec.ts 2>&1); then ok "C8 375px sin scroll horizontal y botón visible"
   else ko "C8 Playwright"; ev "$(printf '%s' "$out" | tail -8)"; fi
 }
 
@@ -111,7 +111,48 @@ c11_readme() {
 # C10 es una rúbrica evaluada sobre capturas a 375 y 1280 px adjuntas al PR; no corre acá.
 # Evidencia de C10: specs/done/001-landing-leads.md.
 
+# --- Spec 002: residuales de la landing -----------------------------------------------------
+
+c12_favicon() {
+  local miss="" out
+  local d=.vercel/output/static
+  [ -f $d/favicon.png ] || miss="$miss favicon.png"
+  [ -f $d/favicon.ico ] || miss="$miss favicon.ico"
+  file $d/favicon.ico 2>/dev/null | grep -q 'MS Windows icon resource' || miss="$miss ico-no-es-icono"
+  grep -oE '<link[^>]*rel="icon"[^>]*>' "$BUILT" 2>/dev/null | grep -q 'href="/favicon.png"' || miss="$miss link-icon"
+  if ! out=$(npx playwright test tests/e2e/favicon.spec.ts -g C12 2>&1); then miss="$miss playwright"; fi
+  if [ -z "$miss" ]; then ok "C12 favicon: mascota x2, ico y <link rel=icon>"; else ko "C12 favicon:$miss"; ev "$(printf '%s' "${out:-}" | tail -8)"; fi
+}
+
+c13_no_errors() {
+  local out
+  if out=$(npx playwright test tests/e2e/favicon.spec.ts -g C13 2>&1); then ok "C13 la página carga sin 404 ni errores de consola"
+  else ko "C13 Playwright"; ev "$(printf '%s' "$out" | tail -8)"; fi
+}
+
+c14_hero_clipping() {
+  local out
+  if out=$(npx playwright test tests/e2e/hero-clipping.spec.ts -g C14 2>&1); then ok "C14 ningún sprite del header cortado de 320 a 1920 px"
+  else ko "C14 Playwright"; ev "$(printf '%s' "$out" | head -30)"; fi
+}
+
+c15_hero_scenery() {
+  local out
+  if out=$(npx playwright test tests/e2e/hero-clipping.spec.ts -g C15 2>&1); then ok "C15 28 sprites enteros a 1920 px; mascota, cofre y poción siempre"
+  else ko "C15 Playwright"; ev "$(printf '%s' "$out" | head -30)"; fi
+}
+
+c16_readme_keys() {
+  local miss="" row
+  for t in 'sb_publishable_' 'sb_secret_' 'service_role' 'API Keys'; do grep -qF "$t" README.md || miss="$miss [$t]"; done
+  row=$(grep -F 'PUBLIC_SUPABASE_ANON_KEY' README.md | grep '^|')
+  printf '%s' "$row" | grep -qF 'sb_publishable_' || miss="$miss [fila-sin-publishable]"
+  ! grep -qF 'anon public' README.md || miss="$miss [anon-public]"
+  if [ -z "$miss" ]; then ok "C16 README pide la publishable key y prohíbe la secret"; else ko "C16 README:$miss"; fi
+}
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
+c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
