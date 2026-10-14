@@ -254,7 +254,7 @@ s4_c2_sections() {
   for id in responsable datos uso no-hacemos donde plazo derechos actualizacion; do
     grep -q "id=\"$id\"" "$PRIV" 2>/dev/null || miss="$miss id[$id]"
   done
-  for t in 'Claudio Carpentino' 'foto de perfil' 'nunca tu email' 'Supabase' 'Vercel' 'Google'; do
+  for t in 'Claudio Carpentino' 'foto de perfil' 'nunca tu email' 'Supabase' 'Vercel' 'Google' 'dirección IP'; do
     grep -q "$t" "$PRIV" 2>/dev/null || miss="$miss texto[$t]"
   done
   if [ -z "$miss" ]; then ok "004·C2 las 8 secciones y los textos obligatorios"; else ko "004·C2:$miss"; fi

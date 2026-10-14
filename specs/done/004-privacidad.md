@@ -32,6 +32,9 @@ sobre los leads y un `<footer>`. La v1 muestra "Entrar con Google" desde
        La foto queda en el registro de inicio de sesión; Nos Vemos no la muestra.
      - Si usás una juntada: las juntadas que creás, las fechas en las que marcás que podés y un
        historial de participación (te uniste, votaste, quedaste confirmado).
+     - Datos técnicos: como cualquier sitio, Supabase y Vercel registran datos técnicos de las visitas y
+       de los inicios de sesión (por ejemplo, la dirección IP) por seguridad. No se usan para nada más.
+       *(Ítem agregado por decisión del operador, 2026-10-14.)*
    - `#uso` — **Para qué los usamos**: avisarte cuando Nos Vemos esté listo; que funcionen las
      juntadas (mostrar tu nombre a tu grupo, contar votos, cerrar por quórum); medir cómo se usa el
      producto con números agregados, por ejemplo cuántos votan en cada juntada.
@@ -115,5 +118,7 @@ operador, siguiendo el README, después de que `/privacidad` esté en línea.
 
 1. Rioplatense, oraciones cortas, sin jerga legal: cumple. Voseo en todo el texto ("escribile", "podés", "iniciás"); ninguna oración pasa de ~25 palabras; no hay términos legales.
 2. No promete nada que no haga ni cita leyes: cumple. "Nunca tu email" se verifica en `detalle_juntada` (devuelve nombre, número y voto; ningún email); "no publicidad" y "no compartimos" no dependen de código; no se cita ninguna ley.
-3. Datos coinciden con las tablas y el login: cumple. `leads` (nombre, email, fuente), `perfiles` (nombre, email de Google), `juntadas`/`opciones` (juntadas creadas), `disponibilidad` (fechas marcadas), `movimientos` (creó, se unió, votó, confirmado, canceló). La foto la comparte Google y vive en el registro de Supabase Auth; la app no la lee. Dos precisiones que el texto no enuncia, anotadas para el operador: `perfiles.lead_id` vincula el perfil con el lead del mismo email, y Supabase Auth guarda sus propios registros de sesión (p. ej. IP) por fuera de las tablas de la app.
+3. Datos coinciden con las tablas y el login: cumple. `leads` (nombre, email, fuente), `perfiles` (nombre, email de Google), `juntadas`/`opciones` (juntadas creadas), `disponibilidad` (fechas marcadas), `movimientos` (creó, se unió, votó, confirmado, canceló). La foto la comparte Google y vive en el registro de Supabase Auth; la app no la lee. Dos precisiones que el texto no enuncia, anotadas para el operador: `perfiles.lead_id` vincula el perfil con el lead del mismo email, y Supabase Auth guarda sus propios registros de sesión (p. ej. IP) por fuera de las tablas de la app. Esa segunda precisión quedó cubierta por el ítem "Datos técnicos" de `#datos` (Supabase y Vercel registran datos técnicos, como la dirección IP, por seguridad); `perfiles.lead_id` sigue sin enunciarse.
 4. Misma estética que la landing, legible: cumple. Mismos tokens, fuentes y favicon; paneles de la landing; contraste del texto #cbd5e0 sobre #2c2950 y links #c4b5fd sobre #2c2950 (7.39). Salvedad visual: la fuente pixel no tiene "Ú" mayúscula con tilde y el título "Última actualización" se ve con "ú" minúscula; se leyó bien y se dejó el texto que fija la spec.
+
+**Nota (2026-10-14)**: el ítem "Datos técnicos" de `#datos` y la comprobación de "dirección IP" en 004·C2 se agregaron por decisión del operador, después de la primera implementación.
