@@ -105,6 +105,7 @@ c11_readme() {
 }
 
 # C10 es una rúbrica evaluada sobre capturas a 375 y 1280 px adjuntas al PR; no corre acá.
+# Evidencia de C10: specs/done/001-landing-leads.md.
 
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 

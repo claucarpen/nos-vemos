@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: []
 ---
 
@@ -136,3 +136,35 @@ recién después de que exista el email de contacto (`PUBLIC_CONTACT_EMAIL`).
 | Dominio propio | Claudio verifica el dominio y la marca |
 | Analítica de visitas | La landing está publicada y se empieza a difundir |
 | Animaciones de sprites | La rúbrica C10 pasa y queda tiempo, en una spec aparte |
+
+## Evidencia de implementación
+
+Comando: `evals/run.sh` (2026-10-13).
+
+```
+PASS C1 el proyecto compila
+PASS C2 las tres secciones y el formulario existen
+PASS C3 campos del formulario
+PASS C4 validación, honeypot, fuente y duplicados (Vitest)
+     |       Tests  12 passed (12)
+PASS C5 migración: forma y seguridad
+PASS C6 sin secretos en el repo
+PASS C7 sprites con licencia CC0 (7 sprites)
+PASS C8 375px sin scroll horizontal y botón visible
+PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
+PASS C11 README con las cuatro secciones
+10 pasan · 0 fallan
+```
+
+### C10 (rúbrica), sobre capturas a 375 y 1280 px
+
+Capturas: `landing_375.png` y `landing_1280.png` (adjuntar al PR).
+
+1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos y formulario en fuente del sistema a 17 px.
+2. Mascota y ambiente de Kenney en el hero: PASA. Tile 98 con colores originales sobre muro y suelo de mazmorra, con puerta, cofre, poción y fantasma.
+3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y salen al enviar el formulario (cubiertos por los tests de C4; no vistos en captura).
+4. Español rioplatense: PASA ("Anotame", "Sumate", "dejanos", "querés", "vos").
+5. Claridad y contraste: PASA. El formulario pide dos campos con etiquetas y un botón "Press Start" naranja `#e19a65` con texto `#181425`, contraste 7.73:1 (AA exige 4.5:1).
+6. Cuatro promesas sin jerga: PASA. "Cierra solo", "Insiste por vos", "Se repite", "Con premios".
+
+Pendiente fuera de alcance de los evals: el operador prueba el envío real tras Supabase y Vercel (README).
