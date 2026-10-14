@@ -139,7 +139,7 @@ recién después de que exista el email de contacto (`PUBLIC_CONTACT_EMAIL`).
 
 ## Evidencia de implementación
 
-Comando: `evals/run.sh` (2026-10-13, tras la enmienda a la paleta Atardecer pixel).
+Comando: `evals/run.sh` (2026-10-13, tras la enmienda del hero a todo el ancho).
 
 ```
 PASS C1 el proyecto compila
@@ -149,7 +149,7 @@ PASS C4 validación, honeypot, fuente y duplicados (Vitest)
      |       Tests  12 passed (12)
 PASS C5 migración: forma y seguridad
 PASS C6 sin secretos en el repo
-PASS C7 sprites con licencia CC0 (9 sprites, 2 licencias)
+PASS C7 sprites con licencia CC0 (11 sprites, 2 licencias)
 PASS C8 375px sin scroll horizontal y botón visible
 PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
 PASS C11 README con las cuatro secciones
@@ -176,12 +176,24 @@ PASS C11 README con las cuatro secciones
 
 Ajuste: el borde #4a4672 pedido para los inputs daba 1.56 contra el panel; se usó #8b84b8. #4a4672 queda solo en los bordes de panel, que son decorativos.
 
+### Contrastes del texto del hero (header a todo el ancho)
+
+| Par | Ratio | Mínimo |
+|---|---|---|
+| Título #edf2f7 sobre #2d2a5a | 11.72 | 4.5 |
+| Título #edf2f7 sobre #4a3a7e | 8.48 | 4.5 |
+| Tagline #f6b8c8 sobre #2d2a5a | 7.93 | 4.5 |
+| Tagline #f6b8c8 sobre #4a3a7e | 5.74 | 4.5 |
+| Botón #1e1b3a sobre lavanda | 8.94 | 4.5 |
+
+Medido en Playwright: a 375 px el hero mide 407 px de 812 (50 %) y `scrollWidth` es 375; a 1280 px el hero mide 464 px y `scrollWidth` es 1280. Los demás contrastes de la tabla anterior no cambiaron.
+
 ### C10 (rúbrica), sobre capturas a 375 y 1280 px
 
 Capturas: `landing_375.png` y `landing_1280.png` (adjuntar al PR).
 
 1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos en fuente del sistema a 17 px.
-2. Mascota y ambiente de Kenney en el hero: PASA. Tile 98 original sobre tierra y pasto de Tiny Town con árboles, cofre y poción, bajo un cielo de atardecer en bandas planas.
+2. Mascota y ambiente de Kenney en el hero: PASA. Header a todo el ancho con cielo de atardecer en bandas planas, murciélagos de Tiny Dungeon, suelo de Tiny Town con árboles, flores y hongos, y la mascota original centrada en el camino con cofre y poción.
 3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y los cubren los tests de C4 (no vistos en captura).
 4. Español rioplatense: PASA ("Anotame", "Sumate", "dejanos", "querés", "vos").
 5. Claridad y contraste: PASA. Dos campos con etiquetas y un botón lavanda "Press Start" con contraste 8.94 (ver tabla).

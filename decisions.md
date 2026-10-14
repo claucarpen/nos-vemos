@@ -48,3 +48,10 @@
 **Por qué**: decisión del operador: UI casi neutra con un acento, y todo el color en el hero. #4a3a7e de borde de input daba 1.56:1 contra el panel y 2.06:1 contra el fondo del input (mínimo 3:1 para componentes de interfaz); #8b84b8 da 3.95:1 y 5.21:1.
 **Reemplaza a**: la paleta RPG clásico del mismo día (fondo bosque, paneles de madera, botón oro).
 **La invalidaría**: que el operador cambie de paleta.
+
+## 2026-10-13 · [landing] Hero como header a todo el ancho, por decisión del operador
+
+**Qué se decide**: el hero ocupa el ancho completo del viewport. Arriba, título, tagline y botón sobre las dos bandas oscuras del cielo (#2d2a5a y #4a3a7e); debajo, tres bandas planas de horizonte (#7b4a9a, #b5589a, #f29e8e), una fila de pasto y una de tierra de Tiny Town repetidas en horizontal, con escala entera (x3 hasta 639 px, x4 desde 640 px). La mascota va centrada en el camino; árboles, flores, hongos, cofre y poción se reparten simétricos desde el centro, y los elementos "wide" solo aparecen desde 640 px para que nada quede cortado. Los murciélagos de Tiny Dungeon y estrellas de 4 px dan vida al cielo; no se sumó ningún pack.
+**Por qué**: decisión del operador. Contrastes del texto del hero: título #edf2f7 sobre #2d2a5a 11.72 y sobre #4a3a7e 8.48; tagline #f6b8c8 sobre #2d2a5a 7.93 y sobre #4a3a7e 5.74; botón 8.94. Ningún texto toca las bandas violeta, rosa ni durazno (el tagline sobre #7b4a9a daría 3.83 y falla). A 375 px el hero mide 407 px (50 % de 812) y no hay scroll horizontal; a 1280 px mide 464 px.
+**Reemplaza a**: el hero de caja centrada de 320×256 px de la paleta Atardecer pixel.
+**La invalidaría**: que el texto del hero crezca hasta las bandas violeta, o que el operador cambie el hero.

@@ -12,7 +12,7 @@
 
 | Ruta | Qué es |
 |---|---|
-| `src/pages/index.astro` | Landing: hero, `#problema`, `#solucion`, `#form-leads`, aviso de privacidad |
+| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion`, `#form-leads`, aviso de privacidad |
 | `src/components/LeadForm.tsx` | Isla React: formulario, honeypot `empresa`, `utm_source` leído de la URL |
 | `src/actions/index.ts` | Action `saveLead`: arma el cliente de Supabase y llama a `processLead` |
 | `src/lib/leads.ts` | Lógica pura (validación, honeypot, `fuente`, duplicados) con cliente inyectable |

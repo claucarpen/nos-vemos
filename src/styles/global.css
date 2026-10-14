@@ -46,20 +46,32 @@ p { margin: 0 0 1rem; }
 section { padding: 3.5rem 1rem; }
 .wrap { max-width: 44rem; margin: 0 auto; }
 
-.hero { text-align: center; padding-top: 2.5rem; }
-.hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--tagline); margin: 1.5rem 0 0; }
-.hero .scene { display: flex; justify-content: center; margin: 1.5rem 0; }
-/* Escena del hero: cielo en bandas planas (sin degradé) y sprites de 16 px escalados x4 */
-.scene-art {
-  position: relative; width: 320px; height: 256px; max-width: 100%;
-  border: 1px solid var(--border); border-radius: 6px;
-  image-rendering: pixelated; overflow: hidden;
-  background: linear-gradient(to bottom,
-    #2d2a5a 0 24px, #4a3a7e 24px 48px, #7b4a9a 48px 72px, #b5589a 72px 100px, #f29e8e 100px 128px, #2c2950 128px);
+/* Header a todo el ancho: cielo en bandas planas y suelo de Tiny Town repetido, con escala entera (x3 celular, x4 escritorio) */
+.hero { --u: 48px; position: relative; overflow: hidden; text-align: center; padding: 0; image-rendering: pixelated; }
+@media (min-width: 640px) { .hero { --u: 64px; } }
+.hero-text {
+  position: relative; padding: 2rem 1rem 2.25rem;
+  /* Texto solo sobre las dos bandas oscuras: contrastes en decisions.md */
+  background: linear-gradient(to bottom, #2d2a5a 0 48%, #4a3a7e 48% 100%);
 }
-.scene-art img { position: absolute; width: 64px; height: 64px; image-rendering: pixelated; }
+.hero-text::before { /* estrellas: cuadrados de 4 px en los costados, lejos del texto */
+  content: ''; position: absolute; left: 4%; top: 14px; width: 4px; height: 4px; background: var(--title);
+  box-shadow: 3vw 38px 0 var(--title), 9vw 12px 0 var(--muted), 78vw 20px 0 var(--title), 90vw 48px 0 var(--muted), 94vw 10px 0 var(--title), 6vw 90px 0 var(--muted), 88vw 96px 0 var(--title);
+}
+.hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--tagline); margin: 1.25rem 0 0; }
+.world {
+  position: relative; height: calc(var(--u) * 3.5);
+  background:
+    url('/sprites/town_25.png') 0 calc(var(--u) * 2.5) / var(--u) var(--u) repeat,
+    url('/sprites/town_0.png') 0 calc(var(--u) * 1.5) / var(--u) var(--u) repeat-x,
+    linear-gradient(to bottom, #7b4a9a 0 calc(var(--u) * 0.5), #b5589a calc(var(--u) * 0.5) calc(var(--u) * 1), #f29e8e calc(var(--u) * 1) calc(var(--u) * 1.5), transparent calc(var(--u) * 1.5));
+  background-repeat: repeat-x, repeat-x, no-repeat;
+}
+.world { background-size: var(--u) var(--u), var(--u) var(--u), 100% 100%; }
+.sp { position: absolute; width: var(--u); height: var(--u); left: calc(50% + var(--x) * var(--u)); top: calc(var(--y) * var(--u)); image-rendering: pixelated; }
+@media (max-width: 639px) { .sp.wide { display: none; } }
 .cta-link {
-  display: inline-block; margin-top: 1.5rem; padding: 0.9rem 1.2rem;
+  display: inline-block; margin-top: 1.25rem; padding: 0.9rem 1.2rem;
   font-family: var(--pixel); font-size: 0.75rem; text-decoration: none;
   color: var(--bg); background: var(--accent); border-radius: 6px;
 }
