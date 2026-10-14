@@ -4,3 +4,60 @@
 > `CLAUDE.md`.
 >
 > Nace sin entradas.
+
+## 2026-10-13 · [landing] Mascota v0 con los colores originales del pack
+
+**Qué se decide**: la mascota v0 es el tile 98 de Tiny Dungeon (Kenney, CC0) sin recolorear; la paleta de la UI sale del pack, sin neón.
+**Por qué**: decisión del operador (2026-10-13) tras ver un recolor magenta/verde agua, que no le gustó. La unicidad de la mascota se refina después en Piskel.
+**La invalidaría**: que el operador entregue una mascota propia desde Piskel.
+
+## 2026-10-13 · [landing] Pack Tiny Dungeon (16×16) y tipografía Press Start 2P
+
+**Qué se decide**: sprites de Tiny Dungeon (Kenney, CC0, 16×16) en `public/sprites/` con su `License.txt`; fuente Press Start 2P (OFL 1.1) solo en títulos, etiquetas y botón; el texto largo va en la fuente del sistema.
+**Por qué**: Tiny Town casi no trae personajes; Pixel Platformer es 18×18. Tiny Dungeon cumple licencia, resolución, personajes y escenarios, y es el más arcade.
+**La invalidaría**: que el pack deje de cubrir lo que pida el diseño, o que el texto en Press Start 2P no se lea en pantallas chicas.
+
+## 2026-10-13 · [landing] Botón de envío color naranja del pack, contraste 7.7:1
+
+**Qué se decide**: el botón usa `#e19a65` con texto `#181425`.
+**Por qué**: es un color del pack; la relación de contraste es 7.73:1 (WCAG AA exige 4.5:1). El primer intento, magenta `#ff4fa3`, daba 5.9:1 y se descartó por la decisión de paleta.
+**La invalidaría**: cambiar la paleta de la UI o el color del botón.
+
+## 2026-10-13 · [landing] Detalles de saveLead que la spec no cerraba
+
+**Qué se decide**: (1) `.gitignore` ignora `.env.*` salvo `.env.example`. (2) Un nombre o email inválido en el servidor responde "Revisá tu nombre y tu email e intentá de nuevo.". (3) Un `utm_source` de más de 50 caracteres se trata como inválido y guarda `directo`, no se trunca. (4) Sin `PUBLIC_CONTACT_EMAIL`, el aviso de privacidad omite la oración del email, para que el build pase sin la variable; el checklist del README exige cargarla. (5) El checklist del README pide verificar que el aviso cumpla lo que exige el país del operador; no se afirma nada legal. (6) La lógica vive en `src/lib/leads.ts` con cliente inyectable, y la Action solo lo conecta.
+**Por qué**: la spec define los mensajes de éxito y de error, no estos casos; son la opción más simple y reversible.
+**La invalidaría**: que la spec o el operador fijen otro comportamiento para alguno de estos casos.
+
+## 2026-10-13 · [landing] Deuda técnica declarada: vulnerabilidad alta en path-to-regexp
+
+**Qué se decide**: se acepta `npm audit` con 1 vulnerabilidad alta (`path-to-regexp` 4.0.0-6.2.2, GHSA-9wv6-86v2-598j) que llega por `@astrojs/vercel`. No se aplica `npm audit fix --force`.
+**Por qué**: el fix baja el adaptador a la v8, un cambio incompatible con Astro 7. Es una dependencia del adaptador, no de código propio.
+**La invalidaría**: que `@astrojs/vercel` publique una versión que la actualice; entonces se actualiza y se borra esta deuda.
+
+## 2026-10-13 · [landing] Paleta RPG clásico + Tiny Town para el hero exterior, por decisión del operador
+
+**Qué se decide**: la UI usa la paleta "RPG clásico" (fondo #1f2a1c, pasto #3f6b35, paneles #5a3e2b, contorno #2a1d0e, oro #c8a24a, pergamino #e6d3a3, texto #f1ead6, más #d9cfb3 para texto secundario). El hero es exterior: pasto, camino y árboles de Tiny Town (Kenney, CC0, 16×16), con la mascota (tile 98 original) y el cofre y la poción de Tiny Dungeon. Cada pack lleva su licencia en `public/sprites/`.
+**Por qué**: decisión del operador. Los contrastes WCAG medidos: botón 6.81, texto en panel 8.10, títulos sobre fondo 10.11, etiquetas y títulos en panel 6.58, tagline oro sobre fondo 6.20, aviso de privacidad 6.27, texto del input 13.65, borde del input 6.58 (mínimos: 4.5 texto, 3 elementos gráficos). El oro sobre panel da 4.04 y falla para texto chico: por eso el oro solo se usa sobre el fondo y en el botón.
+**Reemplaza a**: la paleta solo-Tiny Dungeon del 2026-10-13 (botón naranja #e19a65, contraste 7.73).
+**La invalidaría**: que el operador cambie de paleta o que el oro se use como texto sobre el panel.
+
+## 2026-10-13 · [landing] Paleta Atardecer pixel (lavanda), por decisión del operador
+
+**Qué se decide**: la UI usa fondo #1e1b3a, paneles #2c2950 con borde de 1 px #4a4672 y radio de 6 px, títulos #edf2f7, texto #cbd5e0, texto atenuado #a0aec0, tagline #f6b8c8 y un único acento lavanda #c4b5fd (h3, etiquetas, enlaces y botón con texto #1e1b3a). El borde de los inputs es #8b84b8, no #4a4672. El hero muestra un atardecer: cielo en cinco bandas planas (#2d2a5a, #4a3a7e, #7b4a9a, #b5589a, #f29e8e) sobre el suelo de Tiny Town, con la mascota, el cofre y la poción. La idea de paleta se inspira en el aspecto de pixellab.ai; no se usó ni copió ninguna de sus obras.
+**Por qué**: decisión del operador: UI casi neutra con un acento, y todo el color en el hero. #4a3a7e de borde de input daba 1.56:1 contra el panel y 2.06:1 contra el fondo del input (mínimo 3:1 para componentes de interfaz); #8b84b8 da 3.95:1 y 5.21:1.
+**Reemplaza a**: la paleta RPG clásico del mismo día (fondo bosque, paneles de madera, botón oro).
+**La invalidaría**: que el operador cambie de paleta.
+
+## 2026-10-13 · [landing] Hero como header a todo el ancho, por decisión del operador
+
+**Qué se decide**: el hero ocupa el ancho completo del viewport. Arriba, título, tagline y botón sobre las dos bandas oscuras del cielo (#2d2a5a y #4a3a7e); debajo, tres bandas planas de horizonte (#7b4a9a, #b5589a, #f29e8e), una fila de pasto y una de tierra de Tiny Town repetidas en horizontal, con escala entera (x3 hasta 639 px, x4 desde 640 px). La mascota va centrada en el camino; árboles, flores, hongos, cofre y poción se reparten simétricos desde el centro, y los elementos "wide" solo aparecen desde 640 px para que nada quede cortado. Los murciélagos de Tiny Dungeon y estrellas de 4 px dan vida al cielo; no se sumó ningún pack.
+**Por qué**: decisión del operador. Contrastes del texto del hero: título #edf2f7 sobre #2d2a5a 11.72 y sobre #4a3a7e 8.48; tagline #f6b8c8 sobre #2d2a5a 7.93 y sobre #4a3a7e 5.74; botón 8.94. Ningún texto toca las bandas violeta, rosa ni durazno (el tagline sobre #7b4a9a daría 3.83 y falla). A 375 px el hero mide 407 px (50 % de 812) y no hay scroll horizontal; a 1280 px mide 464 px.
+**Reemplaza a**: el hero de caja centrada de 320×256 px de la paleta Atardecer pixel.
+**La invalidaría**: que el texto del hero crezca hasta las bandas violeta, o que el operador cambie el hero.
+
+## 2026-10-13 · [landing] Pulido del header: tagline en una sola banda, sin murciélagos, pino completo
+
+**Qué se decide**: el título vive en la banda oscura #2d2a5a y el tagline con el botón en la banda #4a3a7e, cada texto entero dentro de una sola banda. Se sacan los murciélagos (markup y `public/sprites/bat.png`); quedan las estrellas. Todos los árboles son el mismo pino de dos tiles de Tiny Town: copa `town_4` sobre tronco `town_16`.
+**Por qué**: decisión del operador. `town_16` solo es la mitad de abajo de un árbol (con el borde de arriba abierto) y `town_28` es un pino chico distinto; los árboles usados antes mostraban la copa cortada. Contrastes sin cambios: título sobre #2d2a5a 11.72, tagline sobre #4a3a7e 5.74, botón 8.94. A 375 px el hero mide 427 px de 812 (53 %) y a 1280 px mide 484 px.
+**La invalidaría**: que el tagline o el botón crezcan fuera de su banda, o que el operador pida otro tipo de árbol.

@@ -1,0 +1,114 @@
+---
+import LeadForm from '../components/LeadForm.tsx';
+import '../styles/global.css';
+
+const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
+---
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nos Vemos — Press Start para la próxima juntada</title>
+    <meta name="description" content="Nos Vemos junta la disponibilidad de tus amigos, insiste con los que no contestan y cierra la juntada sola." />
+    <link rel="preload" href="/fonts/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="hero-text">
+          <div class="band band-1"><h1>NOS VEMOS</h1></div>
+          <div class="band band-2">
+            <p class="tagline">Press Start para la próxima juntada</p>
+            <a class="cta-link" href="#form-leads">Anotame en la lista</a>
+          </div>
+        </div>
+        <div class="world" aria-hidden="true">
+          <img class="sp" src="/sprites/town_2.png" alt="" style="--x:-1.5;--y:1.5" />
+          <img class="sp" src="/sprites/town_1.png" alt="" style="--x:1.5;--y:1.5" />
+          <img class="sp" src="/sprites/town_2.png" alt="" style="--x:3.5;--y:1.5" />
+          <img class="sp" src="/sprites/town_1.png" alt="" style="--x:-3.5;--y:1.5" />
+          <img class="sp" src="/sprites/town_29.png" alt="" style="--x:-1.0;--y:1.55" />
+          <img class="sp" src="/sprites/town_29.png" alt="" style="--x:1.0;--y:1.6" />
+          <img class="sp wide" src="/sprites/town_2.png" alt="" style="--x:-5.5;--y:1.5" />
+          <img class="sp wide" src="/sprites/town_1.png" alt="" style="--x:5.5;--y:1.5" />
+          <img class="sp wide" src="/sprites/town_29.png" alt="" style="--x:-6;--y:1.55" />
+          <img class="sp wide" src="/sprites/town_29.png" alt="" style="--x:6;--y:1.6" />
+          <img class="sp wide" src="/sprites/town_2.png" alt="" style="--x:9.5;--y:1.5" />
+          <img class="sp" src="/sprites/town_4.png" alt="" style="--x:-2.6;--y:0.9" />
+          <img class="sp" src="/sprites/town_16.png" alt="" style="--x:-2.6;--y:1.9" />
+          <img class="sp" src="/sprites/town_4.png" alt="" style="--x:2.6;--y:0.9" />
+          <img class="sp" src="/sprites/town_16.png" alt="" style="--x:2.6;--y:1.9" />
+          <img class="sp wide" src="/sprites/town_4.png" alt="" style="--x:-4.6;--y:0.9" />
+          <img class="sp wide" src="/sprites/town_16.png" alt="" style="--x:-4.6;--y:1.9" />
+          <img class="sp wide" src="/sprites/town_4.png" alt="" style="--x:4.6;--y:0.9" />
+          <img class="sp wide" src="/sprites/town_16.png" alt="" style="--x:4.6;--y:1.9" />
+          <img class="sp wide" src="/sprites/town_4.png" alt="" style="--x:-7.6;--y:0.9" />
+          <img class="sp wide" src="/sprites/town_16.png" alt="" style="--x:-7.6;--y:1.9" />
+          <img class="sp wide" src="/sprites/town_4.png" alt="" style="--x:7.6;--y:0.9" />
+          <img class="sp wide" src="/sprites/town_16.png" alt="" style="--x:7.6;--y:1.9" />
+          <img class="sp wide" src="/sprites/town_4.png" alt="" style="--x:-9.2;--y:0.9" />
+          <img class="sp wide" src="/sprites/town_16.png" alt="" style="--x:-9.2;--y:1.9" />
+          <img class="sp" src="/sprites/chest.png" alt="" style="--x:-1.7;--y:2.42" />
+          <img class="sp" src="/sprites/potion.png" alt="" style="--x:1.2;--y:2.55" />
+          <img class="sp" src="/sprites/mascot.png" alt="" style="--x:-0.5;--y:2.45" />
+        </div>
+      </section>
+
+      <section id="problema" class="problem">
+        <div class="wrap">
+          <h2>La juntada que nunca se concreta</h2>
+          <div class="panel">
+            <ul>
+              <li>El chat explota con mensajes y nadie cierra nada.</li>
+              <li>«A ver si nos juntamos el jueves»… y llega el jueves sin fecha.</li>
+              <li>Siempre están los mismos que nunca contestan, y vos terminás de organizador y de detective.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="solucion">
+        <div class="wrap">
+          <h2>Nos Vemos lo resuelve por vos</h2>
+          <div class="promises">
+            <div class="panel">
+              <h3>Cierra solo</h3>
+              <p>Cuando alcanza la cantidad de gente que definiste, la juntada queda confirmada. Sin vueltas.</p>
+            </div>
+            <div class="panel">
+              <h3>Insiste por vos</h3>
+              <p>Recordatorios con fecha límite a los que no contestan, para que no tengas que perseguirlos.</p>
+            </div>
+            <div class="panel">
+              <h3>Se repite</h3>
+              <p>Armá la juntada una vez y se vuelve a organizar sola cada mes.</p>
+            </div>
+            <div class="panel">
+              <h3>Con premios</h3>
+              <p>Medallas, puntos y ranking para los que siempre aparecen. Hasta los que dudaban se suman.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="form-leads">
+        <div class="wrap">
+          <h2>¿Te pasa lo mismo? Sumate a la lista</h2>
+          <div class="panel">
+            <p>Dejanos tu nombre y tu email y te avisamos cuando arranque.</p>
+            <LeadForm client:load />
+            <p class="privacy">
+              Usamos tu nombre y tu email solo para avisarte cuando Nos Vemos esté listo. También guardamos
+              de qué link viniste, para saber qué canal funciona. No los compartimos ni los vendemos.{' '}
+              {contactEmail
+                ? <>Si querés que los borremos, escribinos a <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</>
+                : null}
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>Nos Vemos · hecho con pixeles y ganas de verte</footer>
+  </body>
+</html>

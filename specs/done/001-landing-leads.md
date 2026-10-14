@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: []
 ---
 
@@ -136,3 +136,65 @@ recién después de que exista el email de contacto (`PUBLIC_CONTACT_EMAIL`).
 | Dominio propio | Claudio verifica el dominio y la marca |
 | Analítica de visitas | La landing está publicada y se empieza a difundir |
 | Animaciones de sprites | La rúbrica C10 pasa y queda tiempo, en una spec aparte |
+
+## Evidencia de implementación
+
+Comando: `evals/run.sh` (2026-10-13, tras la enmienda del hero a todo el ancho).
+
+```
+PASS C1 el proyecto compila
+PASS C2 las tres secciones y el formulario existen
+PASS C3 campos del formulario
+PASS C4 validación, honeypot, fuente y duplicados (Vitest)
+     |       Tests  12 passed (12)
+PASS C5 migración: forma y seguridad
+PASS C6 sin secretos en el repo
+PASS C7 sprites con licencia CC0 (10 sprites, 2 licencias)
+PASS C8 375px sin scroll horizontal y botón visible
+PASS C9 aviso de privacidad con PUBLIC_CONTACT_EMAIL
+PASS C11 README con las cuatro secciones
+10 pasan · 0 fallan
+```
+
+### Contrastes WCAG (paleta Atardecer pixel)
+
+| Par | Ratio | Mínimo |
+|---|---|---|
+| Texto del botón #1e1b3a sobre lavanda #c4b5fd | 8.94 | 4.5 |
+| Títulos #edf2f7 sobre fondo #1e1b3a | 14.65 | 4.5 |
+| Texto #cbd5e0 sobre panel #2c2950 | 9.18 | 4.5 |
+| Texto #cbd5e0 sobre fondo | 11.10 | 4.5 |
+| Tagline #f6b8c8 sobre fondo | 9.90 | 4.5 |
+| h3, etiquetas y enlaces lavanda sobre panel | 7.39 | 4.5 |
+| Texto atenuado #a0aec0 (privacidad) sobre panel | 6.05 | 4.5 |
+| Texto atenuado #a0aec0 (pie) sobre fondo | 7.31 | 4.5 |
+| Mensaje de éxito #f6b8c8 sobre panel | 8.19 | 4.5 |
+| Texto del input #edf2f7 sobre #16142b | 15.95 | 4.5 |
+| Borde del input #8b84b8 sobre panel | 3.95 | 3 |
+| Borde del input #8b84b8 sobre fondo del input | 5.21 | 3 |
+| Foco lavanda sobre panel | 7.39 | 3 |
+
+Ajuste: el borde #4a4672 pedido para los inputs daba 1.56 contra el panel; se usó #8b84b8. #4a4672 queda solo en los bordes de panel, que son decorativos.
+
+### Contrastes del texto del hero (header a todo el ancho)
+
+| Par | Ratio | Mínimo |
+|---|---|---|
+| Título #edf2f7 sobre #2d2a5a (banda 1) | 11.72 | 4.5 |
+| Tagline #f6b8c8 sobre #4a3a7e (banda 2) | 5.74 | 4.5 |
+| Botón #1e1b3a sobre lavanda | 8.94 | 4.5 |
+
+Medido en Playwright: a 375 px el hero mide 427 px de 812 (53 %) y `scrollWidth` es 375; a 1280 px el hero mide 484 px y `scrollWidth` es 1280. Los demás contrastes de la tabla anterior no cambiaron.
+
+### C10 (rúbrica), sobre capturas a 375 y 1280 px
+
+Capturas: `landing_375.png` y `landing_1280.png` (adjuntar al PR).
+
+1. Tipografía pixel en títulos; texto largo legible: PASA. Press Start 2P en h1/h2/etiquetas/botón; párrafos en fuente del sistema a 17 px.
+2. Mascota y ambiente de Kenney en el hero: PASA. Header a todo el ancho con cielo de atardecer en bandas planas con estrellas, suelo de Tiny Town con pinos completos (copa y tronco), flores y hongos, y la mascota original centrada en el camino con cofre y poción.
+3. Textos obligatorios: PASA. "Press Start para la próxima juntada" visible en el hero; "PLAYER JOINED" y "GAME OVER" están en `src/lib/leads.ts` y los cubren los tests de C4 (no vistos en captura).
+4. Español rioplatense: PASA ("Anotame", "Sumate", "dejanos", "querés", "vos").
+5. Claridad y contraste: PASA. Dos campos con etiquetas y un botón lavanda "Press Start" con contraste 8.94 (ver tabla).
+6. Cuatro promesas sin jerga: PASA. "Cierra solo", "Insiste por vos", "Se repite", "Con premios".
+
+Pendiente fuera de los evals: el operador prueba el envío real tras Supabase y Vercel (README).
