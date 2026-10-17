@@ -152,3 +152,29 @@
 **Qué se decide**: `#datos` suma un cuarto ítem, "Datos técnicos": Supabase y Vercel registran datos técnicos de las visitas y los inicios de sesión (por ejemplo la dirección IP) por seguridad; no se usan para nada más. 004·C2 exige "dirección IP".
 **Por qué**: la revisión de lo guardado encontró que Supabase Auth registra la IP de las sesiones fuera de las tablas de la app; la política no podía omitirlo para ser honesta. Lo decidió el operador.
 **La invalidaría**: que se agregue analítica propia o se use ese registro para otra cosa; habría que declararlo.
+
+## 2026-10-16 · [landing] La landing enlaza a `/nueva` como acción principal; los leads quedan como segunda opción
+
+**Qué se decide**: el botón del header dice "Press Start: creá tu juntada" y lleva a `/nueva`; el formulario de leads pasa a "¿Todavía no?". El único enlace de la landing a la v1 es `href="/nueva"`; el eval `003·C1` pasa a exigir eso (ningún `href` a `/j/`) en vez de "la landing no enlaza a la v1". Lo decidió el operador (spec 005, opción C).
+**Por qué**: la v1 ya funciona de punta a punta y la landing era la única puerta de entrada pública; los leads sirven a quien todavía no tiene una juntada que organizar. Efecto buscado: cualquier visitante puede crear juntadas.
+**Reemplaza a**: la decisión de la spec 003 "la landing no enlaza a la v1".
+**La invalidaría**: que crear juntadas abiertas al público genere abuso o ruido que obligue a volver a la entrada por invitación.
+
+## 2026-10-16 · [app] El link "¿Qué es Nos Vemos?" vive una sola vez, en la barra de `App.astro`, a la derecha
+
+**Qué se decide**: `App.astro` muestra un link de texto chico (color `--muted`, subrayado) a `/` en el extremo derecho de la barra; cubre `/nueva` y `/j/<código>` en todos sus estados. Eval `005·C3` exige que aparezca una sola vez en `src/`.
+**Por qué**: la barra es visible a 375 px sin scroll y no se mezcla con "Entrar con Google" ni con los botones del contenido; ponerlo por página lo repetiría.
+**La invalidaría**: que la barra del layout gane otros elementos y no alcance el ancho a 375 px.
+
+## 2026-10-16 · [evals] Prueba de `003·C1` modificado: una mutación temporal lo hace fallar
+
+**Qué se decide**: se probó con `<a href="/j/x">` temporal en el footer de la landing: `003·C1` y `005·C4` fallaron; revertida la mutación, pasan. Sin la mutación, `003·C1` acepta el link a `/nueva`.
+**Por qué**: un eval que solo se vio pasar no prueba que detecte lo que dice detectar (criterio C4 de la spec 005).
+**La invalidaría**: que `003·C1` se vuelva a cambiar.
+
+## 2026-10-16 · [landing] El botón del header dice exactamente "Creá tu juntada"
+
+**Qué se decide**: el botón del header de la landing dice "Creá tu juntada" (href `/nueva`). `005·C1` exige ese texto y que "Press Start: creá tu juntada" no aparezca.
+**Por qué**: el tagline justo arriba ya dice "Press Start para la próxima juntada"; repetir la frase sobraba. Lo decidió el operador.
+**Reemplaza a**: el texto "Press Start: creá tu juntada" de la decisión "La landing enlaza a `/nueva` como acción principal" (la regla de enlazar a `/nueva` sigue vigente).
+**La invalidaría**: que el operador pida otro texto.

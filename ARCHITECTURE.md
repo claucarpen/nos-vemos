@@ -6,7 +6,7 @@
 
 - Astro 7 con `@astrojs/vercel`; React solo para las islas `LeadForm` y `CrearJuntadaForm`.
 - `/` se prerenderiza (`.vercel/output/static/index.html`); `saveLead` corre en el servidor.
-- `/nueva`, `/j/[codigo]` y `/auth/*` se renderizan en el servidor (`prerender = false`). La landing no las enlaza.
+- `/nueva`, `/j/[codigo]` y `/auth/*` se renderizan en el servidor (`prerender = false`). La landing enlaza solo a `/nueva` (botón del header); ningún `href` a `/j/` (eval `003·C1`).
 - Auth: Supabase Auth con Google vía `@supabase/ssr`; la sesión viaja en cookies (PKCE).
 - Supabase: tabla `leads` con RLS (`anon` solo inserta). Tablas de la v1 con RLS y sin acceso directo: todo pasa por funciones `security definer`.
 
@@ -14,7 +14,7 @@
 
 | Ruta | Qué es |
 |---|---|
-| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion`, `#form-leads`, aviso de privacidad |
+| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` con el botón "Creá tu juntada" → `/nueva`, y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion`, `#form-leads` ("¿Todavía no?", la segunda opción), aviso de privacidad |
 | `src/components/LeadForm.tsx` | Isla React: formulario, honeypot `empresa`, `utm_source` leído de la URL |
 | `src/actions/index.ts` | Action `saveLead`: arma el cliente de Supabase y llama a `processLead` |
 | `src/lib/leads.ts` | Lógica pura (validación, honeypot, `fuente`, duplicados) con cliente inyectable |
@@ -26,7 +26,7 @@
 | `src/pages/j/[codigo].astro` | La juntada. Sin sesión: `juntada_publica`. Con sesión: `detalle_juntada` (si no es participante, `unirse` primero). POST `accion=votar\|cancelar` → 303. 404 si no existe, 503 si la base falla |
 | `src/pages/auth/login.ts`, `src/pages/auth/callback.ts` | POST que arranca el OAuth de Google; callback que canjea el código, llama a `asegurar_perfil` y vuelve a `next` (solo rutas internas) |
 | `src/pages/privacidad.astro`, `src/styles/privacidad.css` | Política de privacidad, prerenderizada, indexable (sin `noindex`), 8 secciones con `id`; el contacto sale de `PUBLIC_CONTACT_EMAIL`. Enlazada desde el aviso y el footer de la landing, `EntrarConGoogle.astro` (prop `aviso`) y `JuntadaPublica.astro` |
-| `src/layouts/App.astro` | Layout de la app: barra con la mascota, `global.css` + `app.css`, `noindex` |
+| `src/layouts/App.astro` | Layout de la app: barra con la mascota y el link "¿Qué es Nos Vemos?" → `/` (único, en el layout), `global.css` + `app.css`, `noindex` |
 | `src/components/app/` | `Juntada.astro` (votar / LEVEL CLEAR / GAME OVER), `JuntadaPublica.astro`, `EntrarConGoogle.astro`, isla `CrearJuntadaForm.tsx` (filas de fecha 2-10) |
 | `src/lib/supabase.ts` | Cliente SSR (`createServerClient` con las cookies de Astro) y `rutaSegura` |
 | `src/lib/fechas.ts`, `src/lib/whatsapp.ts`, `src/lib/codigo.ts`, `src/lib/errores.ts`, `src/lib/juntada.ts` | Hora argentina (formato y `datetime-local` → UTC), links `wa.me`, forma del código, traducción de errores de la base, tipos del detalle |

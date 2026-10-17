@@ -5,6 +5,9 @@
   display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
   background: #2d2a5a; border-bottom: 4px solid #4a3a7e; image-rendering: pixelated;
 }
+.app-about { margin-left: auto; font-size: 0.8rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.app-about:hover { color: var(--title); }
+.app-about:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .app-brand { font-family: var(--pixel); font-size: 0.85rem; color: var(--title); }
 
 .app-main { max-width: 36rem; margin: 0 auto; padding: 1.25rem 1rem 3rem; display: grid; gap: 1rem; }
