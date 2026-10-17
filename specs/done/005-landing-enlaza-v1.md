@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: [001, 003, 004]
 ---
 
@@ -80,3 +80,18 @@ juntadas: es el efecto buscado, decidido por el operador.
 | Medir la conversión landing → juntada (pasar `utm_source` a la juntada) | La landing empieza a recibir tráfico de canales que valga la pena comparar |
 | Cambiar los textos de Problema y Solución | El operador o los usuarios lo piden |
 | Contador público de juntadas creadas | Hay suficientes juntadas como para que el número ayude |
+
+## Evidencia
+
+`evals/run.sh`: 35 pasan · 0 fallan (C1 a C5 de esta spec como `005·C1` a `005·C5`; los de las specs 001 a 004 intactos).
+
+- **C1**: el botón `cta-link` del HTML construido dice "Press Start: creá tu juntada", `href="/nueva"`; sin "Anotame en la lista".
+- **C2**: `#form-leads` dice "¿Todavía no?" y "Dejanos tu email y te avisamos de lo nuevo."; sin "Sumate a la lista"; `C2`, `C3`, `C8` y `C9` de la spec 001 siguen pasando.
+- **C3**: `tests/app/sin-sesion.spec.ts` (`005·C3`): en `/nueva` y `/j/<inexistente>` a 375 px el link "¿Qué es Nos Vemos?" tiene `href="/"`, es visible y entra en el ancho. `grep` en `src/`: una sola aparición, en `src/layouts/App.astro`.
+- **C4**: mutación temporal, `<a href="/j/x">` en el footer de `index.astro`, `evals/run.sh` completo: `FAIL 003·C1: landing-enlaza-a-/j/ enlace-a-la-v1-distinto-de-/nueva` y `FAIL 005·C4: landing-con-/j/` (33 pasan · 2 fallan). Mutación revertida: `003·C1` pasa con el único enlace `/nueva`. El cambio de `003·C1` es deliberado (decidido por el operador; ver `decisions.md`).
+- **C5**: `tests/db/juntadas.test.ts` ("README: la consulta…") lee el bloque `sql` del README con `as organizador`, lo ejecuta tal cual con dos juntadas de organizadores distintos: una fila por juntada, `titulo`, `organizador` y `tasa_voto` 0.75 y 0.5.
+- **C6** (capturas en `/tmp/claude-1000/-home-claudio-Escritorio-AI-First-OS/a0bc7378-1a6e-4efd-925c-e83cd50b17c6/scratchpad/spec005/`: `landing-header-{375,1280}.png`, `landing-form-{375,1280}.png`, `nueva-{375,1280}.png`):
+  1. PASA: el botón lavanda, lo más destacado del header, dice "Press Start: creá tu juntada" y está sobre el tagline; se lee como empezar a usar.
+  2. PASA con una observación: el título "¿Todavía no?" y la bajada la presentan como alternativa y queda lejos del header, debajo de Problema y Solución. Observación: su botón de envío sigue diciendo "Press Start" (texto de la spec 001, fuera de alcance), igual que el CTA; no compite por estar en otra sección, pero repite la frase.
+  3. PASA: en `/nueva` el link es texto chico, subrayado, color `--muted`, en el extremo derecho de la barra; "Entrar con Google" es el único botón lleno del contenido.
+  4. PASA: paleta Atardecer pixel y tipografías (Press Start 2P + cuerpo) sin colores nuevos; el link usa `--muted` (#a0aec0) sobre #2d2a5a.

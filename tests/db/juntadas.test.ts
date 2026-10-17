@@ -1,5 +1,6 @@
 // Spec 003, C3: reglas de la juntada y seguridad, sobre Postgres embebido + shim, con 001 y 002.
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { admin, anon, startDb, user, type Db } from './pg';
 
@@ -325,5 +326,26 @@ describe('seguridad', () => {
     expect(r.rows).toEqual([{ tamano_grupo: 8, votantes: 6, tasa: 0.75, estado: 'abierta', horas_hasta_cierre: null }]);
     await expect(db.q(anon, 'select * from public.metricas_experimento')).rejects.toThrow('permission denied');
     await expect(db.q(user(org), 'select * from public.metricas_experimento')).rejects.toThrow('permission denied');
+  });
+  // Spec 005, C5: la consulta del README se ejecuta textualmente.
+  test('README: la consulta con organizador devuelve una fila por juntada con titulo, organizador y tasa de voto', async () => {
+    const readme = readFileSync('README.md', 'utf8');
+    const consulta = [...readme.matchAll(/```sql\n([\s\S]*?)```/g)].map((m) => m[1]).find((q) => q.includes('as organizador'));
+    expect(consulta).toBeTruthy();
+
+    const a = await conGrupo(3, { titulo: 'Asado de Ana', quorum: 4, tamano: 4 });
+    const b = await conGrupo(1, { titulo: 'Cine de Beto', quorum: 2, tamano: 2 });
+    for (const u of a.gente.slice(0, 3)) await votar(u, a.codigo, [a.ops[0]]);
+    await votar(b.gente[0], b.codigo, [b.ops[0]]);
+
+    const todas = await db.q(admin, 'select count(*)::int as n from public.juntadas');
+    const r = await db.q(admin, consulta!);
+    expect(r.rowCount).toBe(todas.rows[0].n);
+    const fila = (codigo: string) => r.rows.find((x) => x.codigo === codigo);
+    const nombreOrg = async (org: string) => (await db.q(admin, 'select nombre from public.perfiles where id = $1', [org])).rows[0].nombre;
+    expect(fila(a.codigo)).toMatchObject({ titulo: 'Asado de Ana', organizador: await nombreOrg(a.org), votantes: 3 });
+    expect(Number(fila(a.codigo).tasa_voto)).toBe(0.75);
+    expect(fila(b.codigo)).toMatchObject({ titulo: 'Cine de Beto', organizador: await nombreOrg(b.org), votantes: 1 });
+    expect(Number(fila(b.codigo).tasa_voto)).toBe(0.5);
   });
 });

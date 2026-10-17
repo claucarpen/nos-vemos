@@ -31,3 +31,21 @@ test.describe('375 px', () => {
     await expect(page.getByText('Esta juntada no existe')).toBeVisible();
   });
 });
+
+// Spec 005, C3: desde la v1 se vuelve a la landing con un link en la barra del layout.
+test.describe('375 px · volver a la landing', () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  for (const ruta of ['/nueva', `/j/${CODIGO_INEXISTENTE}`]) {
+    test(`005·C3: ${ruta.slice(0, 7)} tiene "¿Qué es Nos Vemos?" → /`, async ({ page }) => {
+      await page.goto(ruta);
+      const link = page.getByRole('link', { name: '¿Qué es Nos Vemos?' });
+      await expect(link).toHaveAttribute('href', '/');
+      await expect(link).toBeVisible();
+      const box = await link.boundingBox();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(375);
+      expect(await sinScrollHorizontal(page)).toBeLessThanOrEqual(375);
+    });
+  }
+});

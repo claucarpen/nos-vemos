@@ -170,8 +170,10 @@ s3_c1_build() {
   local miss="" cfg=.vercel/output/config.json
   [ -f "$BUILT" ] || miss="$miss landing-no-prerenderizada"
   for r in '\^/nueva' '\^/j/' '\^/auth/callback' '\^/auth/login'; do grep -q "\"src\": \"$r" "$cfg" 2>/dev/null || miss="$miss ruta[$r]"; done
-  ! grep -qE 'href="/(nueva|j/)' "$BUILT" 2>/dev/null || miss="$miss landing-enlaza-a-la-v1"
-  if [ -z "$miss" ]; then ok "003·C1 compila con las rutas de la v1; la landing sigue prerenderizada y no enlaza a la v1"; else ko "003·C1:$miss"; fi
+  # Modificado por la spec 005·C4: el único enlace de la landing a la v1 es href="/nueva"; ninguno a /j/.
+  ! grep -q 'href="/j/' "$BUILT" 2>/dev/null || miss="$miss landing-enlaza-a-/j/"
+  [ "$(grep -oE 'href="/(nueva|j/)[^"]*"' "$BUILT" 2>/dev/null | sort -u)" = 'href="/nueva"' ] || miss="$miss enlace-a-la-v1-distinto-de-/nueva"
+  if [ -z "$miss" ]; then ok "003·C1 compila con las rutas de la v1; la landing sigue prerenderizada y su único enlace a la v1 es /nueva"; else ko "003·C1:$miss"; fi
 }
 
 s3_c2_migration() {
@@ -296,10 +298,60 @@ s4_c6_readme() {
 # 004·C7 es una rúbrica sobre capturas a 375 y 1280 px; no corre acá.
 # Evidencia de 004·C7: specs/done/004-privacidad.md.
 
+# --- Spec 005: la landing lleva a crear una juntada -----------------------------------------------
+
+s5_c1_header() {
+  local miss="" cta
+  cta=$(grep -oE '<a class="cta-link"[^>]*>[^<]*</a>' "$BUILT" 2>/dev/null)
+  printf '%s' "$cta" | grep -q 'href="/nueva"' || miss="$miss href"
+  printf '%s' "$cta" | grep -q 'Press Start: creá tu juntada' || miss="$miss texto"
+  ! grep -q 'Anotame en la lista' "$BUILT" 2>/dev/null || miss="$miss queda-Anotame"
+  if [ -z "$miss" ]; then ok "005·C1 el botón del header dice \"Press Start: creá tu juntada\" y lleva a /nueva"; else ko "005·C1:$miss"; fi
+}
+
+s5_c2_form() {
+  local miss="" sec
+  sec=$(tr '\n' ' ' < "$BUILT" 2>/dev/null | grep -oE '<section id="form-leads".*' | sed 's#</section>.*##')
+  printf '%s' "$sec" | grep -q '¿Todavía no?' || miss="$miss titulo"
+  printf '%s' "$sec" | grep -q 'Dejanos tu email y te avisamos de lo nuevo\.' || miss="$miss bajada"
+  ! grep -q 'Sumate a la lista' "$BUILT" 2>/dev/null || miss="$miss queda-Sumate"
+  if [ -z "$miss" ]; then ok "005·C2 el formulario se presenta como segunda opción (los evals de 001 sobre el formulario siguen en C2/C3/C8/C9)"; else ko "005·C2:$miss"; fi
+}
+
+s5_c3_back_link() {
+  local out miss="" n
+  if ! out=$(npx playwright test -c playwright.app.config.ts -g '005·C3' 2>&1); then miss="$miss playwright"; fi
+  n=$(grep -rn 'Qué es Nos Vemos' src --include=*.astro --include=*.tsx --include=*.ts | wc -l)
+  [ "$n" = "1" ] || miss="$miss link-aparece-$n-veces-en-src"
+  grep -q 'Qué es Nos Vemos' src/layouts/App.astro || miss="$miss no-esta-en-el-layout"
+  if [ -z "$miss" ]; then ok "005·C3 /nueva y /j/<inexistente> tienen \"¿Qué es Nos Vemos?\" → / a 375 px; el link vive solo en el layout"
+  else ko "005·C3:$miss"; ev "$(printf '%s' "${out:-}" | tail -10)"; fi
+}
+
+s5_c4_eval003() {
+  local miss=""
+  grep -q 'href="/nueva"' "$BUILT" 2>/dev/null || miss="$miss landing-sin-/nueva"
+  grep -q 'href="/j/' "$BUILT" 2>/dev/null && miss="$miss landing-con-/j/"
+  grep -q "! grep -q 'href=\"/j/' \"\$BUILT\"" evals/run.sh || miss="$miss 003C1-no-exige-sin-/j/"
+  [ -f "$BUILT" ] || miss="$miss landing-no-prerenderizada"
+  # La mutación temporal (href="/j/x" en la landing hace fallar 003·C1) está registrada en specs/done/005-landing-enlaza-v1.md.
+  if [ -z "$miss" ]; then ok "005·C4 003·C1 acepta el link a /nueva y rechaza un href a /j/ (mutación registrada en la spec)"; else ko "005·C4:$miss"; fi
+}
+
+s5_c5_readme_query() {
+  local out
+  if out=$(npx vitest run --config vitest.db.config.ts tests/db/juntadas.test.ts -t 'README' 2>&1); then ok "005·C5 la consulta del README devuelve una fila por juntada con titulo, organizador y tasa de voto"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "005·C5 consulta del README"; ev "$(printf '%s' "$out" | grep -E '✗|×|FAIL|Tests |Error' | head -10)"; fi
+}
+
+# 005·C6 es una rúbrica sobre capturas a 375 y 1280 px; no corre acá.
+# Evidencia de 005·C6: specs/done/005-landing-enlaza-v1.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
 s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_readme
+s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

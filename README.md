@@ -2,7 +2,7 @@
 
 - Landing retro gaming (Astro + React) en `/`: cuenta el problema, presenta la solución y guarda
   nombre y email en una tabla de Supabase que el público solo puede llenar, nunca leer.
-- v1, por invitación (la landing no la enlaza): `/nueva` crea una juntada con varias fechas,
+- v1: la landing lleva a crear una juntada. `/nueva` crea una juntada con varias fechas,
   `/j/<código>` es el link que se comparte. Cada uno entra con Google y marca cuándo puede; cuando
   una fecha llega al quórum la juntada se cierra sola y el organizador avisa por WhatsApp.
 
@@ -106,6 +106,18 @@ operador desde el panel. En **SQL Editor**:
 
 ```sql
 select * from metricas_experimento order by creada_en desc;
+```
+
+Para saber quién organizó cada juntada (y separar las del operador de las de otros grupos), pegá
+esta consulta; es solo lectura y suma la columna `organizador` a las de la vista:
+
+```sql
+select m.codigo, m.titulo, p.nombre as organizador, m.creada_en, m.tamano_grupo,
+       m.votantes, m.tasa_voto, m.estado, m.horas_hasta_cierre
+from metricas_experimento m
+join juntadas j on j.codigo = m.codigo
+join perfiles p on p.id = j.organizador_id
+order by m.creada_en desc;
 ```
 
 | Columna | Qué es |
