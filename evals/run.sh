@@ -304,9 +304,10 @@ s5_c1_header() {
   local miss="" cta
   cta=$(grep -oE '<a class="cta-link"[^>]*>[^<]*</a>' "$BUILT" 2>/dev/null)
   printf '%s' "$cta" | grep -q 'href="/nueva"' || miss="$miss href"
-  printf '%s' "$cta" | grep -q 'Press Start: creá tu juntada' || miss="$miss texto"
+  printf '%s' "$cta" | grep -q '>Creá tu juntada<' || miss="$miss texto"
+  ! grep -q 'Press Start: creá tu juntada' "$BUILT" 2>/dev/null || miss="$miss queda-Press-Start-creá"
   ! grep -q 'Anotame en la lista' "$BUILT" 2>/dev/null || miss="$miss queda-Anotame"
-  if [ -z "$miss" ]; then ok "005·C1 el botón del header dice \"Press Start: creá tu juntada\" y lleva a /nueva"; else ko "005·C1:$miss"; fi
+  if [ -z "$miss" ]; then ok "005·C1 el botón del header dice \"Creá tu juntada\" y lleva a /nueva"; else ko "005·C1:$miss"; fi
 }
 
 s5_c2_form() {

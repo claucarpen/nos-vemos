@@ -171,3 +171,10 @@
 **Qué se decide**: se probó con `<a href="/j/x">` temporal en el footer de la landing: `003·C1` y `005·C4` fallaron; revertida la mutación, pasan. Sin la mutación, `003·C1` acepta el link a `/nueva`.
 **Por qué**: un eval que solo se vio pasar no prueba que detecte lo que dice detectar (criterio C4 de la spec 005).
 **La invalidaría**: que `003·C1` se vuelva a cambiar.
+
+## 2026-10-16 · [landing] El botón del header dice exactamente "Creá tu juntada"
+
+**Qué se decide**: el botón del header de la landing dice "Creá tu juntada" (href `/nueva`). `005·C1` exige ese texto y que "Press Start: creá tu juntada" no aparezca.
+**Por qué**: el tagline justo arriba ya dice "Press Start para la próxima juntada"; repetir la frase sobraba. Lo decidió el operador.
+**Reemplaza a**: el texto "Press Start: creá tu juntada" de la decisión "La landing enlaza a `/nueva` como acción principal" (la regla de enlazar a `/nueva` sigue vigente).
+**La invalidaría**: que el operador pida otro texto.
