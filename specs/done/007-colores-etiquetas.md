@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: [006]
 ---
 
@@ -60,3 +60,26 @@ Ninguno.
 | Fuera | Se reactiva si |
 |---|---|
 | Usar los colores de estado en la app (`/nueva`, `/j/…`) | Aparece un estado que mostrar ahí (p. ej. juntada abierta/cerrada con color) |
+
+## Evidencia
+
+Evals: `evals/run.sh` → 42 pasan · 0 fallan (`007·C1`–`007·C3` nuevos; 001–006 intactos). C2: `tests/e2e/etiquetas-colores.spec.ts`. C3: `scripts/contrast-check.mjs`.
+
+Variables nuevas en el `:root` de `src/styles/global.css`: `--status-ok-bg`, `--status-ok-text`, `--status-soon-bg`, `--status-soon-text`.
+
+### C3 — ratios WCAG
+
+| Etiqueta | Texto sobre fondo | Ratio |
+|---|---|---|
+| Disponible | `#14532d` sobre `#bbf7d0` | 7.52:1 |
+| Próximamente | `#713f12` sobre `#fef08a` | 7.45:1 |
+
+### C4 — rúbrica
+
+Capturas de `#solucion` (scratchpad de la sesión, fuera del repo): `spec007/solucion-375.png` y `spec007/solucion-1280.png`.
+
+| Ítem | Resultado | Evidencia |
+|---|---|---|
+| Se distinguen por color | Pasa | Verde para "Disponible", amarillo para las tres "Próximamente", a 375 y 1280 px |
+| Se leen bien | Pasa | Texto oscuro sobre fondo claro, ratios arriba |
+| No rompen el layout | Pasa | Mismo tamaño y posición bajo el `h3`; sin saltos de línea ni desborde |
