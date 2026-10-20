@@ -348,11 +348,55 @@ s5_c5_readme_query() {
 # 005·C6 es una rúbrica sobre capturas a 375 y 1280 px; no corre acá.
 # Evidencia de 005·C6: specs/done/005-landing-enlaza-v1.md.
 
+# --- Spec 006: la landing marca qué está disponible y qué viene después ----------------------------
+
+# Los paneles de #solucion, uno por línea (HTML construido aplanado).
+s6_panels() {
+  tr '\n' ' ' < "$BUILT" 2>/dev/null | grep -oE '<section id="solucion".*' | sed 's#</section>.*##' | sed 's#<div class="panel">#\n<div class="panel">#g' | grep '^<div class="panel">'
+}
+
+s6_c1_labels() {
+  local miss="" p sec
+  p=$(s6_panels)
+  [ "$(printf '%s\n' "$p" | wc -l)" = "4" ] || miss="$miss paneles!=4"
+  printf '%s\n' "$p" | grep 'Cierra solo' | grep -qE 'class="tag[^"]*"[^>]*>Disponible<' || miss="$miss cierra-solo"
+  [ "$(printf '%s\n' "$p" | grep 'Cierra solo' | grep -o 'Disponible' | wc -l)" = "1" ] || miss="$miss cierra-solo-no-exactamente-1"
+  for t in 'Insiste por vos' 'Se repite' 'Con premios'; do
+    printf '%s\n' "$p" | grep "$t" | grep -qE 'class="tag[^"]*"[^>]*>Próximamente<' || miss="$miss [$t]"
+  done
+  sec=$(tr '\n' ' ' < "$BUILT" | grep -oE '<section id="solucion".*' | sed 's#</section>.*##')
+  [ "$(printf '%s' "$sec" | grep -oE 'class="tag[^"]*"[^>]*>Disponible<' | wc -l)" = "1" ] || miss="$miss total-Disponible!=1"
+  [ "$(printf '%s' "$sec" | grep -oE 'class="tag[^"]*"[^>]*>Próximamente<' | wc -l)" = "3" ] || miss="$miss total-Próximamente!=3"
+  if [ -z "$miss" ]; then ok "006·C1 1 Disponible (Cierra solo) y 3 Próximamente (Insiste por vos, Se repite, Con premios)"; else ko "006·C1:$miss"; fi
+}
+
+s6_c2_whatsapp() {
+  if s6_panels | grep 'Cierra solo' | grep -q 'WhatsApp'; then ok "006·C2 el panel Cierra solo menciona WhatsApp"; else ko "006·C2 falta WhatsApp en Cierra solo"; fi
+}
+
+s6_c3_note() {
+  local miss="" sec
+  sec=$(tr '\n' ' ' < "$BUILT" 2>/dev/null | grep -oE '<section id="solucion".*' | sed 's#</section>.*##')
+  printf '%s' "$sec" | grep -q 'Próximamente llega en las próximas versiones' || miss="$miss linea"
+  printf '%s' "$sec" | grep -q 'href="#form-leads"' || miss="$miss href"
+  if [ -z "$miss" ]; then ok "006·C3 la línea de abajo lleva a #form-leads"; else ko "006·C3:$miss"; fi
+}
+
+s6_c4_mobile() {
+  local out
+  if out=$(npx playwright test tests/e2e/etiquetas.spec.ts tests/e2e/hero-clipping.spec.ts 2>&1); then ok "006·C4 375 px sin scroll horizontal, 4 etiquetas visibles; sprites del header intactos"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "006·C4 Playwright"; ev "$(printf '%s' "$out" | tail -10)"; fi
+}
+
+# 006·C5 es una rúbrica sobre capturas a 375 y 1280 px de #solucion; no corre acá.
+# Evidencia de 006·C5: specs/done/006-landing-disponible-proximamente.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
 s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_readme
 s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
+s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

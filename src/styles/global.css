@@ -94,6 +94,13 @@ section { padding: 3.5rem 1rem; }
 .promises { display: grid; gap: 1rem; grid-template-columns: 1fr; }
 @media (min-width: 40rem) { .promises { grid-template-columns: 1fr 1fr; } }
 .promises p { margin: 0; color: var(--text); }
+.panel-head { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem; }
+.panel-head h3 { margin: 0; }
+.tag { font-family: var(--pixel); font-size: 0.55rem; line-height: 1; padding: 0.35rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+.tag-ok { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
+.tag-soon { background: transparent; color: var(--text); border: 1px solid var(--border-input); }
+.promises-note { margin: 1rem 0 0; color: var(--text); }
+.promises-note a { color: var(--accent); }
 
 .lead-form { display: grid; gap: 0.5rem; }
 .lead-form label { font-size: 0.7rem; color: var(--accent); margin-top: 0.5rem; }
