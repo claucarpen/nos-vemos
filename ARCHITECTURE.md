@@ -14,7 +14,7 @@
 
 | Ruta | Qué es |
 |---|---|
-| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` con el botón "Creá tu juntada" → `/nueva`, y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion`, `#form-leads` ("¿Todavía no?", la segunda opción), aviso de privacidad |
+| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` con el botón "Creá tu juntada" → `/nueva`, y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion` (cuatro `.panel` con etiqueta `.tag-ok` "Disponible" o `.tag-soon` "Próximamente" bajo el `h3`, y la línea `.promises-note` que enlaza a `#form-leads`), `#form-leads` ("¿Todavía no?", la segunda opción), aviso de privacidad |
 | `src/components/LeadForm.tsx` | Isla React: formulario, honeypot `empresa`, `utm_source` leído de la URL |
 | `src/actions/index.ts` | Action `saveLead`: arma el cliente de Supabase y llama a `processLead` |
 | `src/lib/leads.ts` | Lógica pura (validación, honeypot, `fuente`, duplicados) con cliente inyectable |
@@ -38,7 +38,7 @@
 | `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
 | `public/favicon.png`, `public/favicon.ico` | Favicon: la mascota ×2 por vecino más cercano (32×32); el `.ico` envuelve ese mismo PNG. Se regeneran con `node scripts/make-favicon.mjs`; `index.astro` declara `<link rel="icon" href="/favicon.png">` |
 | `public/fonts/` | Press Start 2P (OFL) y su licencia |
-| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px) |
+| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px) |
 
 ## Escenario del hero
 

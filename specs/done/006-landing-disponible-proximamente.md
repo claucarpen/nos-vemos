@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: [001, 005]
 ---
 
@@ -69,3 +69,20 @@ Ninguno.
 |---|---|
 | Fechas estimadas para cada "Próximamente" | Hay un plan de la v2 con fecha |
 | Etiquetas en `/nueva` | Algún usuario de prueba pregunta por recordatorios dentro de la app |
+
+## Evidencia
+
+Evals: `evals/run.sh` → 39 pasan · 0 fallan (`006·C1`–`006·C4` nuevos; 001–005 intactos).
+
+Capturas de `#solucion` (generadas fuera del repo, en el scratchpad de la sesión): `solucion-375.png` y `solucion-1280.png`.
+
+### C5 — rúbrica
+
+| # | Ítem | Resultado | Evidencia |
+|---|---|---|---|
+| 1 | Se distingue qué funciona hoy | Pasa | "Disponible" es una píldora lavanda llena con texto oscuro; las otras tres son solo borde. Es lo único relleno de los cuatro paneles, a 375 y 1280 px |
+| 2 | "Próximamente" no parece error ni botón deshabilitado | Pasa | Sin relleno, sin opacidad reducida, texto `--text` igual que el cuerpo; el texto del panel conserva su color. La etiqueta no tiene cursor ni hover |
+| 3 | Contraste AA de ambas etiquetas | Pasa | "Disponible": `#1e1b3a` sobre `#c4b5fd` = 8.94:1. "Próximamente": `#cbd5e0` sobre el panel `#2c2950` = 9.18:1. Borde de "Próximamente" `#8b84b8` sobre el panel = 3.95:1 (supera 3:1 de componentes no textuales) |
+| 4 | Misma paleta y tipografías | Pasa | Solo variables existentes (`--accent`, `--bg`, `--text`, `--border-input`) y `--pixel` (Press Start 2P) en la etiqueta |
+
+Decisión de diseño tomada al mirar las capturas: la etiqueta va debajo del `h3` en los cuatro paneles. En fila con el título, "Insiste por vos" más "Próximamente" no entraba a 375 px ni a 1280 px y la etiqueta saltaba de línea solo en ese panel.

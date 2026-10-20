@@ -178,3 +178,9 @@
 **Por qué**: el tagline justo arriba ya dice "Press Start para la próxima juntada"; repetir la frase sobraba. Lo decidió el operador.
 **Reemplaza a**: el texto "Press Start: creá tu juntada" de la decisión "La landing enlaza a `/nueva` como acción principal" (la regla de enlazar a `/nueva` sigue vigente).
 **La invalidaría**: que el operador pida otro texto.
+
+## 2026-10-19 · [landing] Cada promesa de `#solucion` lleva etiqueta "Disponible" o "Próximamente", debajo del título
+
+**Qué se decide**: los cuatro paneles de `#solucion` muestran una etiqueta bajo el `h3`: "Cierra solo" es "Disponible" (relleno lavanda, texto oscuro); las otras tres, "Próximamente" (solo borde, texto `--text`). Una línea debajo enlaza a `#form-leads`. Evals `006·C1`–`006·C4`.
+**Por qué**: quien crea su primera juntada no debe esperar recordatorios, recurrencia ni premios que todavía no existen. La etiqueta va bajo el título porque en fila no entraba a 375 px sin saltar de línea solo en un panel.
+**La invalidaría**: que una segunda promesa pase a estar disponible y la etiqueta deba cambiar de estado, o que el ancho de los paneles permita ponerla en fila.
