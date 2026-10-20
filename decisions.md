@@ -184,3 +184,10 @@
 **Qué se decide**: los cuatro paneles de `#solucion` muestran una etiqueta bajo el `h3`: "Cierra solo" es "Disponible" (relleno lavanda, texto oscuro); las otras tres, "Próximamente" (solo borde, texto `--text`). Una línea debajo enlaza a `#form-leads`. Evals `006·C1`–`006·C4`.
 **Por qué**: quien crea su primera juntada no debe esperar recordatorios, recurrencia ni premios que todavía no existen. La etiqueta va bajo el título porque en fila no entraba a 375 px sin saltar de línea solo en un panel.
 **La invalidaría**: que una segunda promesa pase a estar disponible y la etiqueta deba cambiar de estado, o que el ancho de los paneles permita ponerla en fila.
+
+## 2026-10-19 · [landing] Las etiquetas de `#solucion` usan colores de estado fuera de la paleta: verde "Disponible", amarillo "Próximamente"
+
+**Qué se decide**: `.tag-ok` usa `--status-ok-bg` `#bbf7d0` y `--status-ok-text` `#14532d`; `.tag-soon` usa `--status-soon-bg` `#fef08a` y `--status-soon-text` `#713f12`; el borde repite el fondo. Evals `007·C1`–`007·C3`.
+**Por qué**: el color comunica estado (listo / en camino) más rápido que el relleno lavanda. Lo decidió el operador; ambos pares pasan AA (7.52:1 y 7.45:1).
+**Reemplaza a**: el estilo de las etiquetas (lavanda lleno / solo borde) de la decisión "Cada promesa de `#solucion` lleva etiqueta" (textos y posición siguen vigentes).
+**La invalidaría**: que la app (`/nueva`, `/j/…`) muestre estados con color y haga falta unificarlos en la paleta.

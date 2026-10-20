@@ -391,12 +391,44 @@ s6_c4_mobile() {
 # 006·C5 es una rúbrica sobre capturas a 375 y 1280 px de #solucion; no corre acá.
 # Evidencia de 006·C5: specs/done/006-landing-disponible-proximamente.md.
 
+# --- Spec 007: colores de estado en las etiquetas ----------------------------------------------
+
+CSS=src/styles/global.css
+
+s7_c1_colors() {
+  local miss="" v
+  for v in '#bbf7d0' '#14532d' '#fef08a' '#713f12'; do
+    sed -n '/^:root {/,/^}/p' "$CSS" | grep -qE "^ *--[a-z-]+: $v;" || miss="$miss $v-no-es-variable-del-root"
+  done
+  grep -E '^\.tag-ok ' "$CSS" | grep -q 'background: var(--status-ok-bg)' || miss="$miss tag-ok-background"
+  grep -E '^\.tag-ok ' "$CSS" | grep -q 'color: var(--status-ok-text)' || miss="$miss tag-ok-color"
+  grep -E '^\.tag-soon ' "$CSS" | grep -q 'background: var(--status-soon-bg)' || miss="$miss tag-soon-background"
+  grep -E '^\.tag-soon ' "$CSS" | grep -q 'color: var(--status-soon-text)' || miss="$miss tag-soon-color"
+  if [ -z "$miss" ]; then ok "007·C1 los cuatro colores son variables del :root y .tag-ok/.tag-soon las usan"; else ko "007·C1:$miss"; fi
+}
+
+s7_c2_computed() {
+  local out
+  if out=$(npx playwright test tests/e2e/etiquetas-colores.spec.ts 2>&1); then ok "007·C2 colores computados de las etiquetas en la página"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "007·C2 Playwright"; ev "$(printf '%s' "$out" | tail -10)"; fi
+}
+
+s7_c3_contrast() {
+  local out
+  if out=$(node scripts/contrast-check.mjs 2>&1); then ok "007·C3 contraste AA (>= 4.5) de ambos pares"; ev "$(printf '%s' "$out" | tr '\n' ' ')"
+  else ko "007·C3 contraste"; ev "$(printf '%s' "$out" | tail -5)"; fi
+}
+
+# 007·C4 es una rúbrica sobre capturas a 375 y 1280 px de #solucion; no corre acá.
+# Evidencia de 007·C4: specs/done/007-colores-etiquetas.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
 s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_readme
 s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
 s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
+s7_c1_colors; s7_c2_computed; s7_c3_contrast
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

@@ -18,6 +18,11 @@
   --muted: #a0aec0;
   --tagline: #f6b8c8;
   --accent: #c4b5fd;
+  /* Colores de estado de las etiquetas de #solucion (fuera de la paleta a propósito) */
+  --status-ok-bg: #bbf7d0;
+  --status-ok-text: #14532d;
+  --status-soon-bg: #fef08a;
+  --status-soon-text: #713f12;
   --pixel: 'Press Start 2P', 'Courier New', monospace;
   --body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
@@ -97,8 +102,8 @@ section { padding: 3.5rem 1rem; }
 .panel-head { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem; }
 .panel-head h3 { margin: 0; }
 .tag { font-family: var(--pixel); font-size: 0.55rem; line-height: 1; padding: 0.35rem 0.5rem; border-radius: 4px; white-space: nowrap; }
-.tag-ok { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
-.tag-soon { background: transparent; color: var(--text); border: 1px solid var(--border-input); }
+.tag-ok { background: var(--status-ok-bg); color: var(--status-ok-text); border: 1px solid var(--status-ok-bg); }
+.tag-soon { background: var(--status-soon-bg); color: var(--status-soon-text); border: 1px solid var(--status-soon-bg); }
 .promises-note { margin: 1rem 0 0; color: var(--text); }
 .promises-note a { color: var(--accent); }
 
