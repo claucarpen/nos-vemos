@@ -38,7 +38,7 @@
 | `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`, y los amigos `friend-p2`, `friend-p3`, `friend-p4` = tiles 99, 100 y 85) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
 | `public/favicon.png`, `public/favicon.ico` | Favicon: la mascota ×2 por vecino más cercano (32×32); el `.ico` envuelve ese mismo PNG. Se regeneran con `node scripts/make-favicon.mjs`; `index.astro` declara `<link rel="icon" href="/favicon.png">` |
 | `public/fonts/` | Press Start 2P (OFL) y su licencia |
-| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px), `etiquetas-colores.spec.ts` (colores computados de las etiquetas), `hero-animacion.spec.ts` (animación del header: C1 a C4 de la spec 008). `scripts/check-keyframes.mjs`: los `@keyframes` del CSS construido solo animan `transform` y `opacity` |
+| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px), `etiquetas-colores.spec.ts` (colores computados de las etiquetas), `hero-animacion.spec.ts` (animación del header: C1 a C4 y C6b de la spec 008). `scripts/check-keyframes.mjs`: los `@keyframes` del CSS construido solo animan `transform` y `opacity` |
 
 ## Escenario del hero
 
@@ -48,18 +48,26 @@ Cada sprite de `.world` se ubica con `--x` (unidades de tile desde el centro) y 
 
 Loop de 12 s, solo CSS (`@keyframes` en `src/styles/global.css`), solo `transform` y `opacity`. Todo lo animado es decorativo y vive dentro de `aria-hidden="true"`.
 
+Amigos por ancho de viewport (tramo `700px`):
+
+| Ancho | Amigos | Llegadas | Posición final `--x` |
+|---|---|---|---|
+| menos de 700 px | 2: `.fr1` (P2, desde la izquierda), `.fr2` (P3, desde la derecha); `.fr3` con `display: none` | 3 s y 6 s (`walk1s`, `walk2s`, caminata de 2,9 s) | `.fr1` 2.25 (a la derecha de la poción), `.fr2` -2.75 (a la izquierda del cofre) |
+| 700 px o más | 3: `.fr1`, `.fr2` y `.fr3` (P4, desde la izquierda) | 2 s, 4 s y 6 s (`walk1`..`walk3`, caminata de 1,9 s) | `.fr1` -3.75, `.fr2` -2.75, `.fr3` 2.25 |
+
 | Tiempo | Qué pasa |
 |---|---|
-| 0 a 2 s, 2 a 4 s, 4 a 6 s | Llegan `.fr1` (izquierda, `friend-p2`), `.fr2` (derecha, `friend-p3`) y `.fr3` (derecha, `friend-p4`): `walkN` mueve el contenedor con `steps(10)`, `hopN` sube la imagen 1 px de sprite cada 0,2 s |
+| 0 a 6 s | Llegan los amigos de a uno: `walkN` mueve el contenedor con `steps()` de 0,1 s, `hopN` sube la imagen 1 px de sprite cada 0,2 s |
 | Llegada de cada uno | Cartel `.pn` ("P2", "P3", "P4") 1 s (`tagN`) |
-| 6 a 8 s | Cartel `.clear` "LEVEL CLEAR" y destello `.flash` (6 a 6,8 s) |
+| 6 a 8 s | Cartel `.clear` "LEVEL CLEAR" y destello `.flash` (6 a 6,8 s), con el último amigo |
 | 9 a 11 s | Los amigos se desvanecen; 11 a 12 s vacío |
 
 Siempre: `.star` (8, titilan con `twinkle`, desfasadas con `--sl`), `.firefly` (5, `drift` + `glow`), `.tree` (copas de pino, `sway` ±1 px), `.mascot` (`breathe`, 1 px por segundo).
 
-- Punto de partida de los amigos: `--sl` (izquierda) y `--sr` (derecha), en tiles desde el centro, por tramo de ancho en `.world` (`global.css`). Cada valor es el más lejano que sigue dentro del viewport en el ancho mínimo del tramo; al cambiar un tramo o la posición final `--x` de un amigo, `hero-clipping.spec.ts` (C6) lo verifica.
-- Los amigos se posicionan con `.fr` (`--x`, `--y`), no con `.sp`; los elementos no-imagen (`.pn`, `.clear`, `.flash`, `.firefly`) no usan clases `wN`: están dentro de ±2,5 tiles del centro.
-- `prefers-reduced-motion: reduce`: `animation: none` en todo el hero; queda la escena final (3 amigos junto a la mascota, carteles en `opacity: 0`).
+- Las posiciones finales no se superponen con la mascota (-0.5), el cofre (-1.7), la poción (1.2) ni entre sí. Al mover un prop o un amigo: `C6b` en `hero-animacion.spec.ts` lo verifica.
+- Cada amigo mostrado camina al menos 1,5 tiles en todos los anchos (`C6b`). Punto de partida: `--sl` (izquierda) y `--sr` (derecha), en tiles desde el centro, por tramo de ancho en `.world`; cada valor es el más lejano que sigue dentro del viewport en el ancho mínimo del tramo. El tramo `700px` existe porque a 640 px (`--u: 64px`) el primer amigo de 3 caminaría menos de 1,5 tiles. Un amigo puede cruzar el camino por delante de los props mientras camina.
+- Los amigos se posicionan con `.fr` (`--x`, `--y` desde CSS), no con `.sp`; los elementos no-imagen (`.pn`, `.clear`, `.flash`, `.firefly`) no usan clases `wN`: están dentro de ±2,5 tiles del centro. `hero-clipping.spec.ts` (C6) verifica que ninguno quede cortado en 6 instantes.
+- `prefers-reduced-motion: reduce`: `animation: none` en todo el hero; queda la escena final (2 o 3 amigos según el tramo, carteles en `opacity: 0`).
 - Un `<script>` de `index.astro` observa `.hero` con `IntersectionObserver` y alterna la clase `is-offscreen`; `global.css` la traduce en `animation-play-state: paused`.
 
 ## Base de la v1

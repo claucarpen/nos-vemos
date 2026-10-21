@@ -100,20 +100,22 @@ Ninguno.
 
 ## Evidencia
 
-Evals: `evals/run.sh` → 49 pasan · 0 fallan (`008·C1`–`008·C7` nuevos; 001–007 intactos; `C15` pasa de 28 a 31 sprites). C1 a C4: `tests/e2e/hero-animacion.spec.ts`. C5: `scripts/check-keyframes.mjs` (32 `@keyframes`). C6: `tests/e2e/hero-clipping.spec.ts` (pausa todas las animaciones y fija `currentTime` en 0,5; 2,2; 4,2; 6,2; 8 y 10,5 s); mutación comprobada: con `--sl: -6` a 320 px falla. C7: compara con `git show main:package.json`.
+Evals: `evals/run.sh` → 50 pasan · 0 fallan (`008·C1`–`008·C7` y `008·C6b`; 001–007 intactos; `C15` pasa de 28 a 31 sprites). C1 a C4 y C6b: `tests/e2e/hero-animacion.spec.ts`. C5: `scripts/check-keyframes.mjs`. C6: `tests/e2e/hero-clipping.spec.ts` (pausa todas las animaciones y fija `currentTime` en 0,5; 2,2; 4,2; 6,2; 8 y 10,5 s). Mutaciones comprobadas: `--sl: -6` a 320 px rompe C6; `--x` del primer amigo en -1.9 a 700 px rompe C2 y C6b. C7: compara con `git show main:package.json`.
+
+Cambio posterior a la revisión del operador (ver `decisions.md`, "posiciones finales sin superposición y 2 amigos en pantallas chicas"): finales sin superposición; bajo 700 px, 2 amigos; cada amigo camina al menos 1,5 tiles. `C1` afirma 3 amigos a 1280 y 700 px y 2 a 375 y 699 px; `C2` lo afirma en reduced motion a 320, 375, 699, 700 y 1280 px; `C6b` mide, a 320, 375, 640, 699, 700, 880, 1280 y 1920 px, que en el instante de LEVEL CLEAR ninguna caja de mascota, cofre, poción o amigo visible se superpone y que cada amigo camina al menos 1,5 tiles.
 
 Personajes: tiles 99 (`friend-p2`), 100 (`friend-p3`) y 85 (`friend-p4`) de Tiny Dungeon (descargado de kenney.nl; la mascota es el tile 98). Hoja de candidatos: `spec008/candidatos.png`.
 
 ### C8 — rúbrica
 
-Archivos (scratchpad de la sesión, fuera del repo): `spec008/video-1280/*.webm`, `spec008/video-375/*.webm`, capturas `spec008/shot-1280-{1,4,6_5,10}s.png`, `spec008/shot-375-{1,4,6_5,10}s.png` (hoja: `spec008/sheet-375.png`) y `spec008/shot-1280-reduced.png`.
+Archivos (scratchpad de la sesión, fuera del repo): `spec008/video-1280/*.webm`, `spec008/video-375/*.webm`, capturas `spec008/shot-1280-{1,4,6_5,10}s.png`, `spec008/shot-375-{1,4,6_5,10}s.png`, `spec008/shot-320-6_5s.png`, `spec008/shot-1280-reduced.png` y las hojas `spec008/sheet-1280.png` y `spec008/sheet-375.png`.
 
 | Ítem | Resultado | Evidencia |
 |---|---|---|
-| 1. Se lee "llegan amigos → se juntan → LEVEL CLEAR" | Pasa | 1 s: la primera amiga camina hacia la mascota; 4 s: dos amigos junto a ella, cartel "P3", el tercero viene por la derecha; 6,5 s: los tres juntos, "P4" y "LEVEL CLEAR" sobre el grupo; 10 s: se desvanecen |
-| 2. Movimiento pixel nítido | Pasa | Sprites con `image-rendering: pixelated`, avance con `steps()`, saltitos de 1 px de sprite; las capturas no muestran bordes borrosos (solo el desvanecimiento de opacidad, 9 a 11 s) |
-| 3. "Creá tu juntada" sigue siendo lo más claro | Pasa | Es el único bloque lavanda claro del header y no se anima; lo animado está debajo, en el escenario |
-| 4. Nada parpadea más de 3 veces por segundo | Pasa | Estrellas: 2 cambios de opacidad cada 2,7 a 4,3 s; luciérnagas: 2 cada 3,3 a 4,5 s; carteles y destello: una vez por loop (destello: 5 pasos en 0,8 s) |
-| 5. En celular se entiende igual | Pasa con matiz | A 375 px se ven los tres amigos, "P3", "P4" y "LEVEL CLEAR" enteros. El recorrido es corto (el viewport limita el punto de partida): el último amigo casi aparece parado (ver `decisions.md`) |
+| 1. Se lee "llegan amigos → se juntan → LEVEL CLEAR" | Pasa | 1280 px: 1 s llega la primera amiga; 4 s dos amigos a la izquierda del cofre y "P3"; 6,5 s los tres alrededor de la mascota (dos a la izquierda del cofre, uno a la derecha de la poción), "P4" y "LEVEL CLEAR"; 10 s se desvanecen. 375 px: 2 amigos que cruzan el camino, "P3" a los 3 s y "LEVEL CLEAR" a los 6,5 s con los dos amigos a los lados |
+| 2. Movimiento pixel nítido | Pasa | `image-rendering: pixelated`, avance con `steps()` de 0,1 s, saltitos de 1 px de sprite; sin bordes borrosos en las capturas (solo el desvanecimiento de opacidad, 9 a 11 s) |
+| 3. "Creá tu juntada" sigue siendo lo más claro | Pasa | Es el único bloque lavanda claro del header y no se anima; lo animado está debajo |
+| 4. Nada parpadea más de 3 veces por segundo | Pasa | Estrellas: 2 cambios de opacidad cada 2,7 a 4,3 s; luciérnagas: 2 cada 3,3 a 4,5 s; carteles y destello: una vez por loop |
+| 5. En celular se entiende igual | Pasa | 375 y 320 px: los dos amigos, "P3" y "LEVEL CLEAR" se ven enteros, sin pisar el cofre ni la poción; cada amigo recorre al menos 1,5 tiles (C6b) |
 
-Con `prefers-reduced-motion: reduce` (`shot-1280-reduced.png`): los tres amigos junto a la mascota, sin carteles ni destello.
+Con `prefers-reduced-motion: reduce` (`shot-1280-reduced.png`): los tres amigos en su sitio, sin carteles ni destello; a menos de 700 px, dos.

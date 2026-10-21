@@ -198,8 +198,9 @@
 **Por qué**: la animación cuenta la historia del producto (llegan los amigos, se completa el quórum). Descartados Canvas 2D y Three.js/WebGPU por peso y mantenimiento desproporcionados para una escena pixel 2D (decisión de Claudio, 2026-10-20). Los tiles se eligieron entre los humanos de Tiny Dungeon, distintos de la mascota (tile 98) y entre sí en pelo y ropa: mujer de pelo largo con vestido lila, anciano de pelo gris, joven de pelo castaño con remera gris.
 **La invalidaría**: que la animación sume peso o jank medible en celulares de gama baja, o que haga falta interacción o ciclos de caminata con varios frames (ver "Fuera de alcance" de la spec 008).
 
-## 2026-10-20 · [landing] Los amigos parten del borde visible de cada tramo de ancho, no de fuera de pantalla
+## 2026-10-20 · [landing] Posiciones finales sin superposición y 2 amigos en pantallas chicas, por decisión del operador
 
-**Qué se decide**: `--sl` y `--sr` (en `.world`) fijan el punto de partida de la caminata por tramo de ancho; el camino de entrada nunca sale del viewport. Los tramos son 320, 440, 560, 640, 800 y 1000 px; desde 1000 px el recorrido no crece más. Eval `008·C6`.
-**Por qué**: la regla "ningún sprite cortado en ningún fotograma" de la spec 008 impide entrar desde fuera de pantalla. A 320 px el recorrido del último amigo es de 0,1 tile: en celular llega casi parado y la historia se entiende por los carteles y el LEVEL CLEAR.
-**La invalidaría**: que se acepte entrar desde fuera de pantalla (con `overflow: hidden` ya presente en `.hero`), lo que permitiría caminos largos en todos los anchos.
+**Qué se decide**: las posiciones finales de los amigos no se superponen con la mascota, el cofre, la poción ni entre sí. Desde 700 px: 3 amigos (`--x` -3.75, -2.75 y 2.25). Bajo 700 px: 2 amigos (P2 en 2.25, P3 en -2.75), que llegan a los 3 s y 6 s, y LEVEL CLEAR sigue a los 6 s, tras el segundo. Todo amigo mostrado camina al menos 1,5 tiles en cada ancho. Evals `008·C1`, `008·C2`, `008·C6`, `008·C6b`.
+**Por qué**: el grupo se leía como una pila confusa y, a 320 px, el tercer amigo caminaba 0,1 tile. Con 2 amigos que cruzan el camino de lado a lado, el recorrido es largo en celular. El tramo es 700 px y no 640 porque a 640 px (`--u: 64px`) el primer amigo de 3 caminaría menos de 1,5 tiles.
+**Reemplaza a**: la decisión "Los amigos parten del borde visible de cada tramo de ancho, no de fuera de pantalla" en lo que fija las posiciones finales y la cantidad de amigos; los puntos de partida `--sl` y `--sr` por tramo siguen vigentes (con un tramo nuevo en 700 px).
+**La invalidaría**: que se reubiquen la mascota, el cofre o la poción, o que se acepte entrar desde fuera de pantalla.

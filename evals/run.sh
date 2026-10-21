@@ -429,8 +429,8 @@ s8_pw() { # $1 id, $2 archivo, $3 filtro, $4 texto
   if out=$(npx playwright test "$2" -g "$3" 2>&1); then ok "008·$1 $4"; ev "$(printf '%s' "$out" | grep -E 'passed')"
   else ko "008·$1 Playwright"; ev "$(printf '%s' "$out" | tail -12)"; fi
 }
-s8_c1() { s8_pw C1 tests/e2e/hero-animacion.spec.ts 'C1:' "al menos 8 elementos animados, 3 amigos nuevos y LEVEL CLEAR con aria-hidden"; }
-s8_c2() { s8_pw C2 tests/e2e/hero-animacion.spec.ts 'C2:' "reducir movimiento: sin animación, 3 amigos visibles, sin cartel"; }
+s8_c1() { s8_pw C1 tests/e2e/hero-animacion.spec.ts 'C1:' "al menos 8 elementos animados, 3 amigos (2 visibles bajo 700 px) y LEVEL CLEAR con aria-hidden"; }
+s8_c2() { s8_pw C2 tests/e2e/hero-animacion.spec.ts 'C2:' "reducir movimiento: sin animación, 2 amigos bajo 700 px y 3 desde 700, sin superposición, sin cartel"; }
 s8_c3() { s8_pw C3 tests/e2e/hero-animacion.spec.ts 'C3:' "running a la vista, paused fuera de la vista"; }
 s8_c4() { s8_pw C4 tests/e2e/hero-animacion.spec.ts 'C4:' "CLS <= 0.01 durante 13 s"; }
 s8_c5() {
@@ -439,6 +439,7 @@ s8_c5() {
   else ko "008·C5 keyframes"; ev "$out"; fi
 }
 s8_c6() { s8_pw C6 tests/e2e/hero-clipping.spec.ts 'C6:' "nada cortado en 6 instantes del loop a 320, 375, 640, 880, 1280 y 1920 px"; }
+s8_c6b() { s8_pw C6b tests/e2e/hero-animacion.spec.ts 'C6b:' "sin superposición en LEVEL CLEAR y cada amigo camina >= 1,5 tiles (2 amigos bajo 700 px, 3 desde 700)"; }
 s8_c7() {
   local out
   if out=$(node -e '
@@ -460,7 +461,7 @@ s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_rea
 s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
 s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
 s7_c1_colors; s7_c2_computed; s7_c3_contrast
-s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c7
+s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c6b; s8_c7
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

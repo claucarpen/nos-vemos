@@ -68,7 +68,7 @@ test('C6: nada cortado en ningún instante del loop, de 320 a 1920 px', async ({
           let op = 1;
           for (let n: HTMLElement | null = el; n && !n.classList.contains('world'); n = n.parentElement) op *= parseFloat(getComputedStyle(n).opacity);
           const cs = getComputedStyle(el);
-          if (cs.display === 'none' || cs.visibility === 'hidden' || op <= 0) continue;
+          if (el.getClientRects().length === 0 || cs.visibility === 'hidden' || op <= 0) continue;
           const r = el.getBoundingClientRect();
           if (r.left < 0 || r.right > (w as number)) out.push(`${el.getAttribute('src') ?? el.className} (left ${r.left.toFixed(1)}, right ${r.right.toFixed(1)})`);
         }

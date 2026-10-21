@@ -94,16 +94,26 @@ section { padding: 3.5rem 1rem; }
 @media (min-width: 440px) { .world { --sl: -4.3; --sr: 3.3; } }
 @media (min-width: 560px) { .world { --sl: -5.6; --sr: 4.6; } }
 @media (min-width: 640px) { .world { --sl: -4.8; --sr: 3.8; } }
+@media (min-width: 700px) { .world { --sl: -5.3; --sr: 4.3; } }
 @media (min-width: 800px) { .world { --sl: -6.1; --sr: 5.1; } }
 @media (min-width: 1000px) { .world { --sl: -7.6; --sr: 6.6; } }
 .fr { position: absolute; width: var(--u); height: var(--u); left: calc(50% + var(--x) * var(--u)); top: calc(var(--y) * var(--u)); animation: var(--walk) 12s steps(1, end) infinite; }
 .fr img { display: block; width: 100%; height: 100%; image-rendering: pixelated; animation: var(--hop) 12s steps(1, end) infinite; }
-.fr1 { --sx: var(--sl); --walk: walk1; --hop: hop1; }
-.fr2 { --sx: var(--sr); --walk: walk2; --hop: hop2; }
-.fr3 { --sx: var(--sr); --walk: walk3; --hop: hop3; }
+/* Posiciones finales (--x): hasta 699 px, 2 amigos (P2 a la derecha de la poción, P3 a la izquierda del cofre) que cruzan
+   el camino en 3 s cada uno; desde 700 px, 3 amigos (P2 y P4 a la izquierda del cofre y a la derecha de la poción, P3 entre
+   el cofre y el borde). Ninguno pisa a la mascota, el cofre, la poción ni a otro amigo. */
+.fr1 { --sx: var(--sl); --x: 2.25; --y: 2.5; --walk: walk1s; --hop: hop1s; }
+.fr2 { --sx: var(--sr); --x: -2.75; --y: 2.5; --walk: walk2s; --hop: hop2s; }
+.fr3 { --sx: var(--sl); --x: 2.25; --y: 2.5; --walk: walk3; --hop: hop3; display: none; }
+@media (min-width: 700px) {
+  .fr1 { --x: -3.75; --walk: walk1; --hop: hop1; }
+  .fr2 { --walk: walk2; --hop: hop2; }
+  .fr3 { display: block; }
+}
+.fr1 .pn { --tag: tag1s; } .fr2 .pn { --tag: tag2s; } .fr3 .pn { --tag: tag3; }
+@media (min-width: 700px) { .fr1 .pn { --tag: tag1; } .fr2 .pn { --tag: tag2; } }
 .pn, .clear { position: absolute; left: 50%; transform: translateX(-50%); font-family: var(--pixel); white-space: nowrap; color: #2d2a5a; background: #fef08a; box-shadow: 0 0 0 2px #2d2a5a; opacity: 0; }
 .pn { bottom: 100%; font-size: 8px; line-height: 1; padding: 3px 4px; animation: var(--tag) 12s steps(1, end) infinite; }
-.fr1 .pn { --tag: tag1; } .fr2 .pn { --tag: tag2; } .fr3 .pn { --tag: tag3; }
 .clear { top: calc(var(--u) * 0.9); font-size: 10px; line-height: 1; padding: 5px 8px; animation: clear 12s steps(1, end) infinite; }
 @media (min-width: 640px) { .clear { font-size: 12px; } .pn { font-size: 10px; } }
 .flash { position: absolute; left: 50%; top: calc(var(--u) * 2); width: 6px; height: 6px; margin-left: -3px; background: #fff7c2; opacity: 0;
@@ -123,31 +133,49 @@ section { padding: 3.5rem 1rem; }
 @keyframes flash { 0%, 100% { opacity: 0; transform: scale(0.3) } 50% { opacity: 1; transform: scale(0.3) } 52% { transform: scale(0.7) } 53.5% { transform: scale(1.1) } 55% { transform: scale(1.5) } 56.5% { opacity: 0; transform: scale(1.5) } }
 @keyframes walk1 {
   0% { opacity: 0; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))) }
-  0.833% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(10, end) }
+  0.833% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(19, end) }
   16.667% { opacity: 1; transform: translateX(0) }
   75% { opacity: 1; transform: translateX(0); animation-timing-function: linear }
   91.667%, 100% { opacity: 0; transform: translateX(0) }
 }
-@keyframes hop1 { 0%, 16.667%, 100% { transform: translateY(0) } 0.833% { transform: translateY(calc(var(--u) / -16)) } 2.5% { transform: translateY(0) } 4.167% { transform: translateY(calc(var(--u) / -16)) } 5.833% { transform: translateY(0) } 7.5% { transform: translateY(calc(var(--u) / -16)) } 9.167% { transform: translateY(0) } 10.833% { transform: translateY(calc(var(--u) / -16)) } 12.5% { transform: translateY(0) } 14.167% { transform: translateY(calc(var(--u) / -16)) } 15.833% { transform: translateY(0) } }
+@keyframes hop1 { 0%, 16.667%, 100% { transform: translateY(0) } 0.833% { transform: translateY(calc(var(--u) / -16)) } 2.5% { transform: translateY(0) } 4.167% { transform: translateY(calc(var(--u) / -16)) } 5.833% { transform: translateY(0) } 7.5% { transform: translateY(calc(var(--u) / -16)) } 9.167% { transform: translateY(0) } 10.833% { transform: translateY(calc(var(--u) / -16)) } 12.5% { transform: translateY(0) } 14.167% { transform: translateY(calc(var(--u) / -16)) } }
 @keyframes tag1 { 0%, 25%, 100% { opacity: 0 } 16.667% { opacity: 1 } }
 @keyframes walk2 {
   0%, 16.667% { opacity: 0; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))) }
-  17.5% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(10, end) }
+  17.5% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(19, end) }
   33.333% { opacity: 1; transform: translateX(0) }
   75% { opacity: 1; transform: translateX(0); animation-timing-function: linear }
   91.667%, 100% { opacity: 0; transform: translateX(0) }
 }
-@keyframes hop2 { 0%, 33.333%, 100% { transform: translateY(0) } 17.5% { transform: translateY(calc(var(--u) / -16)) } 19.167% { transform: translateY(0) } 20.833% { transform: translateY(calc(var(--u) / -16)) } 22.5% { transform: translateY(0) } 24.167% { transform: translateY(calc(var(--u) / -16)) } 25.833% { transform: translateY(0) } 27.5% { transform: translateY(calc(var(--u) / -16)) } 29.167% { transform: translateY(0) } 30.833% { transform: translateY(calc(var(--u) / -16)) } 32.5% { transform: translateY(0) } }
+@keyframes hop2 { 0%, 33.333%, 100% { transform: translateY(0) } 17.5% { transform: translateY(calc(var(--u) / -16)) } 19.167% { transform: translateY(0) } 20.833% { transform: translateY(calc(var(--u) / -16)) } 22.5% { transform: translateY(0) } 24.167% { transform: translateY(calc(var(--u) / -16)) } 25.833% { transform: translateY(0) } 27.5% { transform: translateY(calc(var(--u) / -16)) } 29.167% { transform: translateY(0) } 30.833% { transform: translateY(calc(var(--u) / -16)) } }
 @keyframes tag2 { 0%, 41.667%, 100% { opacity: 0 } 33.333% { opacity: 1 } }
 @keyframes walk3 {
   0%, 33.333% { opacity: 0; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))) }
-  34.167% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(10, end) }
+  34.167% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(19, end) }
   50% { opacity: 1; transform: translateX(0) }
   75% { opacity: 1; transform: translateX(0); animation-timing-function: linear }
   91.667%, 100% { opacity: 0; transform: translateX(0) }
 }
-@keyframes hop3 { 0%, 50%, 100% { transform: translateY(0) } 34.167% { transform: translateY(calc(var(--u) / -16)) } 35.833% { transform: translateY(0) } 37.5% { transform: translateY(calc(var(--u) / -16)) } 39.167% { transform: translateY(0) } 40.833% { transform: translateY(calc(var(--u) / -16)) } 42.5% { transform: translateY(0) } 44.167% { transform: translateY(calc(var(--u) / -16)) } 45.833% { transform: translateY(0) } 47.5% { transform: translateY(calc(var(--u) / -16)) } 49.167% { transform: translateY(0) } }
+@keyframes hop3 { 0%, 50%, 100% { transform: translateY(0) } 34.167% { transform: translateY(calc(var(--u) / -16)) } 35.833% { transform: translateY(0) } 37.5% { transform: translateY(calc(var(--u) / -16)) } 39.167% { transform: translateY(0) } 40.833% { transform: translateY(calc(var(--u) / -16)) } 42.5% { transform: translateY(0) } 44.167% { transform: translateY(calc(var(--u) / -16)) } 45.833% { transform: translateY(0) } 47.5% { transform: translateY(calc(var(--u) / -16)) } }
 @keyframes tag3 { 0%, 58.333%, 100% { opacity: 0 } 50% { opacity: 1 } }
+@keyframes walk1s {
+  0% { opacity: 0; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))) }
+  0.833% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(29, end) }
+  25% { opacity: 1; transform: translateX(0) }
+  75% { opacity: 1; transform: translateX(0); animation-timing-function: linear }
+  91.667%, 100% { opacity: 0; transform: translateX(0) }
+}
+@keyframes hop1s { 0%, 25%, 100% { transform: translateY(0) } 0.833% { transform: translateY(calc(var(--u) / -16)) } 2.5% { transform: translateY(0) } 4.167% { transform: translateY(calc(var(--u) / -16)) } 5.833% { transform: translateY(0) } 7.5% { transform: translateY(calc(var(--u) / -16)) } 9.167% { transform: translateY(0) } 10.833% { transform: translateY(calc(var(--u) / -16)) } 12.5% { transform: translateY(0) } 14.167% { transform: translateY(calc(var(--u) / -16)) } 15.833% { transform: translateY(0) } 17.5% { transform: translateY(calc(var(--u) / -16)) } 19.167% { transform: translateY(0) } 20.833% { transform: translateY(calc(var(--u) / -16)) } 22.5% { transform: translateY(0) } }
+@keyframes tag1s { 0%, 33.333%, 100% { opacity: 0 } 25% { opacity: 1 } }
+@keyframes walk2s {
+  0%, 25% { opacity: 0; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))) }
+  25.833% { opacity: 1; transform: translateX(calc((var(--sx) - var(--x)) * var(--u))); animation-timing-function: steps(29, end) }
+  50% { opacity: 1; transform: translateX(0) }
+  75% { opacity: 1; transform: translateX(0); animation-timing-function: linear }
+  91.667%, 100% { opacity: 0; transform: translateX(0) }
+}
+@keyframes hop2s { 0%, 50%, 100% { transform: translateY(0) } 25.833% { transform: translateY(calc(var(--u) / -16)) } 27.5% { transform: translateY(0) } 29.167% { transform: translateY(calc(var(--u) / -16)) } 30.833% { transform: translateY(0) } 32.5% { transform: translateY(calc(var(--u) / -16)) } 34.167% { transform: translateY(0) } 35.833% { transform: translateY(calc(var(--u) / -16)) } 37.5% { transform: translateY(0) } 39.167% { transform: translateY(calc(var(--u) / -16)) } 40.833% { transform: translateY(0) } 42.5% { transform: translateY(calc(var(--u) / -16)) } 44.167% { transform: translateY(0) } 45.833% { transform: translateY(calc(var(--u) / -16)) } 47.5% { transform: translateY(0) } }
+@keyframes tag2s { 0%, 58.333%, 100% { opacity: 0 } 50% { opacity: 1 } }
 
 .hero.is-offscreen *, .hero.is-offscreen { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .hero *, .hero { animation: none !important; } }
