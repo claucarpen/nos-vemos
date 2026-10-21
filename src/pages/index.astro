@@ -12,6 +12,14 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
     <title>Nos Vemos — Press Start para la próxima juntada</title>
     <meta name="description" content="Nos Vemos junta la disponibilidad de tus amigos, insiste con los que no contestan y cierra la juntada sola." />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/sprites/town_0.png" as="image" />
+    <link rel="preload" href="/sprites/town_25.png" as="image" />
+    <link rel="preload" href="/sprites/mascot.png" as="image" />
+    <link rel="preload" href="/sprites/chest.png" as="image" />
+    <link rel="preload" href="/sprites/potion.png" as="image" />
+    <link rel="preload" href="/sprites/friend-p2.png" as="image" />
+    <link rel="preload" href="/sprites/friend-p3.png" as="image" />
+    <link rel="preload" href="/sprites/friend-p4.png" as="image" />
     <link rel="preload" href="/fonts/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
@@ -35,6 +43,8 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
           </div>
         </div>
         <div class="world" aria-hidden="true">
+          <div class="ground ground-grass"></div>
+          <div class="ground ground-dirt"></div>
           <img class="sp" src="/sprites/town_2.png" alt="" style="--x:-1.5;--y:1.5" />
           <img class="sp" src="/sprites/town_1.png" alt="" style="--x:1.5;--y:1.5" />
           <img class="sp w448" src="/sprites/town_2.png" alt="" style="--x:3.5;--y:1.5" />

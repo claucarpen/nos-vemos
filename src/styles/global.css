@@ -66,15 +66,11 @@ section { padding: 3.5rem 1rem; }
 }
 .star.m { background: var(--muted); }
 .hero .tagline { font-family: var(--pixel); font-size: clamp(0.7rem, 3.4vw, 1rem); line-height: 1.8; color: var(--tagline); margin: 0; }
-.world {
-  position: relative; height: calc(var(--u) * 3.5);
-  background:
-    url('/sprites/town_25.png') 0 calc(var(--u) * 2.5) / var(--u) var(--u) repeat,
-    url('/sprites/town_0.png') 0 calc(var(--u) * 1.5) / var(--u) var(--u) repeat-x,
-    linear-gradient(to bottom, #7b4a9a 0 calc(var(--u) * 0.5), #b5589a calc(var(--u) * 0.5) calc(var(--u) * 1), #f29e8e calc(var(--u) * 1) calc(var(--u) * 1.5), transparent calc(var(--u) * 1.5));
-  background-repeat: repeat-x, repeat-x, no-repeat;
-}
-.world { background-size: var(--u) var(--u), var(--u) var(--u), 100% 100%; }
+.world { position: relative; height: calc(var(--u) * 3.5); background: linear-gradient(to bottom, #7b4a9a 0 calc(var(--u) * 0.5), #b5589a calc(var(--u) * 0.5) calc(var(--u) * 1), #f29e8e calc(var(--u) * 1) calc(var(--u) * 1.5), transparent calc(var(--u) * 1.5)) no-repeat; }
+/* Suelo: color sólido del tile debajo de la imagen, para que nunca se vea el fondo de la página mientras los tiles cargan */
+.ground { position: absolute; left: 0; right: 0; height: var(--u); background-repeat: repeat-x; background-size: var(--u) var(--u); }
+.ground-grass { top: calc(var(--u) * 1.5); background-color: #84c669; background-image: url('/sprites/town_0.png'); }
+.ground-dirt { top: calc(var(--u) * 2.5); background-color: #eaa56c; background-image: url('/sprites/town_25.png'); }
 .sp { position: absolute; width: var(--u); height: var(--u); left: calc(50% + var(--x) * var(--u)); top: calc(var(--y) * var(--u)); image-rendering: pixelated; }
 /* Un sprite se muestra solo si entra entero en el viewport: cada clase wN es el ancho mínimo (ancho del sprite
    más el borde, ×2 por simetría, más 16 px de margen por la barra de scroll). El par izquierdo y derecho comparten

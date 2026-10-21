@@ -204,3 +204,9 @@
 **Por qué**: el grupo se leía como una pila confusa y, a 320 px, el tercer amigo caminaba 0,1 tile. Con 2 amigos que cruzan el camino de lado a lado, el recorrido es largo en celular. El tramo es 700 px y no 640 porque a 640 px (`--u: 64px`) el primer amigo de 3 caminaría menos de 1,5 tiles.
 **Reemplaza a**: la decisión "Los amigos parten del borde visible de cada tramo de ancho, no de fuera de pantalla" en lo que fija las posiciones finales y la cantidad de amigos; los puntos de partida `--sl` y `--sr` por tramo siguen vigentes (con un tramo nuevo en 700 px).
 **La invalidaría**: que se reubiquen la mascota, el cofre o la poción, o que se acepte entrar desde fuera de pantalla.
+
+## 2026-10-20 · [landing] El suelo del hero lleva color sólido bajo el tile y sus imágenes se precargan
+
+**Qué se decide**: pasto y tierra son elementos `.ground-grass` y `.ground-dirt` con `background-color` igual al color dominante del tile (`#84c669` y `#eaa56c`) bajo la imagen; `index.astro` precarga los tiles y los sprites del camino con `<link rel="preload" as="image">`. Eval `008·C9`.
+**Por qué**: en los primeros cuadros del video el suelo mostraba el fondo oscuro de la página hasta que cargaban los tiles. Ambos tiles son de un solo color, así que el relleno es idéntico a la imagen.
+**La invalidaría**: que los tiles pasen a tener más de un color dominante, o que el suelo se dibuje de otra forma que no dependa de imágenes.

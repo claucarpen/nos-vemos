@@ -111,3 +111,28 @@ test('C6b: en el instante de LEVEL CLEAR nadie pisa a nadie, y cada amigo camina
     res.walks.forEach((d, i) => expect(d, `ancho ${w}: amigo ${i + 1} camina ${d.toFixed(2)} tiles`).toBeGreaterThanOrEqual(1.5));
   }
 });
+
+test('C9: el suelo existe desde el primer pintado, aunque los sprites no carguen', async ({ page }) => {
+  await page.route('**/sprites/**', (route) => route.abort());
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const rows = await page.evaluate(() => {
+    const bg = (sel: string) => getComputedStyle(document.querySelector(sel)!).backgroundColor;
+    return { grass: bg('.ground-grass'), dirt: bg('.ground-dirt'), page: getComputedStyle(document.body).backgroundColor };
+  });
+  expect(rows.grass).toBe('rgb(132, 198, 105)');
+  expect(rows.dirt).toBe('rgb(234, 165, 108)');
+  // Píxel de captura en cada fila (a la izquierda del escenario, donde no hay sprites).
+  const png = await page.screenshot({ clip: { x: 4, y: 0, width: 4, height: 800 } });
+  const box = async (sel: string) => (await page.locator(sel).boundingBox())!;
+  const g = await box('.ground-grass'), d = await box('.ground-dirt');
+  const px = async (y: number) => page.evaluate(async ([b64, y]) => {
+    const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
+    const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height;
+    const cx = cv.getContext('2d')!; cx.drawImage(img, 0, 0);
+    return Array.from(cx.getImageData(1, y as number, 1, 1).data.slice(0, 3));
+  }, [png.toString('base64'), Math.round(y)] as const);
+  expect(await px(g.y + g.height / 2)).toEqual([132, 198, 105]);
+  expect(await px(d.y + d.height / 2)).toEqual([234, 165, 108]);
+  expect(rows.page).not.toBe(rows.grass);
+});

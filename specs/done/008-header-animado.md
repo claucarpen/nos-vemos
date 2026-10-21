@@ -100,9 +100,11 @@ Ninguno.
 
 ## Evidencia
 
-Evals: `evals/run.sh` → 50 pasan · 0 fallan (`008·C1`–`008·C7` y `008·C6b`; 001–007 intactos; `C15` pasa de 28 a 31 sprites). C1 a C4 y C6b: `tests/e2e/hero-animacion.spec.ts`. C5: `scripts/check-keyframes.mjs`. C6: `tests/e2e/hero-clipping.spec.ts` (pausa todas las animaciones y fija `currentTime` en 0,5; 2,2; 4,2; 6,2; 8 y 10,5 s). Mutaciones comprobadas: `--sl: -6` a 320 px rompe C6; `--x` del primer amigo en -1.9 a 700 px rompe C2 y C6b. C7: compara con `git show main:package.json`.
+Evals: `evals/run.sh` → 51 pasan · 0 fallan (`008·C1`–`008·C7` y `008·C6b`; 001–007 intactos; `C15` pasa de 28 a 31 sprites). C1 a C4 y C6b: `tests/e2e/hero-animacion.spec.ts`. C5: `scripts/check-keyframes.mjs`. C6: `tests/e2e/hero-clipping.spec.ts` (pausa todas las animaciones y fija `currentTime` en 0,5; 2,2; 4,2; 6,2; 8 y 10,5 s). Mutaciones comprobadas: `--sl: -6` a 320 px rompe C6; `--x` del primer amigo en -1.9 a 700 px rompe C2 y C6b. C7: compara con `git show main:package.json`.
 
 Cambio posterior a la revisión del operador (ver `decisions.md`, "posiciones finales sin superposición y 2 amigos en pantallas chicas"): finales sin superposición; bajo 700 px, 2 amigos; cada amigo camina al menos 1,5 tiles. `C1` afirma 3 amigos a 1280 y 700 px y 2 a 375 y 699 px; `C2` lo afirma en reduced motion a 320, 375, 699, 700 y 1280 px; `C6b` mide, a 320, 375, 640, 699, 700, 880, 1280 y 1920 px, que en el instante de LEVEL CLEAR ninguna caja de mascota, cofre, poción o amigo visible se superpone y que cada amigo camina al menos 1,5 tiles.
+
+Suelo (pedido posterior del operador): `.ground-grass` `#84c669` y `.ground-dirt` `#eaa56c` (colores únicos de `town_0` y `town_25`) bajo los tiles, más `preload` de imágenes. Eval `008·C9`: con `/sprites/` abortado, los colores computados son esos y un píxel de la captura en cada fila coincide. Primer cuadro del video con los sprites retrasados 400 ms: `spec008/video-first-frame-1280.png` (pasto y tierra presentes).
 
 Personajes: tiles 99 (`friend-p2`), 100 (`friend-p3`) y 85 (`friend-p4`) de Tiny Dungeon (descargado de kenney.nl; la mascota es el tile 98). Hoja de candidatos: `spec008/candidatos.png`.
 

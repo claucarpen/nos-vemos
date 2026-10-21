@@ -440,6 +440,7 @@ s8_c5() {
 }
 s8_c6() { s8_pw C6 tests/e2e/hero-clipping.spec.ts 'C6:' "nada cortado en 6 instantes del loop a 320, 375, 640, 880, 1280 y 1920 px"; }
 s8_c6b() { s8_pw C6b tests/e2e/hero-animacion.spec.ts 'C6b:' "sin superposición en LEVEL CLEAR y cada amigo camina >= 1,5 tiles (2 amigos bajo 700 px, 3 desde 700)"; }
+s8_c9() { s8_pw C9 tests/e2e/hero-animacion.spec.ts 'C9:' "suelo con color sólido (pasto #84c669, tierra #eaa56c) aunque los sprites no carguen"; }
 s8_c7() {
   local out
   if out=$(node -e '
@@ -461,7 +462,7 @@ s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_rea
 s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
 s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
 s7_c1_colors; s7_c2_computed; s7_c3_contrast
-s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c6b; s8_c7
+s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c6b; s8_c7; s8_c9
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]
