@@ -1,5 +1,5 @@
 ---
-status: pendiente
+status: implementada
 depends_on: [002, 005]
 ---
 
@@ -97,3 +97,23 @@ Ninguno.
 | Interacción (hover/clic sobre personajes) | La animación base funciona y queda tiempo |
 | Sonido | Nunca en la landing sin que el usuario lo active |
 | Efectos 3D/WebGPU | Aparece una necesidad que el 2D no cubra |
+
+## Evidencia
+
+Evals: `evals/run.sh` → 49 pasan · 0 fallan (`008·C1`–`008·C7` nuevos; 001–007 intactos; `C15` pasa de 28 a 31 sprites). C1 a C4: `tests/e2e/hero-animacion.spec.ts`. C5: `scripts/check-keyframes.mjs` (32 `@keyframes`). C6: `tests/e2e/hero-clipping.spec.ts` (pausa todas las animaciones y fija `currentTime` en 0,5; 2,2; 4,2; 6,2; 8 y 10,5 s); mutación comprobada: con `--sl: -6` a 320 px falla. C7: compara con `git show main:package.json`.
+
+Personajes: tiles 99 (`friend-p2`), 100 (`friend-p3`) y 85 (`friend-p4`) de Tiny Dungeon (descargado de kenney.nl; la mascota es el tile 98). Hoja de candidatos: `spec008/candidatos.png`.
+
+### C8 — rúbrica
+
+Archivos (scratchpad de la sesión, fuera del repo): `spec008/video-1280/*.webm`, `spec008/video-375/*.webm`, capturas `spec008/shot-1280-{1,4,6_5,10}s.png`, `spec008/shot-375-{1,4,6_5,10}s.png` (hoja: `spec008/sheet-375.png`) y `spec008/shot-1280-reduced.png`.
+
+| Ítem | Resultado | Evidencia |
+|---|---|---|
+| 1. Se lee "llegan amigos → se juntan → LEVEL CLEAR" | Pasa | 1 s: la primera amiga camina hacia la mascota; 4 s: dos amigos junto a ella, cartel "P3", el tercero viene por la derecha; 6,5 s: los tres juntos, "P4" y "LEVEL CLEAR" sobre el grupo; 10 s: se desvanecen |
+| 2. Movimiento pixel nítido | Pasa | Sprites con `image-rendering: pixelated`, avance con `steps()`, saltitos de 1 px de sprite; las capturas no muestran bordes borrosos (solo el desvanecimiento de opacidad, 9 a 11 s) |
+| 3. "Creá tu juntada" sigue siendo lo más claro | Pasa | Es el único bloque lavanda claro del header y no se anima; lo animado está debajo, en el escenario |
+| 4. Nada parpadea más de 3 veces por segundo | Pasa | Estrellas: 2 cambios de opacidad cada 2,7 a 4,3 s; luciérnagas: 2 cada 3,3 a 4,5 s; carteles y destello: una vez por loop (destello: 5 pasos en 0,8 s) |
+| 5. En celular se entiende igual | Pasa con matiz | A 375 px se ven los tres amigos, "P3", "P4" y "LEVEL CLEAR" enteros. El recorrido es corto (el viewport limita el punto de partida): el último amigo casi aparece parado (ver `decisions.md`) |
+
+Con `prefers-reduced-motion: reduce` (`shot-1280-reduced.png`): los tres amigos junto a la mascota, sin carteles ni destello.

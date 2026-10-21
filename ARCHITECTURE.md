@@ -35,14 +35,32 @@
 | `src/dev/vista-previa.astro` | Vista previa de diseño con datos de ejemplo; la integración de `astro.config.mjs` la inyecta en `/vista-previa/[pantalla]` solo en `astro dev` |
 | `tests/db/` | `npm run test:db`: `pg.ts` levanta `embedded-postgres` con `supabase-shim.sql`; `shim.test.ts` (paso 0) y `juntadas.test.ts` (reglas y seguridad) |
 | `tests/app/`, `playwright.app.config.ts` | Playwright de la app sin sesión contra `astro dev --ignore-lock` y `stub-supabase.mjs` (Supabase falso: ninguna juntada existe) |
-| `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
+| `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`, y los amigos `friend-p2`, `friend-p3`, `friend-p4` = tiles 99, 100 y 85) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
 | `public/favicon.png`, `public/favicon.ico` | Favicon: la mascota ×2 por vecino más cercano (32×32); el `.ico` envuelve ese mismo PNG. Se regeneran con `node scripts/make-favicon.mjs`; `index.astro` declara `<link rel="icon" href="/favicon.png">` |
 | `public/fonts/` | Press Start 2P (OFL) y su licencia |
-| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px), `etiquetas-colores.spec.ts` (colores computados de las etiquetas) |
+| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px), `etiquetas-colores.spec.ts` (colores computados de las etiquetas), `hero-animacion.spec.ts` (animación del header: C1 a C4 de la spec 008). `scripts/check-keyframes.mjs`: los `@keyframes` del CSS construido solo animan `transform` y `opacity` |
 
 ## Escenario del hero
 
 Cada sprite de `.world` se ubica con `--x` (unidades de tile desde el centro) y `--u` (48 px hasta 639 px, 64 px desde 640 px). Un sprite se muestra solo si entra entero en el viewport: su clase `wN` en `index.astro` es el ancho mínimo, y `global.css` lo activa con `@media (min-width: Npx)`. Sin clase, siempre visible. El par izquierdo/derecho comparte clase, y la copa y el tronco de un pino también. Regla del ancho mínimo: `ceil(2 × --u × (|--x| + 1 del lado derecho del par)) + 16` (los 16 px son margen por la barra de scroll). Al sumar un sprite: ponerle la clase `wN` de su tier o crear el tier; `hero-clipping.spec.ts` lo verifica.
+
+## Animación del hero
+
+Loop de 12 s, solo CSS (`@keyframes` en `src/styles/global.css`), solo `transform` y `opacity`. Todo lo animado es decorativo y vive dentro de `aria-hidden="true"`.
+
+| Tiempo | Qué pasa |
+|---|---|
+| 0 a 2 s, 2 a 4 s, 4 a 6 s | Llegan `.fr1` (izquierda, `friend-p2`), `.fr2` (derecha, `friend-p3`) y `.fr3` (derecha, `friend-p4`): `walkN` mueve el contenedor con `steps(10)`, `hopN` sube la imagen 1 px de sprite cada 0,2 s |
+| Llegada de cada uno | Cartel `.pn` ("P2", "P3", "P4") 1 s (`tagN`) |
+| 6 a 8 s | Cartel `.clear` "LEVEL CLEAR" y destello `.flash` (6 a 6,8 s) |
+| 9 a 11 s | Los amigos se desvanecen; 11 a 12 s vacío |
+
+Siempre: `.star` (8, titilan con `twinkle`, desfasadas con `--sl`), `.firefly` (5, `drift` + `glow`), `.tree` (copas de pino, `sway` ±1 px), `.mascot` (`breathe`, 1 px por segundo).
+
+- Punto de partida de los amigos: `--sl` (izquierda) y `--sr` (derecha), en tiles desde el centro, por tramo de ancho en `.world` (`global.css`). Cada valor es el más lejano que sigue dentro del viewport en el ancho mínimo del tramo; al cambiar un tramo o la posición final `--x` de un amigo, `hero-clipping.spec.ts` (C6) lo verifica.
+- Los amigos se posicionan con `.fr` (`--x`, `--y`), no con `.sp`; los elementos no-imagen (`.pn`, `.clear`, `.flash`, `.firefly`) no usan clases `wN`: están dentro de ±2,5 tiles del centro.
+- `prefers-reduced-motion: reduce`: `animation: none` en todo el hero; queda la escena final (3 amigos junto a la mascota, carteles en `opacity: 0`).
+- Un `<script>` de `index.astro` observa `.hero` con `IntersectionObserver` y alterna la clase `is-offscreen`; `global.css` la traduce en `animation-play-state: paused`.
 
 ## Base de la v1
 

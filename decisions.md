@@ -191,3 +191,15 @@
 **Por qué**: el color comunica estado (listo / en camino) más rápido que el relleno lavanda. Lo decidió el operador; ambos pares pasan AA (7.52:1 y 7.45:1).
 **Reemplaza a**: el estilo de las etiquetas (lavanda lleno / solo borde) de la decisión "Cada promesa de `#solucion` lleva etiqueta" (textos y posición siguen vigentes).
 **La invalidaría**: que la app (`/nueva`, `/j/…`) muestre estados con color y haga falta unificarlos en la paleta.
+
+## 2026-10-20 · [landing] El header se anima solo con CSS: loop de 12 s en el que llegan 3 amigos y se cierra la juntada
+
+**Qué se decide**: la escena del hero se anima con `@keyframes` (solo `transform` y `opacity`), sin librerías y con un único `IntersectionObserver` que pausa fuera de vista; con `prefers-reduced-motion` queda la escena final quieta. Los amigos son los tiles 99, 100 y 85 de Tiny Dungeon (`friend-p2`, `friend-p3`, `friend-p4`). Evals `008·C1`–`008·C7`; detalle en `ARCHITECTURE.md`, "Animación del hero".
+**Por qué**: la animación cuenta la historia del producto (llegan los amigos, se completa el quórum). Descartados Canvas 2D y Three.js/WebGPU por peso y mantenimiento desproporcionados para una escena pixel 2D (decisión de Claudio, 2026-10-20). Los tiles se eligieron entre los humanos de Tiny Dungeon, distintos de la mascota (tile 98) y entre sí en pelo y ropa: mujer de pelo largo con vestido lila, anciano de pelo gris, joven de pelo castaño con remera gris.
+**La invalidaría**: que la animación sume peso o jank medible en celulares de gama baja, o que haga falta interacción o ciclos de caminata con varios frames (ver "Fuera de alcance" de la spec 008).
+
+## 2026-10-20 · [landing] Los amigos parten del borde visible de cada tramo de ancho, no de fuera de pantalla
+
+**Qué se decide**: `--sl` y `--sr` (en `.world`) fijan el punto de partida de la caminata por tramo de ancho; el camino de entrada nunca sale del viewport. Los tramos son 320, 440, 560, 640, 800 y 1000 px; desde 1000 px el recorrido no crece más. Eval `008·C6`.
+**Por qué**: la regla "ningún sprite cortado en ningún fotograma" de la spec 008 impide entrar desde fuera de pantalla. A 320 px el recorrido del último amigo es de 0,1 tile: en celular llega casi parado y la historia se entiende por los carteles y el LEVEL CLEAR.
+**La invalidaría**: que se acepte entrar desde fuera de pantalla (con `overflow: hidden` ya presente en `.hero`), lo que permitiría caminos largos en todos los anchos.
