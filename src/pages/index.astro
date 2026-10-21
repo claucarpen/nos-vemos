@@ -12,12 +12,30 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
     <title>Nos Vemos — Press Start para la próxima juntada</title>
     <meta name="description" content="Nos Vemos junta la disponibilidad de tus amigos, insiste con los que no contestan y cierra la juntada sola." />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/sprites/town_0.png" as="image" />
+    <link rel="preload" href="/sprites/town_25.png" as="image" />
+    <link rel="preload" href="/sprites/mascot.png" as="image" />
+    <link rel="preload" href="/sprites/chest.png" as="image" />
+    <link rel="preload" href="/sprites/potion.png" as="image" />
+    <link rel="preload" href="/sprites/friend-p2.png" as="image" />
+    <link rel="preload" href="/sprites/friend-p3.png" as="image" />
+    <link rel="preload" href="/sprites/friend-p4.png" as="image" />
     <link rel="preload" href="/fonts/press-start-2p-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <main>
       <section class="hero">
         <div class="hero-text">
+        <div class="stars" aria-hidden="true">
+          <i class="star" style="--sx:0;--sy:0px;--sd:3.1s;--sl:0s"></i>
+          <i class="star m" style="--sx:3vw;--sy:38px;--sd:3.9s;--sl:-1.3s"></i>
+          <i class="star" style="--sx:9vw;--sy:12px;--sd:2.7s;--sl:-2.1s"></i>
+          <i class="star m" style="--sx:78vw;--sy:20px;--sd:4.3s;--sl:-0.6s"></i>
+          <i class="star" style="--sx:90vw;--sy:48px;--sd:3.4s;--sl:-2.8s"></i>
+          <i class="star m" style="--sx:94vw;--sy:10px;--sd:2.9s;--sl:-1.7s"></i>
+          <i class="star" style="--sx:5vw;--sy:56px;--sd:3.7s;--sl:-0.2s"></i>
+          <i class="star m" style="--sx:92vw;--sy:62px;--sd:4.1s;--sl:-3.3s"></i>
+        </div>
           <div class="band band-1"><h1>NOS VEMOS</h1></div>
           <div class="band band-2">
             <p class="tagline">Press Start para la próxima juntada</p>
@@ -25,6 +43,8 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
           </div>
         </div>
         <div class="world" aria-hidden="true">
+          <div class="ground ground-grass"></div>
+          <div class="ground ground-dirt"></div>
           <img class="sp" src="/sprites/town_2.png" alt="" style="--x:-1.5;--y:1.5" />
           <img class="sp" src="/sprites/town_1.png" alt="" style="--x:1.5;--y:1.5" />
           <img class="sp w448" src="/sprites/town_2.png" alt="" style="--x:3.5;--y:1.5" />
@@ -36,23 +56,33 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
           <img class="sp w912" src="/sprites/town_29.png" alt="" style="--x:-6;--y:1.55" />
           <img class="sp w912" src="/sprites/town_29.png" alt="" style="--x:6;--y:1.6" />
           <img class="sp w1360" src="/sprites/town_2.png" alt="" style="--x:9.5;--y:1.5" />
-          <img class="sp w362" src="/sprites/town_4.png" alt="" style="--x:-2.6;--y:0.9" />
+          <img class="sp tree w362" src="/sprites/town_4.png" alt="" style="--sd:0s;--x:-2.6;--y:0.9" />
           <img class="sp w362" src="/sprites/town_16.png" alt="" style="--x:-2.6;--y:1.9" />
-          <img class="sp w362" src="/sprites/town_4.png" alt="" style="--x:2.6;--y:0.9" />
+          <img class="sp tree w362" src="/sprites/town_4.png" alt="" style="--sd:-1s;--x:2.6;--y:0.9" />
           <img class="sp w362" src="/sprites/town_16.png" alt="" style="--x:2.6;--y:1.9" />
-          <img class="sp w733" src="/sprites/town_4.png" alt="" style="--x:-4.6;--y:0.9" />
+          <img class="sp tree w733" src="/sprites/town_4.png" alt="" style="--sd:-2s;--x:-4.6;--y:0.9" />
           <img class="sp w733" src="/sprites/town_16.png" alt="" style="--x:-4.6;--y:1.9" />
-          <img class="sp w733" src="/sprites/town_4.png" alt="" style="--x:4.6;--y:0.9" />
+          <img class="sp tree w733" src="/sprites/town_4.png" alt="" style="--sd:-0.5s;--x:4.6;--y:0.9" />
           <img class="sp w733" src="/sprites/town_16.png" alt="" style="--x:4.6;--y:1.9" />
-          <img class="sp w1117" src="/sprites/town_4.png" alt="" style="--x:-7.6;--y:0.9" />
+          <img class="sp tree w1117" src="/sprites/town_4.png" alt="" style="--sd:-1.5s;--x:-7.6;--y:0.9" />
           <img class="sp w1117" src="/sprites/town_16.png" alt="" style="--x:-7.6;--y:1.9" />
-          <img class="sp w1117" src="/sprites/town_4.png" alt="" style="--x:7.6;--y:0.9" />
+          <img class="sp tree w1117" src="/sprites/town_4.png" alt="" style="--sd:-2.5s;--x:7.6;--y:0.9" />
           <img class="sp w1117" src="/sprites/town_16.png" alt="" style="--x:7.6;--y:1.9" />
-          <img class="sp w1360" src="/sprites/town_4.png" alt="" style="--x:-9.2;--y:0.9" />
+          <img class="sp tree w1360" src="/sprites/town_4.png" alt="" style="--sd:-0.8s;--x:-9.2;--y:0.9" />
           <img class="sp w1360" src="/sprites/town_16.png" alt="" style="--x:-9.2;--y:1.9" />
           <img class="sp" src="/sprites/chest.png" alt="" style="--x:-1.7;--y:2.42" />
           <img class="sp" src="/sprites/potion.png" alt="" style="--x:1.2;--y:2.55" />
-          <img class="sp" src="/sprites/mascot.png" alt="" style="--x:-0.5;--y:2.45" />
+          <img class="sp mascot" src="/sprites/mascot.png" alt="" style="--x:-0.5;--y:2.45" />
+          <div class="fr fr1"><img src="/sprites/friend-p2.png" alt="" /><span class="pn">P2</span></div>
+          <div class="fr fr2"><img src="/sprites/friend-p3.png" alt="" /><span class="pn">P3</span></div>
+          <div class="fr fr3"><img src="/sprites/friend-p4.png" alt="" /><span class="pn">P4</span></div>
+          <span class="flash" aria-hidden="true"></span>
+          <span class="clear" aria-hidden="true">LEVEL CLEAR</span>
+          <i class="firefly" style="--x:-2.5;--y:1.85;--dd:5.1s;--dl:-1s;--gd:3.3s"></i>
+          <i class="firefly" style="--x:-1.2;--y:2.05;--dd:6s;--dl:-3s;--gd:4.1s"></i>
+          <i class="firefly" style="--x:0.2;--y:1.8;--dd:4.6s;--dl:-2s;--gd:3.7s"></i>
+          <i class="firefly" style="--x:1.4;--y:2.1;--dd:5.6s;--dl:-4s;--gd:4.5s"></i>
+          <i class="firefly" style="--x:2.5;--y:1.9;--dd:6.4s;--dl:-0.5s;--gd:3.9s"></i>
         </div>
       </section>
 
@@ -127,6 +157,13 @@ const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL;
         </div>
       </section>
     </main>
+    <script>
+      // Pausa las animaciones del header mientras no se ve (clase leída por global.css).
+      const hero = document.querySelector('.hero');
+      if (hero && 'IntersectionObserver' in window) {
+        new IntersectionObserver(([e]) => hero.classList.toggle('is-offscreen', !e.isIntersecting)).observe(hero);
+      }
+    </script>
     <footer>Nos Vemos · hecho con pixeles y ganas de verte · <a href="/privacidad">Privacidad</a></footer>
   </body>
 </html>

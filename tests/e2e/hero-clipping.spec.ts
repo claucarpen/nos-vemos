@@ -36,7 +36,7 @@ test('C15: el header no pierde escenario donde sobra lugar', async ({ page }) =>
   await page.goto('/');
   await page.setViewportSize({ width: 1920, height: 800 });
   const all = await sprites(page);
-  expect(all).toHaveLength(28);
+  expect(all).toHaveLength(31);
   const hidden = all.filter((s) => !s.visible || s.left < 0 || s.right > 1920);
   expect(hidden.map((s) => `${s.src} --x:${s.x}`), 'a 1920 px todos deben verse').toEqual([]);
 
@@ -50,4 +50,32 @@ test('C15: el header no pierde escenario donde sobra lugar', async ({ page }) =>
     }
   }
   expect(seen, 'mascota, cofre y poción siempre visibles y enteros').toEqual({});
+});
+
+// C6 (spec 008): en 6 instantes del loop, ningún elemento visible (opacity > 0) del escenario queda parcialmente fuera.
+test('C6: nada cortado en ningún instante del loop, de 320 a 1920 px', async ({ page }) => {
+  await page.goto('/');
+  const instants = [0.5, 2.2, 4.2, 6.2, 8, 10.5];
+  const widths6 = [320, 375, 640, 880, 1280, 1920];
+  const clipped: string[] = [];
+  for (const w of widths6) {
+    await page.setViewportSize({ width: w, height: 800 });
+    for (const t of instants) {
+      const bad = await page.evaluate(([t, w]) => {
+        document.getAnimations().forEach((a) => { a.pause(); a.currentTime = (t as number) * 1000; });
+        const out: string[] = [];
+        for (const el of document.querySelectorAll<HTMLElement>('.world img, .world .pn, .world .clear, .world .flash, .world .firefly')) {
+          let op = 1;
+          for (let n: HTMLElement | null = el; n && !n.classList.contains('world'); n = n.parentElement) op *= parseFloat(getComputedStyle(n).opacity);
+          const cs = getComputedStyle(el);
+          if (el.getClientRects().length === 0 || cs.visibility === 'hidden' || op <= 0) continue;
+          const r = el.getBoundingClientRect();
+          if (r.left < 0 || r.right > (w as number)) out.push(`${el.getAttribute('src') ?? el.className} (left ${r.left.toFixed(1)}, right ${r.right.toFixed(1)})`);
+        }
+        return out;
+      }, [t, w] as const);
+      for (const b of bad) clipped.push(`ancho ${w}, t=${t}s: ${b}`);
+    }
+  }
+  expect(clipped, `elementos cortados:\n${clipped.join('\n')}`).toEqual([]);
 });

@@ -138,7 +138,7 @@ c14_hero_clipping() {
 
 c15_hero_scenery() {
   local out
-  if out=$(npx playwright test tests/e2e/hero-clipping.spec.ts -g C15 2>&1); then ok "C15 28 sprites enteros a 1920 px; mascota, cofre y poción siempre"
+  if out=$(npx playwright test tests/e2e/hero-clipping.spec.ts -g C15 2>&1); then ok "C15 31 sprites enteros a 1920 px; mascota, cofre y poción siempre"
   else ko "C15 Playwright"; ev "$(printf '%s' "$out" | head -30)"; fi
 }
 
@@ -422,6 +422,39 @@ s7_c3_contrast() {
 # 007·C4 es una rúbrica sobre capturas a 375 y 1280 px de #solucion; no corre acá.
 # Evidencia de 007·C4: specs/done/007-colores-etiquetas.md.
 
+# --- Spec 008: header animado -------------------------------------------------------------------
+
+s8_pw() { # $1 id, $2 archivo, $3 filtro, $4 texto
+  local out
+  if out=$(npx playwright test "$2" -g "$3" 2>&1); then ok "008·$1 $4"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "008·$1 Playwright"; ev "$(printf '%s' "$out" | tail -12)"; fi
+}
+s8_c1() { s8_pw C1 tests/e2e/hero-animacion.spec.ts 'C1:' "al menos 8 elementos animados, 3 amigos (2 visibles bajo 700 px) y LEVEL CLEAR con aria-hidden"; }
+s8_c2() { s8_pw C2 tests/e2e/hero-animacion.spec.ts 'C2:' "reducir movimiento: sin animación, 2 amigos bajo 700 px y 3 desde 700, sin superposición, sin cartel"; }
+s8_c3() { s8_pw C3 tests/e2e/hero-animacion.spec.ts 'C3:' "running a la vista, paused fuera de la vista"; }
+s8_c4() { s8_pw C4 tests/e2e/hero-animacion.spec.ts 'C4:' "CLS <= 0.01 durante 13 s"; }
+s8_c5() {
+  local out
+  if out=$(node scripts/check-keyframes.mjs 2>&1); then ok "008·C5 solo transform y opacity en los @keyframes"; ev "$out"
+  else ko "008·C5 keyframes"; ev "$out"; fi
+}
+s8_c6() { s8_pw C6 tests/e2e/hero-clipping.spec.ts 'C6:' "nada cortado en 6 instantes del loop a 320, 375, 640, 880, 1280 y 1920 px"; }
+s8_c6b() { s8_pw C6b tests/e2e/hero-animacion.spec.ts 'C6b:' "sin superposición en LEVEL CLEAR y cada amigo camina >= 1,5 tiles (2 amigos bajo 700 px, 3 desde 700)"; }
+s8_c9() { s8_pw C9 tests/e2e/hero-animacion.spec.ts 'C9:' "suelo con color sólido (pasto #84c669, tierra #eaa56c) aunque los sprites no carguen"; }
+s8_c7() {
+  local out
+  if out=$(node -e '
+    const {execSync}=require("child_process");
+    const a=JSON.parse(require("fs").readFileSync("package.json","utf8"));
+    const b=JSON.parse(execSync("git show main:package.json").toString());
+    const k=(o)=>JSON.stringify({d:o.dependencies,v:o.devDependencies});
+    if(k(a)!==k(b)){console.error("dependencies distintas de main");process.exit(1)}' 2>&1); then ok "008·C7 mismas dependencies y devDependencies que main"
+  else ko "008·C7 dependencias"; ev "$out"; fi
+}
+
+# 008·C8 es una rúbrica sobre videos de un loop a 1280 y 375 px y capturas de 4 instantes; no corre acá.
+# Evidencia de 008·C8: specs/done/008-header-animado.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
@@ -429,6 +462,7 @@ s4_c1_build; s4_c2_sections; s4_c3_contact; s4_c4_links; s4_c5_mobile; s4_c6_rea
 s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
 s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
 s7_c1_colors; s7_c2_computed; s7_c3_contrast
+s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c6b; s8_c7; s8_c9
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]
