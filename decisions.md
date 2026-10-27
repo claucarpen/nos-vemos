@@ -210,3 +210,10 @@
 **Qué se decide**: pasto y tierra son elementos `.ground-grass` y `.ground-dirt` con `background-color` igual al color dominante del tile (`#84c669` y `#eaa56c`) bajo la imagen; `index.astro` precarga los tiles y los sprites del camino con `<link rel="preload" as="image">`. Eval `008·C9`.
 **Por qué**: en los primeros cuadros del video el suelo mostraba el fondo oscuro de la página hasta que cargaban los tiles. Ambos tiles son de un solo color, así que el relleno es idéntico a la imagen.
 **La invalidaría**: que los tiles pasen a tener más de un color dominante, o que el suelo se dibuje de otra forma que no dependa de imágenes.
+
+## 2026-10-27 · [landing] Mascota v1 "Lavanda": la armadura de la mascota usa los lilas de la paleta
+
+**Qué se decide**: `public/sprites/mascot.png` es la mascota entregada por el operador, igual al tile 98 de Tiny Dungeon salvo la armadura: `#c0cbdc`→`#c4b5fd`, `#8b9bb4`→`#8b84b8`, `#52607c`→`#4a4672`. El favicon se regenera con `node scripts/make-favicon.mjs`. Evals `009·C1`–`009·C4`.
+**Por qué**: con los colores originales del pack la mascota quedaba fuera de la identidad del sitio; con armadura lavanda queda en la paleta y sigue siendo el mismo personaje. Lo decidió el operador, entre Lavanda, Atardecer y Lavanda + pelo coral.
+**Reemplaza a**: "Mascota v0 con los colores originales del pack" (2026-10-13).
+**La invalidaría**: que el operador entregue una mascota con otro diseño, accesorio o logo, o que la mascota no se distinga de los amigos del hero.

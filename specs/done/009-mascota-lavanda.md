@@ -1,5 +1,5 @@
 ---
-status: en curso
+status: implementada
 depends_on: [008]
 ---
 
@@ -68,3 +68,28 @@ Ninguno: el cambio queda en una rama sin push. Publicarlo es el merge que hace C
 |---|---|
 | Accesorio o logo en la mascota | Claudio entrega un `.piskel` retocado |
 | Recolorear a los amigos del hero | Al verla en el sitio, la mascota no se distingue de los amigos |
+
+## Evidencia
+
+Evals: `evals/run.sh` → 51 pasan · 0 fallan (001–008 intactos, incluido C12 de favicon).
+
+- C1: `cmp public/sprites/mascot.png /home/claudio/Escritorio/mi-brain/initiatives/portal-juntadas/mascota/mascota-lavanda.png` sale sin diferencias.
+- C2: comparación con `git show 83a7e2d:public/sprites/mascot.png` (16×16 ambos). Píxeles distintos, 38 en total y solo estas tres sustituciones; la transparencia es idéntica (0 píxeles con alfa distinto).
+
+| Original | Nueva | Píxeles |
+|---|---|---|
+| `#c0cbdc` | `#c4b5fd` | 18 |
+| `#8b9bb4` | `#8b84b8` | 6 |
+| `#52607c` | `#4a4672` | 14 |
+
+- C3: `favicon.png` y `favicon.ico` regenerados con `node scripts/make-favicon.mjs` (`git status` los muestra modificados); C12 pasa.
+
+### C4 — rúbrica
+
+Capturas (scratchpad de la sesión, fuera del repo; hero con `reducedMotion` para ver la escena final): `/tmp/claude-1000/-home-claudio-Escritorio-mi-brain/e7a0afcd-caa7-4ce4-85da-f093e7b250e3/scratchpad/spec009/hero-375.png`, `/tmp/claude-1000/-home-claudio-Escritorio-mi-brain/e7a0afcd-caa7-4ce4-85da-f093e7b250e3/scratchpad/spec009/hero-1280.png` y `/tmp/claude-1000/-home-claudio-Escritorio-mi-brain/e7a0afcd-caa7-4ce4-85da-f093e7b250e3/scratchpad/spec009/nueva-barra.png` (barra de `/nueva` a 375 px, ×3).
+
+| Ítem | Resultado | Evidencia |
+|---|---|---|
+| Se lee como el mismo personaje | Pasa | Misma figura y pelo; solo cambia la armadura a lila |
+| Se distingue sobre el cielo | Pasa | Armadura lila clara con contorno oscuro sobre el degradé del hero y sobre la barra de `/nueva`; se separa de los amigos (anciano gris, joven de remera gris) |
+| Nada se corta | Pasa | Mascota completa en el hero a 375 y 1280 px y en la barra de `/nueva` |
