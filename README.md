@@ -99,6 +99,22 @@ Crea las tablas de la v1 (`tipos_evento`, `perfiles`, `juntadas`, `opciones`, `p
 No hacen falta variables nuevas: la v1 usa las mismas `PUBLIC_SUPABASE_URL` y
 `PUBLIC_SUPABASE_ANON_KEY`.
 
+## Migración 003
+
+Agrega puntos, medallas y ranking (spec 010). No crea tablas: todo se calcula a partir de
+`movimientos`. No toca `leads` ni las tablas de la v1.
+
+1. Con `001_leads.sql` y `002_juntadas.sql` ya corridas: **SQL Editor → New query**, pegá el
+   contenido de `supabase/migrations/003_premios.sql` y ejecutalo una sola vez.
+2. Verificá en **Database → Functions** que existen `ranking_juntada` y `mis_premios` (las que usa
+   la app) y `premios_valor`, `premios_eventos` y `premios_medallas` (auxiliares, sin acceso público).
+3. Probá con tu cuenta: entrá a `/perfil` y a una juntada; el panel "Ranking" aparece bajo la grilla.
+
+Mientras la 003 no esté corrida, las juntadas se ven igual pero sin ranking, y `/perfil` muestra
+un error. Para cambiar un valor de puntos, cambialo en `src/lib/premios.ts` y en
+`premios_valor()` (una migración nueva con `create or replace function`): `npm run test:db` falla
+si no coinciden.
+
 ## Métricas del experimento
 
 La vista `metricas_experimento` no la puede leer el público ni los usuarios con sesión; la lee el

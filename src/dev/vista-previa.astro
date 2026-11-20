@@ -1,10 +1,12 @@
 ---
 // Vista previa de diseño (solo `astro dev`; ver astro.config.mjs): las pantallas con datos de ejemplo.
-// /vista-previa/crear · /vista-previa/votar · /vista-previa/cerrada · /vista-previa/cancelada
+// /vista-previa/crear · /vista-previa/votar · /vista-previa/cerrada · /vista-previa/cancelada · /vista-previa/perfil
 import App from '../layouts/App.astro';
 import CrearJuntadaForm from '../components/app/CrearJuntadaForm.tsx';
 import Juntada from '../components/app/Juntada.astro';
+import Perfil from '../components/app/Perfil.astro';
 import type { Detalle } from '../lib/juntada';
+import { puntosDe, type MisPremios, type Ranking } from '../lib/premios';
 
 export const prerender = false;
 
@@ -20,7 +22,7 @@ const base: Detalle = {
   maximo: 10,
   organizador: 'Clau',
   soy_organizador: true,
-  yo_vote: true,
+  yo_vote: false,
   opcion_ganadora_id: null,
   opciones: [
     { id: 'a', inicio: '2026-10-23T00:00:00Z', votos: 3, mia: true },
@@ -45,17 +47,60 @@ const detalles: Record<string, Detalle> = {
   cancelada: { ...base, estado: 'cancelada' },
 };
 
-const titulos: Record<string, string> = { crear: 'Nueva juntada', votar: 'Votar', cerrada: 'Cerrada', cancelada: 'Cancelada' };
-if (!pantalla || !(pantalla in titulos)) return new Response('Pantallas: crear, votar, cerrada, cancelada', { status: 404 });
+// Ranking de ejemplo: creada hace 5 h (ventana de voto rápido), con un negativo.
+const ahora = new Date('2026-10-20T20:00:00Z');
+const ranking: Ranking = {
+  creada_en: '2026-10-20T15:00:00Z',
+  ranking: [
+    { nombre: 'Sofi', puntos: 185, medallas: 4, soy_yo: false },
+    { nombre: 'Clau', puntos: 120, medallas: 3, soy_yo: true },
+    { nombre: 'Martín Fernández', puntos: 35, medallas: 1, soy_yo: false },
+    { nombre: 'Ñata', puntos: -25, medallas: 1, soy_yo: false },
+  ],
+  medallas: [],
+  penalidades: [],
+};
+const rankings: Record<string, Ranking> = {
+  votar: ranking,
+  cerrada: {
+    ...ranking,
+    medallas: [{ medalla: 'destrabador', nombre: 'Sofi' }, { medalla: 'anfitrion', nombre: 'Clau' }, { medalla: 'fantasma', nombre: 'Ñata' }],
+    penalidades: [{ nombre: 'Ñata', regla: 'te_colgaste', puntos: puntosDe('te_colgaste') }],
+  },
+  cancelada: ranking,
+};
+const perfil: MisPremios = {
+  puntos: 120,
+  medallas: [
+    { medalla: 'primer_voto', fecha: '2026-10-14T23:00:00Z', codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d', titulo: 'Asado en lo de Juli' },
+    { medalla: 'rayo', fecha: '2026-10-18T22:00:00Z', codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d', titulo: 'Cena del jueves en lo de Sofi' },
+    { medalla: 'anfitrion', fecha: '2026-10-21T00:00:00Z', codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d', titulo: 'Cumple de Martín' },
+  ],
+  historial: [
+    { codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d', titulo: 'Cena del jueves en lo de Sofi', estado: 'abierta', puntos: puntosDe('votar') + puntosDe('voto_rapido'),
+      detalle: [{ regla: 'votar', puntos: puntosDe('votar') }, { regla: 'voto_rapido', puntos: puntosDe('voto_rapido') }] },
+    { codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d', titulo: 'Cumple de Martín', estado: 'cerrada', puntos: (['votar', 'voto_rapido', 'confirmado', 'organizar', 'cambio_ultimo_momento'] as const).reduce((t, r) => t + puntosDe(r), 0),
+      detalle: [{ regla: 'votar', puntos: puntosDe('votar') }, { regla: 'voto_rapido', puntos: puntosDe('voto_rapido') },
+        { regla: 'confirmado', puntos: puntosDe('confirmado') }, { regla: 'organizar', puntos: puntosDe('organizar') },
+        { regla: 'cambio_ultimo_momento', puntos: puntosDe('cambio_ultimo_momento') }] },
+    { codigo: 'Xk3pQ9vR2mT7wY1zA4bC6d', titulo: 'Fulbito del martes', estado: 'cancelada', puntos: puntosDe('cancelar'),
+      detalle: [{ regla: 'cancelar', puntos: puntosDe('cancelar') }] },
+  ],
+};
+
+const titulos: Record<string, string> = { crear: 'Nueva juntada', votar: 'Votar', cerrada: 'Cerrada', cancelada: 'Cancelada', perfil: 'Mi perfil' };
+if (!pantalla || !(pantalla in titulos)) return new Response('Pantallas: crear, votar, cerrada, cancelada, perfil', { status: 404 });
 ---
-<App titulo={`Vista previa: ${titulos[pantalla]}`}>
+<App titulo={`Vista previa: ${titulos[pantalla]}`} conSesion={pantalla !== 'crear'}>
   {pantalla === 'crear' ? (
     <section class="panel">
       <h1 class="app-title">Nueva juntada</h1>
       <p class="lead">Proponé fechas, compartí el link y la juntada se cierra sola cuando llegan al quórum.</p>
       <CrearJuntadaForm client:load min="2026-10-14T00:00" inicial={{ titulo: 'Cena del jueves', tamano: '8', quorum: '4', opciones: ['2026-10-22T21:00', '2026-10-23T21:30', ''] }} />
     </section>
+  ) : pantalla === 'perfil' ? (
+    <Perfil p={perfil} nombre="Clau" />
   ) : (
-    <Juntada d={detalles[pantalla]} url={url} />
+    <Juntada d={detalles[pantalla]} url={url} r={rankings[pantalla]} ahora={ahora} />
   )}
 </App>

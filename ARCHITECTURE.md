@@ -6,7 +6,7 @@
 
 - Astro 7 con `@astrojs/vercel`; React solo para las islas `LeadForm` y `CrearJuntadaForm`.
 - `/` se prerenderiza (`.vercel/output/static/index.html`); `saveLead` corre en el servidor.
-- `/nueva`, `/j/[codigo]` y `/auth/*` se renderizan en el servidor (`prerender = false`). La landing enlaza solo a `/nueva` (botón del header); ningún `href` a `/j/` (eval `003·C1`).
+- `/nueva`, `/j/[codigo]`, `/perfil` y `/auth/*` se renderizan en el servidor (`prerender = false`); `/reglas` se prerenderiza. La landing enlaza solo a `/nueva` (botón del header); ningún `href` a `/j/` (eval `003·C1`).
 - Auth: Supabase Auth con Google vía `@supabase/ssr`; la sesión viaja en cookies (PKCE).
 - Supabase: tabla `leads` con RLS (`anon` solo inserta). Tablas de la v1 con RLS y sin acceso directo: todo pasa por funciones `security definer`.
 
@@ -14,7 +14,7 @@
 
 | Ruta | Qué es |
 |---|---|
-| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` con el botón "Creá tu juntada" → `/nueva`, y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion` (cuatro `.panel` con etiqueta `.tag-ok` "Disponible" o `.tag-soon` "Próximamente" bajo el `h3`, y la línea `.promises-note` que enlaza a `#form-leads`), `#form-leads` ("¿Todavía no?", la segunda opción), aviso de privacidad |
+| `src/pages/index.astro` | Landing: hero (header a todo el ancho: `.hero-text` con el botón "Creá tu juntada" → `/nueva`, y `.world` con sprites posicionados en unidades de tile desde el centro), `#problema`, `#solucion` (cuatro `.panel` con etiqueta `.tag-ok` "Disponible" —"Cierra solo" y "Con premios", que enlaza a `/reglas`— o `.tag-soon` "Próximamente" bajo el `h3`, y la línea `.promises-note` que enlaza a `#form-leads`), `#form-leads` ("¿Todavía no?", la segunda opción), aviso de privacidad |
 | `src/components/LeadForm.tsx` | Isla React: formulario, honeypot `empresa`, `utm_source` leído de la URL |
 | `src/actions/index.ts` | Action `saveLead`: arma el cliente de Supabase y llama a `processLead` |
 | `src/lib/leads.ts` | Lógica pura (validación, honeypot, `fuente`, duplicados) con cliente inyectable |
@@ -22,23 +22,27 @@
 | `src/styles/global.css` | Estilos retro y paleta "Atardecer pixel" (índigo, un acento lavanda; el cielo del hero en bandas planas). Las etiquetas `.tag-ok` (verde) y `.tag-soon` (amarillo) usan las variables `--status-*` del `:root`, fuera de la paleta; `scripts/contrast-check.mjs` verifica su contraste AA |
 | `supabase/migrations/001_leads.sql` | Tabla `leads` y política de insert para `anon` |
 | `supabase/migrations/002_juntadas.sql` | v1: 7 tablas, 7 funciones, vista `metricas_experimento` (ver "Base de la v1") |
+| `supabase/migrations/003_premios.sql` | v4: puntos, medallas y ranking, sin tablas (ver "Premios") |
+| `src/lib/premios.ts` | Fuente única de reglas de puntos, ventanas, tope y medallas; `conSigno`, `ventanaActual` y los tipos de `ranking_juntada` y `mis_premios` |
+| `src/pages/perfil.astro`, `src/components/app/Perfil.astro` | Mi perfil: sin sesión "Entrar con Google"; con sesión `mis_premios` (puntos, medallas ganadas y por ganar, historial) |
+| `src/pages/reglas.astro` | "Cómo se juega", pública: `#suman`, `#restan`, `#medallas`, `#ejemplo`, todo leído de `premios.ts` |
 | `src/pages/nueva.astro` | Crear juntada. Sin sesión: "Entrar con Google". POST → `crear_juntada` → 303 a `/j/<código>` |
 | `src/pages/j/[codigo].astro` | La juntada. Sin sesión: `juntada_publica`. Con sesión: `detalle_juntada` (si no es participante, `unirse` primero). POST `accion=votar\|cancelar` → 303. 404 si no existe, 503 si la base falla |
 | `src/pages/auth/login.ts`, `src/pages/auth/callback.ts` | POST que arranca el OAuth de Google; callback que canjea el código, llama a `asegurar_perfil` y vuelve a `next` (solo rutas internas) |
 | `src/pages/privacidad.astro`, `src/styles/privacidad.css` | Política de privacidad, prerenderizada, indexable (sin `noindex`), 8 secciones con `id`; el contacto sale de `PUBLIC_CONTACT_EMAIL`. Enlazada desde el aviso y el footer de la landing, `EntrarConGoogle.astro` (prop `aviso`) y `JuntadaPublica.astro` |
-| `src/layouts/App.astro` | Layout de la app: barra con la mascota y el link "¿Qué es Nos Vemos?" → `/` (único, en el layout), `global.css` + `app.css`, `noindex` |
-| `src/components/app/` | `Juntada.astro` (votar / LEVEL CLEAR / GAME OVER), `JuntadaPublica.astro`, `EntrarConGoogle.astro`, isla `CrearJuntadaForm.tsx` (filas de fecha 2-10) |
+| `src/layouts/App.astro` | Layout de la app: barra con la mascota, "Mi perfil" → `/perfil` (solo con prop `conSesion`) y el link "¿Qué es Nos Vemos?" → `/` (único, en el layout); a 375 px los links bajan a una segunda línea, `global.css` + `app.css`, `noindex` |
+| `src/components/app/` | `Juntada.astro` (votar / LEVEL CLEAR / GAME OVER; recibe el ranking `r`), `Ranking.astro` (panel bajo la grilla; en LEVEL CLEAR, medallas y penalidades de la juntada), `EnJuego.astro` (aviso antes del primer voto), `MedallaIcono.astro` (SVG pixel: medalla o fantasma), `JuntadaPublica.astro`, `EntrarConGoogle.astro`, isla `CrearJuntadaForm.tsx` (filas de fecha 2-10) |
 | `src/lib/supabase.ts` | Cliente SSR (`createServerClient` con las cookies de Astro) y `rutaSegura` |
 | `src/lib/fechas.ts`, `src/lib/whatsapp.ts`, `src/lib/codigo.ts`, `src/lib/errores.ts`, `src/lib/juntada.ts` | Hora argentina (formato y `datetime-local` → UTC), links `wa.me`, forma del código, traducción de errores de la base, tipos del detalle |
 | `src/lib/juntadas.test.ts` | Vitest de fechas, WhatsApp, código y errores |
 | `src/styles/app.css` | Estilos de la app con la paleta Atardecer pixel (sin tocar `global.css`) |
 | `src/dev/vista-previa.astro` | Vista previa de diseño con datos de ejemplo; la integración de `astro.config.mjs` la inyecta en `/vista-previa/[pantalla]` solo en `astro dev` |
-| `tests/db/` | `npm run test:db`: `pg.ts` levanta `embedded-postgres` con `supabase-shim.sql`; `shim.test.ts` (paso 0) y `juntadas.test.ts` (reglas y seguridad) |
-| `tests/app/`, `playwright.app.config.ts` | Playwright de la app sin sesión contra `astro dev --ignore-lock` y `stub-supabase.mjs` (Supabase falso: ninguna juntada existe) |
+| `tests/db/` | `npm run test:db`: `pg.ts` levanta `embedded-postgres` con `supabase-shim.sql`; `shim.test.ts` (paso 0), `juntadas.test.ts` (reglas y seguridad) y `premios.test.ts` (puntos, medallas, ranking y valores iguales a `premios.ts`) |
+| `tests/app/`, `playwright.app.config.ts` | Playwright de la app sin sesión contra `astro dev --ignore-lock` y `stub-supabase.mjs` (Supabase falso: ninguna juntada existe); `premios.spec.ts`: `/perfil` sin sesión, `/reglas` y los links a `/reglas` en la vista previa |
 | `public/sprites/` | Sprites Tiny Dungeon (`chest`, `potion`, `mascot`, y los amigos `friend-p2`, `friend-p3`, `friend-p4` = tiles 99, 100 y 85) y Tiny Town (`town_*`: pasto, tierra, árboles), Kenney CC0, con `License-tiny-dungeon.txt` y `License-tiny-town.txt` |
 | `public/favicon.png`, `public/favicon.ico` | Favicon: la mascota ×2 por vecino más cercano (32×32); el `.ico` envuelve ese mismo PNG. Se regeneran con `node scripts/make-favicon.mjs`; `index.astro` declara `<link rel="icon" href="/favicon.png">` |
 | `public/fonts/` | Press Start 2P (OFL) y su licencia |
-| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px), `etiquetas-colores.spec.ts` (colores computados de las etiquetas), `hero-animacion.spec.ts` (animación del header: C1 a C4 y C6b de la spec 008). `scripts/check-keyframes.mjs`: los `@keyframes` del CSS construido solo animan `transform` y `opacity` |
+| `scripts/serve-static.mjs`, `tests/e2e/` | Servidor estático (sirve `.ico` como `image/x-icon` y `/ruta` como `ruta/index.html`, como Vercel) y tests Playwright: `mobile.spec.ts` (375 px), `privacidad.spec.ts` (`/privacidad` a 375 px, carga limpia), `favicon.spec.ts` (favicon y sin 404/errores de consola), `hero-clipping.spec.ts` (ningún sprite cortado de 320 a 1920 px), `etiquetas.spec.ts` (las 4 etiquetas de `#solucion` visibles a 375 px), `etiquetas-colores.spec.ts` (colores computados de las etiquetas), `hero-animacion.spec.ts` (animación del header: C1 a C4 y C6b de la spec 008). `scripts/check-keyframes.mjs`: los `@keyframes` del CSS construido solo animan `transform` y `opacity`. `scripts/contrast-premios.mjs`: contraste AA de los colores de premios |
 
 ## Escenario del hero
 
@@ -86,6 +90,20 @@ Tablas (RLS y `revoke all` para `anon` y `authenticated`): `tipos_evento`, `perf
 | `cancelar(codigo)` | authenticated organizador | `no_existe`, `no_organizador`, `juntada_no_abierta` |
 
 `metricas_experimento` (`security_invoker`, sin acceso para `anon` ni `authenticated`): `codigo`, `titulo`, `creada_en`, `tamano_grupo`, `votantes`, `tasa_voto`, `estado`, `horas_hasta_cierre`. Votante = tiene al menos un movimiento `voto`. Borrar una fila de `juntadas` borra en cascada opciones, participantes, disponibilidad y movimientos.
+
+## Premios
+
+Sin tablas: `premios_eventos(perfiles[])` arma una fila por regla cumplida por (persona, juntada) a partir de `participantes`, `juntadas` y `movimientos`; `premios_medallas(perfiles[])` deriva las medallas (juntada de origen = la del evento que cruzó el umbral, por `en`). Ambas y `premios_valor(clave)` (los números, espejo de `src/lib/premios.ts`) no las ejecuta nadie fuera de las funciones públicas.
+
+| Función | Ejecuta | Devuelve | Errores |
+|---|---|---|---|
+| `ranking_juntada(codigo)` → jsonb | authenticated participante | `creada_en`; `ranking` (nombre, puntos totales, medallas, `soy_yo`; orden puntos desc, `unido_en`); `medallas` y `penalidades` de esta juntada | `sin_sesion`, `no_existe`, `no_participante` |
+| `mis_premios()` → jsonb | authenticated | `puntos`; `medallas` (id, fecha, código y título de origen); `historial` (por juntada: puntos y detalle por regla, más nueva primero) | `sin_sesion` |
+
+- Los nombres de medallas y reglas no viajan desde la base: la UI los resuelve por id en `premios.ts`.
+- Si `ranking_juntada` falla, `/j/<código>` se muestra sin ranking ni aviso.
+- "Llave final" = el `voto` de `id` más alto de una juntada cerrada (`votar` inserta los `confirmado` después de ese voto, en la misma llamada).
+- Las ventanas usan `creada_en`/`cerrada_en` de `juntadas` (`now()`) y `creado_en` de `movimientos` (`clock_timestamp()`).
 
 ## Variables de entorno
 

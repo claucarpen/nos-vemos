@@ -6,6 +6,7 @@ import JuntadaPublica from '../../components/app/JuntadaPublica.astro';
 import { esCodigo } from '../../lib/codigo';
 import { claveDeError, textoDeError } from '../../lib/errores';
 import type { Detalle, Publica } from '../../lib/juntada';
+import type { Ranking } from '../../lib/premios';
 import { supabaseServidor } from '../../lib/supabase';
 
 export const prerender = false;
@@ -17,6 +18,7 @@ const url = new URL(ruta, Astro.url.origin).href;
 let estado: 'no_existe' | 'publica' | 'detalle' | 'falla' = 'no_existe';
 let publica: Publica | null = null;
 let detalle: Detalle | null = null;
+let ranking: Ranking | null = null;
 let conSesion = false;
 let error: string | null = null;
 let motivo: string | null = null;
@@ -44,7 +46,12 @@ if (esCodigo(codigo)) {
       if (!u.error) r = await supabase.rpc('detalle_juntada', { codigo });
       else if (claveDeError(u.error) !== 'no_existe') motivo = textoDeError(u.error);
     }
-    if (!r.error) { estado = 'detalle'; detalle = r.data as Detalle; }
+    if (!r.error) {
+      estado = 'detalle'; detalle = r.data as Detalle;
+      // Si el ranking falla (p. ej. la migración 003 todavía no corrió), la juntada se ve igual.
+      const rk = await supabase.rpc('ranking_juntada', { codigo });
+      if (!rk.error) ranking = rk.data as Ranking;
+    }
     else if (claveDeError(r.error) !== 'no_existe' && claveDeError(r.error) !== 'no_participante') estado = 'falla';
   }
 
@@ -58,8 +65,8 @@ if (esCodigo(codigo)) {
 if (estado === 'no_existe') Astro.response.status = 404;
 if (estado === 'falla') Astro.response.status = 503;
 ---
-<App titulo={detalle?.titulo ?? publica?.titulo ?? 'Juntada'}>
-  {estado === 'detalle' && detalle && <Juntada d={detalle} url={url} error={error} />}
+<App titulo={detalle?.titulo ?? publica?.titulo ?? 'Juntada'} conSesion={conSesion}>
+  {estado === 'detalle' && detalle && <Juntada d={detalle} url={url} error={error} r={ranking} />}
   {estado === 'publica' && publica && <JuntadaPublica j={publica} next={ruta} conSesion={conSesion} motivo={motivo} />}
   {estado === 'no_existe' && (
     <section class="panel">
