@@ -23,6 +23,7 @@
 | `supabase/migrations/001_leads.sql` | Tabla `leads` y política de insert para `anon` |
 | `supabase/migrations/002_juntadas.sql` | v1: 7 tablas, 7 funciones, vista `metricas_experimento` (ver "Base de la v1") |
 | `supabase/migrations/003_premios.sql` | v4: puntos, medallas y ranking, sin tablas (ver "Premios") |
+| `src/lib/iconos-medallas.ts` | Íconos de las medallas (spec 011): capas de trazado + color por `MedallaId`, `capasDe(id, apagada)`; `iconos-medallas.test.ts` exige uno por medalla. `scripts/contrast-iconos.mjs` mide su contraste |
 | `src/lib/premios.ts` | Fuente única de reglas de puntos, ventanas, tope y medallas; `conSigno`, `ventanaActual` y los tipos de `ranking_juntada` y `mis_premios` |
 | `src/pages/perfil.astro`, `src/components/app/Perfil.astro` | Mi perfil: sin sesión "Entrar con Google"; con sesión `mis_premios` (puntos, medallas ganadas y por ganar, historial) |
 | `src/pages/reglas.astro` | "Cómo se juega", pública: `#suman`, `#restan`, `#medallas`, `#ejemplo`, todo leído de `premios.ts` |
@@ -31,7 +32,7 @@
 | `src/pages/auth/login.ts`, `src/pages/auth/callback.ts` | POST que arranca el OAuth de Google; callback que canjea el código, llama a `asegurar_perfil` y vuelve a `next` (solo rutas internas) |
 | `src/pages/privacidad.astro`, `src/styles/privacidad.css` | Política de privacidad, prerenderizada, indexable (sin `noindex`), 8 secciones con `id`; el contacto sale de `PUBLIC_CONTACT_EMAIL`. Enlazada desde el aviso y el footer de la landing, `EntrarConGoogle.astro` (prop `aviso`) y `JuntadaPublica.astro` |
 | `src/layouts/App.astro` | Layout de la app: barra con la mascota, "Mi perfil" → `/perfil` (solo con prop `conSesion`) y el link "¿Qué es Nos Vemos?" → `/` (único, en el layout); a 375 px los links bajan a una segunda línea, `global.css` + `app.css`, `noindex` |
-| `src/components/app/` | `Juntada.astro` (votar / LEVEL CLEAR / GAME OVER; recibe el ranking `r`), `Ranking.astro` (panel bajo la grilla; en LEVEL CLEAR, medallas y penalidades de la juntada), `EnJuego.astro` (aviso antes del primer voto), `MedallaIcono.astro` (SVG pixel: medalla o fantasma), `JuntadaPublica.astro`, `EntrarConGoogle.astro`, isla `CrearJuntadaForm.tsx` (filas de fecha 2-10) |
+| `src/components/app/` | `Juntada.astro` (votar / LEVEL CLEAR / GAME OVER; recibe el ranking `r`), `Ranking.astro` (panel bajo la grilla; en LEVEL CLEAR, medallas y penalidades de la juntada), `EnJuego.astro` (aviso antes del primer voto), `MedallaIcono.astro` (SVG pixel por medalla, prop `medalla`; sin ella, el genérico de Player 1; `apagada` lo pinta en `--border`), `JuntadaPublica.astro`, `EntrarConGoogle.astro`, isla `CrearJuntadaForm.tsx` (filas de fecha 2-10) |
 | `src/lib/supabase.ts` | Cliente SSR (`createServerClient` con las cookies de Astro) y `rutaSegura` |
 | `src/lib/fechas.ts`, `src/lib/whatsapp.ts`, `src/lib/codigo.ts`, `src/lib/errores.ts`, `src/lib/juntada.ts` | Hora argentina (formato y `datetime-local` → UTC), links `wa.me`, forma del código, traducción de errores de la base, tipos del detalle |
 | `src/lib/juntadas.test.ts` | Vitest de fechas, WhatsApp, código y errores |

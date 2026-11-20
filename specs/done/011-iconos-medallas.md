@@ -1,5 +1,5 @@
 ---
-status: aprobada
+status: implementada
 depends_on: [010]
 ---
 
@@ -78,3 +78,28 @@ Los evals de las specs 001 a 010 siguen pasando.
 ## Efectos que escapan del sistema
 
 Ninguno: solo cambia el front. No hay migración.
+
+## Evidencia de implementación (2026-11-20)
+
+Rama `spec/011-iconos-medallas`. Decisión: `decisions.md`, 2026-11-20.
+
+Evals: `evals/run.sh` → 69 pasan · 0 fallan (001–010 intactos).
+
+```
+PASS 011·C1 el build incluye /reglas
+PASS 011·C2 #medallas de /reglas: 7 íconos con trazados distintos
+PASS 011·C3 cada medalla de premios.ts tiene ícono, distintos, apagados en un color   | Tests 4 passed
+PASS 011·C4 en /perfil las por ganar usan solo #4a4672 y el fondo
+PASS 011·C5.2 contraste no textual >= 3:1: primer_voto 7.39, rayo 11.72, destrabador 11.72, infaltable 6.53, anfitrion 8.19, fantasma 6.05, redencion 11.25 (peor caso, sobre --panel)
+```
+
+### C5 — rúbrica
+
+Capturas (scratchpad de la sesión, fuera del repo): `/private/tmp/claude-501/-Users-claudio-Library-Application-Support-Claude-scratch-workspaces-7ebd45db-63c5-4a57-ac74-b93abebba1c7-21dfaaea-071b-43fb-9375-dd68e91a045a-scratch-2026-11-20-6b2add/7e43140f-88f9-4aa0-9c47-7740b63ae498/scratchpad/spec011/{reglas,perfil,cerrada}-{375,1280}.png`, `/private/tmp/claude-501/-Users-claudio-Library-Application-Support-Claude-scratch-workspaces-7ebd45db-63c5-4a57-ac74-b93abebba1c7-21dfaaea-071b-43fb-9375-dd68e91a045a-scratch-2026-11-20-6b2add/7e43140f-88f9-4aa0-9c47-7740b63ae498/scratchpad/spec011/perfil-medallas-375.png`, `/private/tmp/claude-501/-Users-claudio-Library-Application-Support-Claude-scratch-workspaces-7ebd45db-63c5-4a57-ac74-b93abebba1c7-21dfaaea-071b-43fb-9375-dd68e91a045a-scratch-2026-11-20-6b2add/7e43140f-88f9-4aa0-9c47-7740b63ae498/scratchpad/spec011/ranking-375.png` y la maqueta aprobada `/private/tmp/claude-501/-Users-claudio-Library-Application-Support-Claude-scratch-workspaces-7ebd45db-63c5-4a57-ac74-b93abebba1c7-21dfaaea-071b-43fb-9375-dd68e91a045a-scratch-2026-11-20-6b2add/7e43140f-88f9-4aa0-9c47-7740b63ae498/scratchpad/medallas.png`.
+
+| Ítem | Resultado | Evidencia |
+|---|---|---|
+| 1. Se reconocen a 32 px y se distinguen a 18 px | Pasa | Maqueta a 64/32/18 px; en el ranking (18 px) se distinguen llave, casa y fantasma |
+| 2. Contraste ≥ 3:1 | Pasa | Mínimo 6.05:1 (`011·C5.2`) |
+| 3. Fantasma sigue siendo la de la vergüenza | Pasa | Mismo fantasma gris, tarjeta con borde punteado |
+| 4. Estética pixel | Pasa | 10×10, `crispEdges`, misma escala que la mascota |

@@ -1,21 +1,14 @@
 ---
-// Ícono pixel de una medalla: disco con cinta, o fantasma para la medalla de la vergüenza.
-// Formas SVG en `currentColor`: el color lo pone la clase del contenedor (ver app.css, "Premios").
-interface Props { verguenza?: boolean; apagada?: boolean }
-const { verguenza = false, apagada = false } = Astro.props;
-const clase = ['medalla-icono', verguenza && 'verguenza', apagada && 'apagada'].filter(Boolean).join(' ');
+// Ícono pixel de una medalla (spec 011). Los dibujos viven en src/lib/iconos-medallas.ts.
+// Sin `medalla`, dibuja el genérico (el de Player 1), para contar medallas en el ranking.
+import { capasDe } from '../../lib/iconos-medallas';
+import type { MedallaId } from '../../lib/premios';
+
+interface Props { medalla?: MedallaId; apagada?: boolean; size?: number }
+const { medalla = 'primer_voto', apagada = false, size = 32 } = Astro.props;
 ---
-<span class={clase} aria-hidden="true">
-  {verguenza ? (
-    <svg viewBox="0 0 10 10" shape-rendering="crispEdges" width="32" height="32">
-      <path fill="currentColor" d="M3 1h4v1H3zM2 2h6v6H2zM2 8h1v1H2zM4 8h2v1H4zM7 8h1v1H7z" />
-      <path fill="var(--bg)" d="M3 4h1v1H3zM6 4h1v1H6z" />
-    </svg>
-  ) : (
-    <svg viewBox="0 0 10 10" shape-rendering="crispEdges" width="32" height="32">
-      <path class="cinta" d="M1 0h3v1H1zM2 1h3v1H2zM6 0h3v1H6zM5 1h3v1H5zM4 2h2v1H4z" />
-      <path fill="currentColor" d="M3 3h4v1H3zM2 4h6v5H2zM3 9h4v1H3z" />
-      <path fill="var(--bg)" d="M4 5h2v1H4zM5 6h1v1H5z" />
-    </svg>
-  )}
+<span class="medalla-icono" data-medalla={medalla} data-apagada={apagada ? '' : undefined} aria-hidden="true">
+  <svg viewBox="0 0 10 10" shape-rendering="crispEdges" width={size} height={size}>
+    {capasDe(medalla, apagada).map((c) => <path fill={c.color} d={c.d} />)}
+  </svg>
 </span>
