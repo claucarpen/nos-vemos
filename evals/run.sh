@@ -575,6 +575,41 @@ s10_contrast() {
 # 010·C10 es una rúbrica sobre capturas a 375 y 1280 px; la evidencia va en el PR y en
 # specs/done/010-medallas-puntos.md. s10_contrast cubre su punto de contraste.
 
+# --- Spec 011: cada medalla tiene su propio ícono -------------------------------------------------
+
+s11_c1_build() {
+  if [ -f "$REGLAS_HTML" ]; then ok "011·C1 el build incluye /reglas (el resumen final exige 0 fallas)"; else ko "011·C1 falta el build"; fi
+}
+
+s11_c2_distintos() {
+  local sec n u
+  sec=$(tr '\n' ' ' < "$REGLAS_HTML" 2>/dev/null | grep -oE '<section[^>]*id="medallas".*' | sed 's#</section>.*##')
+  n=$(printf '%s' "$sec" | grep -oE '<svg' | wc -l | tr -d ' ')
+  u=$(printf '%s' "$sec" | sed 's#<svg#\n<svg#g' | grep '^<svg' | while IFS= read -r l; do printf '%s' "$l" | sed 's#</svg>.*##' | grep -oE ' d="[^"]*"' | tr -d '\n'; echo; done | sort -u | wc -l | tr -d ' ')
+  if [ "$n" = "7" ] && [ "$u" = "7" ]; then ok "011·C2 #medallas de /reglas: 7 íconos con trazados distintos"
+  else ko "011·C2 svgs=$n distintos=$u"; fi
+}
+
+s11_c3_unit() {
+  local out
+  if out=$(npx vitest run src/lib/iconos-medallas.test.ts 2>&1); then ok "011·C3 cada medalla de premios.ts tiene ícono, distintos, apagados en un color"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "011·C3 Vitest"; ev "$(printf '%s' "$out" | tail -12)"; fi
+}
+
+s11_c4_apagadas() {
+  local out
+  if out=$(npx playwright test -c playwright.app.config.ts -g '011·C4' 2>&1); then ok "011·C4 en /perfil las por ganar usan solo #4a4672 y el fondo"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "011·C4 Playwright"; ev "$(printf '%s' "$out" | tail -12)"; fi
+}
+
+s11_c5_contraste() {
+  local out
+  if out=$(node --experimental-strip-types scripts/contrast-iconos.mjs 2>&1); then ok "011·C5.2 contraste no textual >= 3:1 de cada ícono sobre --bg y --panel"; ev "$(printf '%s' "$out" | tr '\n' ' ')"
+  else ko "011·C5.2 contraste"; ev "$out"; fi
+}
+
+# 011·C5 (1, 3 y 4) es una rúbrica sobre capturas; la evidencia va en specs/done/011-iconos-medallas.md.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
@@ -584,6 +619,7 @@ s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
 s7_c1_colors; s7_c2_computed; s7_c3_contrast
 s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c6b; s8_c7; s8_c9
 s10_c1_build; s10_c2_migration; s10_c3; s10_c4; s10_c5; s10_c6; s10_c7_landing; s10_c8_privacy; s10_c9_no_preview; s10_c11_readme; s10_c12_reglas; s10_c13; s10_contrast
+s11_c1_build; s11_c2_distintos; s11_c3_unit; s11_c4_apagadas; s11_c5_contraste
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

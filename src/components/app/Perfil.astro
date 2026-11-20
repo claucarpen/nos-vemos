@@ -31,7 +31,7 @@ const estados = { abierta: 'abierta', cerrada: 'LEVEL CLEAR', cancelada: 'GAME O
       const g = ganadas.get(m.id);
       return (
         <li class={[g ? 'ganada' : 'por-ganar', m.verguenza && 'verguenza'].filter(Boolean).join(' ')}>
-          <MedallaIcono verguenza={m.verguenza} apagada={!g} />
+          <MedallaIcono medalla={m.id} apagada={!g} />
           <span class="medalla-nombre">{m.nombre}</span>
           <span class="medalla-txt">
             {g ? <>Ganada en <a href={`/j/${g.codigo}`}>{g.titulo}</a>, {formatearInicio(g.fecha)}</> : m.condicion}

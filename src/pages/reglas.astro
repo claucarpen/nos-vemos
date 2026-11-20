@@ -72,7 +72,7 @@ const sofi = puntosDe('votar') + puntosDe('voto_tardio') + puntosDe('cambio_ulti
     <ul class="medallas">
       {MEDALLAS.map((m) => (
         <li class={m.verguenza ? 'ganada verguenza' : 'ganada'}>
-          <MedallaIcono verguenza={m.verguenza} />
+          <MedallaIcono medalla={m.id} />
           <span class="medalla-nombre">{m.nombre}</span>
           <span class="medalla-txt">{m.condicion}</span>
         </li>

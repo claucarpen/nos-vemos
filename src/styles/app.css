@@ -135,11 +135,8 @@ a.btn-start:hover { background: var(--title); }
 .premios-juntada li.perdio, .premios-juntada li.verguenza { background: var(--bg); border: 2px dashed #b5589a; color: var(--text); }
 .premios-juntada strong { color: var(--tagline); font-weight: 600; }
 
-.medalla-icono { display: inline-flex; flex: none; color: var(--tagline); image-rendering: pixelated; }
-.medalla-icono .cinta { fill: var(--accent); }
-.medalla-icono.verguenza { color: var(--muted); }
-.medalla-icono.apagada { color: var(--border); }
-.medalla-icono.apagada .cinta { fill: var(--border); }
+.medalla-icono { display: inline-flex; flex: none; image-rendering: pixelated; }
+/* Los colores de cada ícono vienen de src/lib/iconos-medallas.ts (spec 011). */
 
 .medallas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
 .medallas li { display: grid; grid-template-columns: 32px 1fr; grid-template-areas: 'icono nombre' 'icono txt'; column-gap: 0.75rem; align-items: center; padding: 0.6rem 0.75rem; background: var(--bg); border: 2px solid var(--border); border-radius: 6px; }

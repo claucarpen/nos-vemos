@@ -261,3 +261,10 @@
 **Por qué**: la v4 está construida; anunciarla como próxima subestima lo que hay (decisión de Claudio en la spec 010).
 **Reemplaza a**: el conteo 1 + 3 de "Cada promesa de `#solucion` lleva etiqueta…" (2026-10-19); textos, posición y colores siguen vigentes.
 **La invalidaría**: que se despliegue la app sin correr `003_premios.sql` en producción.
+
+## 2026-11-20 · [premios] Cada medalla tiene su ícono pixel, definido una vez en `src/lib/iconos-medallas.ts`
+
+**Qué se decide**: `ICONOS` (`Record<MedallaId, …>`) guarda las capas (trazado + color) de cada ícono de 10×10: joystick, rayo, llave, corazón, casa, fantasma y flecha. `MedallaIcono.astro` recibe `medalla`; apagada = todo en `#4a4672` salvo los huecos `#1e1b3a`. En la fila del ranking queda el genérico (Player 1). Evals `011·C2`–`011·C5`.
+**Por qué**: con un solo dibujo para seis medallas no se distinguían a simple vista (pedido de Claudio). Los colores son los de la paleta y los de estado ya usados; contraste no textual mínimo 6.05:1 (Fantasma sobre `--panel`).
+**Reemplaza a**: el ícono único "disco con cinta" de la spec 010 (`MedallaIcono` con `verguenza`).
+**La invalidaría**: que se sumen íconos PNG de un pack con licencia, o que se agreguen medallas sin dibujo (`011·C3` lo impide).
