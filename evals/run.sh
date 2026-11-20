@@ -77,7 +77,7 @@ c6_secrets() {
 
 c7_sprites() {
   local n lic bad=""
-  n=$(find public/sprites -maxdepth 1 -name '*.png' 2>/dev/null | wc -l)
+  n=$(find public/sprites -maxdepth 1 -name '*.png' 2>/dev/null | wc -l | tr -d ' ')
   lic=$(find public/sprites -maxdepth 1 -iname '*license*' 2>/dev/null)
   [ -n "$lic" ] || bad=" sin-licencia"
   for f in $lic; do grep -q 'CC0' "$f" || bad="$bad $f"; done
@@ -272,7 +272,7 @@ s4_c3_contact() {
 
 s4_c4_links() {
   local miss="" n
-  n=$(grep -o 'href="/privacidad"' "$BUILT" 2>/dev/null | wc -l)
+  n=$(grep -o 'href="/privacidad"' "$BUILT" 2>/dev/null | wc -l | tr -d ' ')
   [ "$n" = "2" ] || miss="$miss landing-tiene-$n-links"
   for f in src/components/app/EntrarConGoogle.astro src/components/app/JuntadaPublica.astro; do
     grep -q 'href="/privacidad"' "$f" || miss="$miss $f"
@@ -322,7 +322,7 @@ s5_c2_form() {
 s5_c3_back_link() {
   local out miss="" n
   if ! out=$(npx playwright test -c playwright.app.config.ts -g '005·C3' 2>&1); then miss="$miss playwright"; fi
-  n=$(grep -rn 'Qué es Nos Vemos' src --include=*.astro --include=*.tsx --include=*.ts | wc -l)
+  n=$(grep -rn 'Qué es Nos Vemos' src --include=*.astro --include=*.tsx --include=*.ts | wc -l | tr -d ' ')
   [ "$n" = "1" ] || miss="$miss link-aparece-$n-veces-en-src"
   grep -q 'Qué es Nos Vemos' src/layouts/App.astro || miss="$miss no-esta-en-el-layout"
   if [ -z "$miss" ]; then ok "005·C3 /nueva y /j/<inexistente> tienen \"¿Qué es Nos Vemos?\" → / a 375 px; el link vive solo en el layout"
@@ -356,18 +356,21 @@ s6_panels() {
 }
 
 s6_c1_labels() {
-  local miss="" p sec
+  # Actualizado por la spec 010 (C7): "Con premios" pasó a Disponible. Quedan 2 y 2.
+  local miss="" p sec t
   p=$(s6_panels)
-  [ "$(printf '%s\n' "$p" | wc -l)" = "4" ] || miss="$miss paneles!=4"
-  printf '%s\n' "$p" | grep 'Cierra solo' | grep -qE 'class="tag[^"]*"[^>]*>Disponible<' || miss="$miss cierra-solo"
-  [ "$(printf '%s\n' "$p" | grep 'Cierra solo' | grep -o 'Disponible' | wc -l)" = "1" ] || miss="$miss cierra-solo-no-exactamente-1"
-  for t in 'Insiste por vos' 'Se repite' 'Con premios'; do
+  [ "$(printf '%s\n' "$p" | wc -l | tr -d ' ')" = "4" ] || miss="$miss paneles!=4"
+  for t in 'Cierra solo' 'Con premios'; do
+    printf '%s\n' "$p" | grep "$t" | grep -qE 'class="tag[^"]*"[^>]*>Disponible<' || miss="$miss [$t]"
+    [ "$(printf '%s\n' "$p" | grep "$t" | grep -o '>Disponible<' | wc -l | tr -d ' ')" = "1" ] || miss="$miss [$t]-no-exactamente-1"
+  done
+  for t in 'Insiste por vos' 'Se repite'; do
     printf '%s\n' "$p" | grep "$t" | grep -qE 'class="tag[^"]*"[^>]*>Próximamente<' || miss="$miss [$t]"
   done
   sec=$(tr '\n' ' ' < "$BUILT" | grep -oE '<section id="solucion".*' | sed 's#</section>.*##')
-  [ "$(printf '%s' "$sec" | grep -oE 'class="tag[^"]*"[^>]*>Disponible<' | wc -l)" = "1" ] || miss="$miss total-Disponible!=1"
-  [ "$(printf '%s' "$sec" | grep -oE 'class="tag[^"]*"[^>]*>Próximamente<' | wc -l)" = "3" ] || miss="$miss total-Próximamente!=3"
-  if [ -z "$miss" ]; then ok "006·C1 1 Disponible (Cierra solo) y 3 Próximamente (Insiste por vos, Se repite, Con premios)"; else ko "006·C1:$miss"; fi
+  [ "$(printf '%s' "$sec" | grep -oE 'class="tag[^"]*"[^>]*>Disponible<' | wc -l | tr -d ' ')" = "2" ] || miss="$miss total-Disponible!=2"
+  [ "$(printf '%s' "$sec" | grep -oE 'class="tag[^"]*"[^>]*>Próximamente<' | wc -l | tr -d ' ')" = "2" ] || miss="$miss total-Próximamente!=2"
+  if [ -z "$miss" ]; then ok "006·C1 2 Disponible (Cierra solo, Con premios) y 2 Próximamente (Insiste por vos, Se repite) — actualizado por 010·C7"; else ko "006·C1:$miss"; fi
 }
 
 s6_c2_whatsapp() {
@@ -455,6 +458,123 @@ s8_c7() {
 # 008·C8 es una rúbrica sobre videos de un loop a 1280 y 375 px y capturas de 4 instantes; no corre acá.
 # Evidencia de 008·C8: specs/done/008-header-animado.md.
 
+# --- Spec 010: puntos, medallas, ranking, /perfil y /reglas ---------------------------------------
+
+M3=supabase/migrations/003_premios.sql
+REGLAS_HTML=.vercel/output/static/reglas/index.html
+
+s10_c1_build() {
+  # El build y la corrida completa ya los cubren 001·C1 y el resumen final de este script.
+  if [ -f "$REGLAS_HTML" ] && [ -f .vercel/output/static/index.html ]; then ok "010·C1 el build incluye / y /reglas (el resumen final exige 0 fallas)"
+  else ko "010·C1 falta el build o /reglas"; fi
+}
+
+s10_c2_migration() {
+  local miss="" st f
+  st=$(tr '\n' ' ' < "$M3" | sed 's/\$\$[^$]*\$\$/$$…$$/g' | tr ';' '\n')
+  ! grep -qiE '^\s*create table' "$M3" || miss="$miss create-table"
+  for f in ranking_juntada mis_premios premios_valor premios_eventos premios_medallas; do
+    printf '%s\n' "$st" | awk -v f="create function public.$f(" 'index($0, f) { found=1; if (index($0, "security definer") && index($0, "set search_path")) good=1 } END { exit !(found && good) }' \
+      || miss="$miss funcion[$f]"
+    grep -qE "^revoke all on function public\.$f\(.*\) from public, anon, authenticated;" "$M3" || miss="$miss revoke[$f]"
+  done
+  ! grep -qiE '\bleads\b|alter table|\bdrop\b' "$M3" || miss="$miss toca-leads-alter-o-drop"
+  [ -z "$(git diff main -- supabase/migrations/001_leads.sql supabase/migrations/002_juntadas.sql)" ] || miss="$miss 001-o-002-cambiaron"
+  if [ -z "$miss" ]; then ok "010·C2 003_premios.sql: sin tablas, 5 funciones security definer con search_path y revoke, sin leads/alter/drop; 001 y 002 intactas"
+  else ko "010·C2:$miss"; fi
+}
+
+s10_db() { # $1 id, $2 filtro de describe, $3 texto
+  local out
+  if out=$(npx vitest run --config vitest.db.config.ts tests/db/premios.test.ts -t "$2" 2>&1); then ok "010·$1 $3"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "010·$1 npm run test:db"; ev "$(printf '%s' "$out" | grep -E '✗|×|FAIL|Tests |Error' | head -15)"; fi
+}
+s10_c3() { s10_db C3 '010·C3' "puntos: suman, restan, ventanas, excepciones, tope y totales negativos"; }
+s10_c4() { s10_db C4 '010·C4' "medallas: umbrales, Llave final, Fantasma, Redención, sin repetir, juntada de origen"; }
+s10_c5() { s10_db C5 '010·C5' "ranking seguro: ajena, inexistente, sin emails, orden, permisos, < 200 ms"; }
+s10_c13() {
+  local out miss=""
+  out=$(npx vitest run --config vitest.db.config.ts tests/db/premios.test.ts -t '010·C13' 2>&1) || miss="$miss vitest"
+  # Ningún literal de puntos fuera del módulo: ni en páginas ni en componentes.
+  local hits
+  hits=$(grep -rnE "[>\"' (][+−-](10|5|20|30|15|3)([<\"' ),]|\$)" src/pages src/components)
+  [ -z "$hits" ] || miss="$miss literal-en-pagina[$hits]"
+  if [ -z "$miss" ]; then ok "010·C13 la base da exactamente los valores de src/lib/premios.ts; sin literales de puntos en páginas"; ev "$(printf '%s' "$out" | grep -E 'Tests ')"
+  else ko "010·C13:$miss"; ev "$(printf '%s' "$out" | grep -E '✗|×|FAIL|Tests ' | head -10)"; fi
+}
+
+s10_app() { # $1 id, $2 filtro, $3 texto
+  local out
+  if out=$(npx playwright test -c playwright.app.config.ts -g "$2" 2>&1); then ok "010·$1 $3"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "010·$1 Playwright"; ev "$(printf '%s' "$out" | tail -12)"; fi
+}
+s10_c6() { s10_app C6 '010·C6' "/perfil sin sesión muestra \"Entrar con Google\" a 375 px sin scroll horizontal"; }
+
+s10_c7_landing() {
+  local miss="" p
+  p=$(s6_panels)
+  for t in 'Cierra solo' 'Con premios'; do printf '%s\n' "$p" | grep "$t" | grep -qE 'class="tag tag-ok"[^>]*>Disponible<' || miss="$miss [$t]"; done
+  for t in 'Insiste por vos' 'Se repite'; do printf '%s\n' "$p" | grep "$t" | grep -qE 'class="tag tag-soon"[^>]*>Próximamente<' || miss="$miss [$t]"; done
+  printf '%s\n' "$p" | grep 'Con premios' | grep -q 'ranking' || miss="$miss sin-ranking"
+  if [ -z "$miss" ]; then ok "010·C7 Cierra solo y Con premios Disponible (.tag-ok), las otras dos Próximamente, Con premios menciona ranking"; else ko "010·C7:$miss"; fi
+}
+
+s10_c8_privacy() {
+  local miss="" html=.vercel/output/static/privacidad/index.html sec
+  for id in datos uso; do
+    sec=$(tr '\n' ' ' < "$html" | grep -oE "<section id=\"$id\".*" | sed 's#</section>.*##')
+    case $id in
+      datos) printf '%s' "$sec" | grep -q 'puntos' && printf '%s' "$sec" | grep -q 'medallas' || miss="$miss datos" ;;
+      uso) printf '%s' "$sec" | grep -q 'ranking' || miss="$miss uso" ;;
+    esac
+  done
+  if [ -z "$miss" ]; then ok "010·C8 /privacidad: #datos nombra puntos y medallas, #uso el ranking (los 004·* corren aparte)"; else ko "010·C8:$miss"; fi
+}
+
+s10_c9_no_preview() {
+  local miss=""
+  ! find .vercel/output -path '*vista-previa*' | grep -q . || miss="$miss ruta-vista-previa"
+  ! grep -rqi 'vista-previa' .vercel/output 2>/dev/null || miss="$miss texto-vista-previa"
+  if [ -z "$miss" ]; then ok "010·C9 ni vista-previa/perfil ni ninguna vista-previa en .vercel/output"; else ko "010·C9:$miss"; fi
+}
+
+s10_c11_readme() {
+  if grep -qE '^#{1,3} Migración 003' README.md && grep -q '003_premios.sql' README.md; then ok "010·C11 README con la sección Migración 003"
+  else ko "010·C11 falta Migración 003 en el README"; fi
+}
+
+s10_c12_reglas() {
+  local miss="" out flat
+  flat=$(tr '\n' ' ' < "$REGLAS_HTML" 2>/dev/null)
+  for id in suman restan medallas ejemplo; do printf '%s' "$flat" | grep -q "id=\"$id\"" || miss="$miss #$id"; done
+  for h in '24 h' '72 h' '12 h' '2 h'; do printf '%s' "$flat" | grep -q "$h" || miss="$miss [$h]"; done
+  # Cada regla y medalla del módulo, con su nombre y (las reglas) su valor con signo.
+  out=$(node --experimental-strip-types -e '
+    import("./src/lib/premios.ts").then(({ REGLAS, MEDALLAS, conSigno }) => {
+      for (const r of REGLAS) console.log(`R\t${r.nombre}\t${conSigno(r.puntos)}`);
+      for (const m of MEDALLAS) console.log(`M\t${m.nombre}`);
+    })' 2>/dev/null)
+  [ "$(printf '%s\n' "$out" | grep -c '^R')" = "8" ] || miss="$miss reglas!=8"
+  [ "$(printf '%s\n' "$out" | grep -c '^M')" = "7" ] || miss="$miss medallas!=7"
+  while IFS=$'\t' read -r k nombre valor; do
+    [ -n "$k" ] || continue
+    printf '%s' "$flat" | grep -qF "$nombre" || miss="$miss [$nombre]"
+    if [ "$k" = R ]; then printf '%s' "$flat" | grep -qF ">$valor<" || miss="$miss [$nombre:$valor]"; fi
+  done <<< "$out"
+  out=$(npx playwright test -c playwright.app.config.ts -g '010·C12' 2>&1) || miss="$miss playwright"
+  if [ -z "$miss" ]; then ok "010·C12 /reglas: #suman #restan #medallas #ejemplo, 8 reglas con valor, 7 medallas, ventanas; links a /reglas"; ev "$(printf '%s' "$out" | grep -E 'passed')"
+  else ko "010·C12:$miss"; ev "$(printf '%s' "$out" | tail -10)"; fi
+}
+
+s10_contrast() {
+  local out
+  if out=$(node scripts/contrast-premios.mjs 2>&1); then ok "010·C10.3b contraste AA de los colores de premios (parte determinista de la rúbrica)"; ev "$(printf '%s' "$out" | tr '\n' ' ')"
+  else ko "010·C10.3b contraste"; ev "$out"; fi
+}
+
+# 010·C10 es una rúbrica sobre capturas a 375 y 1280 px; la evidencia va en el PR y en
+# specs/done/010-medallas-puntos.md. s10_contrast cubre su punto de contraste.
+
 c1_build; c2_sections; c3_fields; c4_tests; c5_migration; c6_secrets; c7_sprites; c8_mobile; c9_privacy; c11_readme
 c12_favicon; c13_no_errors; c14_hero_clipping; c15_hero_scenery; c16_readme_keys
 s3_c0_paso0; s3_c1_build; s3_c2_migration; s3_c3_db; s3_c4_unit; s3_c5_app; s3_c6_no_preview; s3_c7_secrets; s3_c9_readme
@@ -463,6 +583,7 @@ s5_c1_header; s5_c2_form; s5_c3_back_link; s5_c4_eval003; s5_c5_readme_query
 s6_c1_labels; s6_c2_whatsapp; s6_c3_note; s6_c4_mobile
 s7_c1_colors; s7_c2_computed; s7_c3_contrast
 s8_c1; s8_c2; s8_c3; s8_c4; s8_c5; s8_c6; s8_c6b; s8_c7; s8_c9
+s10_c1_build; s10_c2_migration; s10_c3; s10_c4; s10_c5; s10_c6; s10_c7_landing; s10_c8_privacy; s10_c9_no_preview; s10_c11_readme; s10_c12_reglas; s10_c13; s10_contrast
 
 printf '%s pasan · %s fallan\n' "$passed" "$failed"
 [ "$failed" = "0" ]

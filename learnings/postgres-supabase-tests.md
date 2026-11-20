@@ -7,3 +7,5 @@
 - Con `search_path = ''` todo va calificado, incluido `extensions.gen_random_bytes`; `gen_random_uuid()` está en `pg_catalog` y no lo necesita.
 - Un voto suma como mucho 1 a cada opción: dos opciones solo llegan juntas al quórum empatadas. El caso "llegan juntas con distintos votos" solo se prueba sembrando el estado directo en la base.
 - `pkill -f <patrón>` desde un shell cuyo comando contiene el patrón se mata a sí mismo: filtrar por `comm` (`ps -eo pid,comm,args`).
+- `juntadas.creada_en`/`cerrada_en` usan `now()` (inicio de la transacción) y `movimientos.creado_en` usa `clock_timestamp()`: el voto que cierra queda unos µs después de `cerrada_en`. Para "el último voto" usar `id`, no timestamps.
+- Para probar ventanas de tiempo sin esperar: mover `creada_en` hacia atrás antes de votar, o `unido_en` / `creado_en` respecto de `cerrada_en` después de cerrar, como `postgres` (ver `tests/db/premios.test.ts`).

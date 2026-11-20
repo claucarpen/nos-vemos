@@ -36,7 +36,7 @@ if (user && Astro.request.method === 'POST') {
 
 const min = aLocalArgentina(new Date());
 ---
-<App titulo="Nueva juntada">
+<App titulo="Nueva juntada" conSesion={!!user}>
   <section class="panel">
     <h1 class="app-title">Nueva juntada</h1>
     {user ? (

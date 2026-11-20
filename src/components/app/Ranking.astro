@@ -1,0 +1,58 @@
+---
+// Panel "Ranking" de una juntada (spec 010): puntos totales de cada participante y, si se cerró,
+// las medallas que se ganaron en esta juntada y quiénes perdieron puntos.
+import MedallaIcono from './MedallaIcono.astro';
+import type { Estado } from '../../lib/juntada';
+import { conSigno, medalla, regla, type Ranking } from '../../lib/premios';
+
+interface Props { r: Ranking; estado: Estado }
+const { r, estado } = Astro.props;
+
+const yo = r.ranking.find((f) => f.soy_yo);
+const resultado = estado === 'cerrada' && (r.medallas.length > 0 || r.penalidades.length > 0);
+const textoPenalidad: Record<string, string> = {
+  te_colgaste: 'se colgó',
+  voto_tardio: 'votó tarde',
+  cambio_ultimo_momento: 'cambió a último momento',
+  cancelar: 'canceló',
+};
+---
+<section class="panel ranking" aria-labelledby="ranking-titulo">
+  <h2 class="app-h2" id="ranking-titulo">Ranking</h2>
+
+  {resultado && (
+    <ul class="premios-juntada">
+      {r.medallas.map((m) => {
+        const def = medalla(m.medalla);
+        return (
+          <li class={def?.verguenza ? 'gano verguenza' : 'gano'}>
+            <MedallaIcono verguenza={def?.verguenza} />
+            <span>¡{m.nombre} ganó <strong>{def?.nombre ?? m.medalla}</strong>!</span>
+          </li>
+        );
+      })}
+      {r.penalidades.map((p) => (
+        <li class="perdio">
+          <span class="pts neg">{conSigno(p.puntos)}</span>
+          <span>{p.nombre} {textoPenalidad[p.regla] ?? regla(p.regla)?.nombre.toLowerCase()}</span>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <ol class="tabla-ranking">
+    {r.ranking.map((f, i) => (
+      <li class={f.soy_yo ? 'yo' : undefined}>
+        <span class="pos">{i + 1}</span>
+        <span class="quien">{f.nombre}{f.soy_yo && ' (vos)'}</span>
+        {f.medallas > 0 && <span class="cant-medallas" title={`${f.medallas} medallas`}>{f.medallas}<MedallaIcono /></span>}
+        <span class={f.puntos < 0 ? 'pts neg' : 'pts'}>{conSigno(f.puntos)}</span>
+      </li>
+    ))}
+  </ol>
+
+  <p class="nota">
+    Los puntos suman todas las juntadas de cada uno.{' '}
+    <a href={yo && yo.puntos < 0 ? '/reglas#restan' : '/reglas'}>¿Cómo se cuentan?</a>
+  </p>
+</section>

@@ -1,0 +1,18 @@
+---
+// Aviso de lo que está en juego antes de votar (spec 010). Todos los números salen de premios.ts.
+import { VENTANAS, conSigno, faltaTexto, puntosDe, ventanaActual } from '../../lib/premios';
+
+interface Props { creadaEn: string; ahora?: Date }
+const { creadaEn, ahora = new Date() } = Astro.props;
+
+const v = ventanaActual(new Date(creadaEn), ahora);
+const colgarse = conSigno(puntosDe('te_colgaste'));
+const falta = v.hasta ? faltaTexto(v.hasta, ahora) : null;
+---
+<p class="en-juego">
+  {v.efecto > 0 && <>Votá en menos de {VENTANAS.horas_rapido} h: <strong class="pts">{conSigno(v.efecto)}</strong> (te quedan {falta}).</>}
+  {v.efecto === 0 && <>Votá antes de las {VENTANAS.horas_tardio} h para no perder puntos (te quedan {falta}).</>}
+  {v.efecto < 0 && <>Pasaron {VENTANAS.horas_tardio} h: tu voto llega tarde, <strong class="pts neg">{conSigno(v.efecto)}</strong>.</>}
+  {' '}Si no votás y se cierra: <strong class="pts neg">{colgarse}</strong>.{' '}
+  <a href="/reglas#restan">Reglas</a>
+</p>

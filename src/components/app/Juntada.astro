@@ -1,11 +1,15 @@
 ---
-// Lo que ve un participante: votar (abierta), LEVEL CLEAR (cerrada) o GAME OVER (cancelada).
+// Lo que ve un participante: votar (abierta), LEVEL CLEAR (cerrada) o GAME OVER (cancelada),
+// con el ranking de la juntada (spec 010) si está disponible.
+import EnJuego from './EnJuego.astro';
+import Ranking from './Ranking.astro';
 import { formatearInicio } from '../../lib/fechas';
 import { faltanParaQuorum, type Detalle } from '../../lib/juntada';
+import type { Ranking as R } from '../../lib/premios';
 import { linkCierre, linkInvitacion } from '../../lib/whatsapp';
 
-interface Props { d: Detalle; url: string; error?: string | null; aviso?: string | null }
-const { d, url, error, aviso } = Astro.props;
+interface Props { d: Detalle; url: string; error?: string | null; aviso?: string | null; r?: R | null; ahora?: Date }
+const { d, url, error, aviso, r = null, ahora } = Astro.props;
 
 const ganadora = d.opciones.find((o) => o.id === d.opcion_ganadora_id) ?? null;
 const faltan = faltanParaQuorum(d);
@@ -51,10 +55,13 @@ const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno
           </label>
         ))}
       </fieldset>
+      {!d.yo_vote && r && <EnJuego creadaEn={r.creada_en} ahora={ahora} />}
       <button type="submit" class="btn-start btn-block">{d.yo_vote ? 'Actualizar mi voto' : 'Confirmar mi voto'}</button>
     </form>
   )}
 </section>
+
+{r && <Ranking r={r} estado={d.estado} />}
 
 <section class="panel">
   <h2 class="app-h2">Jugadores</h2>

@@ -102,3 +102,83 @@ a.btn-start:hover { background: var(--title); }
 .btn-quitar:hover { color: var(--bg); background: var(--accent); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .login { margin-top: 1rem; }
+
+/* Barra: links a la derecha; a 375 px entran en una segunda línea si no alcanza el ancho. */
+.app-bar { flex-wrap: wrap; row-gap: 0.4rem; }
+.app-links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; justify-content: flex-end; }
+.app-link { font-size: 0.8rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding: 0.35rem 0; }
+.app-link:hover { color: var(--title); }
+.app-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.app-bar .app-about { margin-left: 0; }
+
+/* Premios (spec 010): puntos, medallas, ranking. Negativos en coral (#f29e8e, ya usado en .alerta);
+   contrastes en decisions.md. */
+.pts { font-family: var(--pixel); font-size: 0.7rem; line-height: 1.8; color: var(--tagline); white-space: nowrap; }
+.pts.neg, .neg .pts, .movidas .neg { color: #f29e8e; }
+.app-h3 { font-size: 0.7rem; line-height: 1.8; margin: 1.25rem 0 0.5rem; color: var(--accent); }
+
+.en-juego { margin: 0.25rem 0 0.75rem; padding: 0.6rem 0.75rem; font-size: 0.9rem; color: var(--text); background: var(--bg); border-left: 4px solid var(--accent); border-radius: 4px; }
+.en-juego a { color: var(--accent); }
+
+.tabla-ranking { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.tabla-ranking li { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; background: var(--bg); border: 2px solid transparent; border-radius: 6px; }
+.tabla-ranking li.yo { border-color: var(--accent); background: #2d2a5a; }
+.tabla-ranking .pos { font-family: var(--pixel); font-size: 0.7rem; color: var(--accent); min-width: 1.5rem; }
+.tabla-ranking li:first-child .pos { color: var(--tagline); }
+.tabla-ranking .quien { color: var(--title); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.cant-medallas { display: inline-flex; align-items: center; gap: 0.15rem; font-size: 0.8rem; color: var(--muted); }
+.cant-medallas .medalla-icono svg { width: 18px; height: 18px; }
+.ranking .nota a, .ranking .nota a:visited { color: var(--accent); }
+
+.premios-juntada { list-style: none; margin: 0 0 0.75rem; padding: 0; display: grid; gap: 0.4rem; }
+.premios-juntada li { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.75rem; border-radius: 6px; background: #4a3a7e; color: var(--title); }
+.premios-juntada li.perdio, .premios-juntada li.verguenza { background: var(--bg); border: 2px dashed #b5589a; color: var(--text); }
+.premios-juntada strong { color: var(--tagline); font-weight: 600; }
+
+.medalla-icono { display: inline-flex; flex: none; color: var(--tagline); image-rendering: pixelated; }
+.medalla-icono .cinta { fill: var(--accent); }
+.medalla-icono.verguenza { color: var(--muted); }
+.medalla-icono.apagada { color: var(--border); }
+.medalla-icono.apagada .cinta { fill: var(--border); }
+
+.medallas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+.medallas li { display: grid; grid-template-columns: 32px 1fr; grid-template-areas: 'icono nombre' 'icono txt'; column-gap: 0.75rem; align-items: center; padding: 0.6rem 0.75rem; background: var(--bg); border: 2px solid var(--border); border-radius: 6px; }
+.medallas .medalla-icono { grid-area: icono; }
+.medallas .medalla-nombre { grid-area: nombre; font-family: var(--pixel); font-size: 0.65rem; line-height: 1.8; color: var(--title); }
+.medallas .medalla-txt { grid-area: txt; font-size: 0.85rem; color: var(--text); }
+.medallas .medalla-txt a { color: var(--accent); }
+.medallas li.ganada { border-color: #7b4a9a; }
+.medallas li.verguenza { border-style: dashed; border-color: #b5589a; }
+.medallas li.por-ganar { border-style: dashed; }
+.medallas li.por-ganar .medalla-nombre { color: var(--muted); }
+
+.total { display: flex; align-items: baseline; gap: 0.75rem; }
+.total-num { font-family: var(--pixel); font-size: clamp(1.6rem, 9vw, 2.2rem); line-height: 1.3; color: var(--tagline); }
+.total.neg .total-num { color: #f29e8e; }
+.total-txt { color: var(--text); }
+.total + .nota a, .panel .nota a { color: var(--accent); }
+
+.historial { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.historial > li { padding: 0.6rem 0.75rem; background: var(--bg); border-radius: 6px; }
+.historial-cab { display: flex; gap: 0.75rem; align-items: baseline; justify-content: space-between; }
+.historial-titulo { color: var(--title); overflow-wrap: anywhere; min-height: 44px; display: inline-flex; align-items: center; }
+.historial-estado { font-size: 0.8rem; color: var(--muted); }
+.movidas { list-style: none; margin: 0.4rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.movidas li { font-size: 0.8rem; padding: 0.15rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; color: var(--tagline); }
+
+/* /reglas */
+.indice { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.indice a { padding: 0.6rem 0.75rem; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center; color: var(--accent); border: 2px solid var(--border); border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
+.indice a:hover { border-color: var(--accent); }
+.reglas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.reglas li { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.75rem; align-items: start; padding: 0.6rem 0.75rem; background: var(--bg); border-radius: 6px; }
+.reglas strong { color: var(--title); }
+.reglas p { margin: 0.2rem 0 0; color: var(--text); font-size: 0.95rem; }
+.reglas .pts { font-size: 0.8rem; }
+.tope { color: var(--muted); font-size: 0.85rem; }
+.ventanas { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.ventanas th, .ventanas td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border); color: var(--text); }
+.ventanas th { color: var(--muted); font-weight: 400; }
+.excepciones, .ejemplo { padding-left: 1.2rem; color: var(--text); display: grid; gap: 0.4rem; }
+.ejemplo strong { color: var(--title); }
+.ejemplo + .btn-start { margin-top: 1rem; }

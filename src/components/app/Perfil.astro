@@ -1,0 +1,72 @@
+---
+// Lo que ve cada uno en /perfil (spec 010): puntos, medallas ganadas y por ganar, e historial.
+import MedallaIcono from './MedallaIcono.astro';
+import { formatearInicio } from '../../lib/fechas';
+import { MEDALLAS, conSigno, regla, type MisPremios } from '../../lib/premios';
+
+interface Props { p: MisPremios; nombre?: string | null }
+const { p, nombre } = Astro.props;
+
+const ganadas = new Map(p.medallas.map((m) => [m.medalla, m]));
+const estados = { abierta: 'abierta', cerrada: 'LEVEL CLEAR', cancelada: 'GAME OVER' } as const;
+---
+<section class="panel">
+  {nombre && <p class="eyebrow">{nombre}</p>}
+  <h1 class="app-title">Mi perfil</h1>
+  <div class={p.puntos < 0 ? 'total neg' : 'total'}>
+    <span class="total-num">{conSigno(p.puntos)}</span>
+    <span class="total-txt">puntos</span>
+  </div>
+  <p class="nota">
+    {p.puntos < 0
+      ? <>Estás en rojo. Votá a tiempo para remontar. <a href="/reglas#restan">¿Por qué resté?</a></>
+      : <>Sumás votando a tiempo y apareciendo. <a href="/reglas">¿Cómo se cuentan?</a></>}
+  </p>
+</section>
+
+<section class="panel" aria-labelledby="medallas-titulo">
+  <h2 class="app-h2" id="medallas-titulo">Medallas</h2>
+  <ul class="medallas">
+    {MEDALLAS.map((m) => {
+      const g = ganadas.get(m.id);
+      return (
+        <li class={[g ? 'ganada' : 'por-ganar', m.verguenza && 'verguenza'].filter(Boolean).join(' ')}>
+          <MedallaIcono verguenza={m.verguenza} apagada={!g} />
+          <span class="medalla-nombre">{m.nombre}</span>
+          <span class="medalla-txt">
+            {g ? <>Ganada en <a href={`/j/${g.codigo}`}>{g.titulo}</a>, {formatearInicio(g.fecha)}</> : m.condicion}
+          </span>
+        </li>
+      );
+    })}
+  </ul>
+</section>
+
+<section class="panel" aria-labelledby="historial-titulo">
+  <h2 class="app-h2" id="historial-titulo">Historial</h2>
+  {p.historial.length === 0 ? (
+    <>
+      <p class="lead">Todavía no jugaste ninguna juntada.</p>
+      <a class="btn-start btn-block" href="/nueva">Creá tu juntada</a>
+    </>
+  ) : (
+    <ul class="historial">
+      {p.historial.map((h) => (
+        <li>
+          <div class="historial-cab">
+            <a class="historial-titulo" href={`/j/${h.codigo}`}>{h.titulo}</a>
+            <span class={h.puntos < 0 ? 'pts neg' : 'pts'}>{conSigno(h.puntos)}</span>
+          </div>
+          <span class="historial-estado">{estados[h.estado]}</span>
+          {h.detalle.length > 0 && (
+            <ul class="movidas">
+              {h.detalle.map((d) => (
+                <li class={d.puntos < 0 ? 'neg' : undefined}>{regla(d.regla)?.nombre ?? d.regla} {conSigno(d.puntos)}</li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
+</section>

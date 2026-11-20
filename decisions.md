@@ -217,3 +217,47 @@
 **Por qué**: con los colores originales del pack la mascota quedaba fuera de la identidad del sitio; con armadura lavanda queda en la paleta y sigue siendo el mismo personaje. Lo decidió el operador, entre Lavanda, Atardecer y Lavanda + pelo coral.
 **Reemplaza a**: "Mascota v0 con los colores originales del pack" (2026-10-13).
 **La invalidaría**: que el operador entregue una mascota con otro diseño, accesorio o logo, o que la mascota no se distinga de los amigos del hero.
+
+## 2026-11-19 · [premios] Los puntos y las medallas se calculan en cada consulta desde `movimientos`, sin tablas nuevas
+
+**Qué se decide**: `003_premios.sql` no crea tablas; `premios_eventos` y `premios_medallas` derivan todo de `participantes`, `juntadas` y `movimientos`, y solo las llaman `ranking_juntada` y `mis_premios`. Evals `010·C2`–`010·C5`.
+**Por qué**: guardar puntos duplicaría el historial y obligaría a recalcular al cambiar una regla; con el volumen del experimento el cálculo en vivo tarda milisegundos (test de 50 juntadas × 10 personas < 200 ms) y vale retroactivo.
+**La invalidaría**: que `ranking_juntada` pase los 200 ms con el volumen real, o que haga falta congelar puntos ganados aunque cambien las reglas.
+
+## 2026-11-19 · [premios] Los valores viven en `src/lib/premios.ts`; la base los repite en `premios_valor()` y un test exige que coincidan
+
+**Qué se decide**: páginas y componentes leen puntos, ventanas, tope y medallas de `premios.ts`; `premios_valor(clave)` es el único lugar del SQL con números. `tests/db/premios.test.ts` (`010·C13`) corre un escenario por regla y compara con el módulo; un grep prohíbe literales de puntos en `src/pages` y `src/components`. Mutación probada: `te_colgaste` a -20 solo en el módulo → `010·C13` falla.
+**Por qué**: la página `/reglas` promete a cada participante cuánto suma o resta cada acción; si el número de la página y el de la base divergen, la explicación miente.
+**La invalidaría**: que los valores se configuren por juntada u organizador.
+
+## 2026-11-19 · [premios] La base devuelve ids de medalla y regla; los nombres los pone la UI
+
+**Qué se decide**: `ranking_juntada` y `mis_premios` devuelven `medalla` y `regla` como id; la UI los traduce con `medalla()` y `regla()` de `premios.ts`. La spec pedía "id, nombre" en `mis_premios`.
+**Por qué**: repetir los nombres en SQL sería una segunda copia sin test que la cuide; el id basta para mostrar el nombre.
+**La invalidaría**: que otro cliente (no esta app) consuma las funciones y necesite los nombres.
+
+## 2026-11-19 · [premios] Los negativos se escriben con guion ASCII y se pintan en coral `#f29e8e`
+
+**Qué se decide**: `conSigno` devuelve "+10" / "-15" / "0" con guion ASCII. Negativos en `#f29e8e` (el de `.alerta`): 7.90:1 sobre `--bg`, 6.53:1 sobre `--panel`, 6.32:1 sobre la fila propia `#2d2a5a`. "Fantasma" y las penalidades van con borde punteado `#b5589a`. `scripts/contrast-premios.mjs` mide 9 pares (todos ≥ 5.74:1).
+**Por qué**: Press Start 2P no tiene el signo menos U+2212 y el navegador lo dibujaba con otra fuente, chico y casi invisible. El coral ya está en la app y se lee como alerta sin rojo a pantalla completa.
+**La invalidaría**: que se cambie la fuente pixel por una que tenga U+2212, o que el coral se use para otro significado.
+
+## 2026-11-19 · [app] La barra de `App.astro` suma "Mi perfil" con sesión y, a 375 px, los links bajan a una segunda línea
+
+**Qué se decide**: `App.astro` recibe `conSesion`; con sesión muestra "Mi perfil" → `/perfil` a la izquierda de "¿Qué es Nos Vemos?" (que sigue siendo único, `005·C3`). `.app-bar` hace `flex-wrap`: a 375 px los dos links quedan en una segunda línea alineada a la derecha.
+**Por qué**: marca, mascota y dos links no entran en una línea a 375 px; achicar o esconder la marca le quitaba identidad a la barra.
+**Reemplaza a**: el punto de "El link '¿Qué es Nos Vemos?' vive una sola vez, en la barra" que lo ubica "en el extremo derecho de la barra" en una sola línea (la regla de un único link sigue vigente).
+**La invalidaría**: que la barra gane un tercer link o que la segunda línea tape contenido en celular.
+
+## 2026-11-19 · [evals] Los conteos con `wc -l` de `evals/run.sh` se recortan con `tr -d ' '`
+
+**Qué se decide**: las 7 comparaciones `[ "$(… | wc -l)" = "N" ]` pasan a `wc -l | tr -d ' '`. Afecta a `004·C4`, `005·C3` y `006·C1`, que fallaban en macOS con valores correctos.
+**Por qué**: el `wc` de BSD/macOS rellena con espacios ("       2"); los evals se habían escrito y corrido en Linux.
+**La invalidaría**: ninguna conocida; es una corrección de portabilidad.
+
+## 2026-11-19 · [landing] "Con premios" pasa a "Disponible" y `006·C1` / `007·C2` cuentan 2 y 2
+
+**Qué se decide**: el panel "Con premios" lleva `.tag-ok` "Disponible" y enlaza a `/reglas`; `006·C1` y `etiquetas-colores.spec.ts` (`007·C2`) exigen 2 "Disponible" (Cierra solo, Con premios) y 2 "Próximamente". Evals `010·C7`, `010·C12`.
+**Por qué**: la v4 está construida; anunciarla como próxima subestima lo que hay (decisión de Claudio en la spec 010).
+**Reemplaza a**: el conteo 1 + 3 de "Cada promesa de `#solucion` lleva etiqueta…" (2026-10-19); textos, posición y colores siguen vigentes.
+**La invalidaría**: que se despliegue la app sin correr `003_premios.sql` en producción.

@@ -1,5 +1,5 @@
 ---
-status: aprobada
+status: implementada
 depends_on: [003, 004, 006, 007]
 ---
 
@@ -229,3 +229,44 @@ y se registra el cambio en `decisions.md`.
 **Ninguno durante la implementación.** Todo se prueba con el Postgres embebido y variables
 falsas. Correr `003_premios.sql` en producción y desplegar son actos del operador siguiendo el
 README (sección nueva "Migración 003").
+
+## Evidencia de implementación (2026-11-19)
+
+Rama `spec/010-medallas-puntos`. Decisiones: `decisions.md`, entradas del 2026-11-19.
+
+Evals: `evals/run.sh` → 64 pasan · 0 fallan (001–009 intactos; `006·C1` y `007·C2` actualizados a 2 + 2 según C7).
+
+```
+PASS 010·C1 el build incluye / y /reglas (el resumen final exige 0 fallas)
+PASS 010·C2 003_premios.sql: sin tablas, 5 funciones security definer con search_path y revoke, sin leads/alter/drop; 001 y 002 intactas
+PASS 010·C3 puntos: suman, restan, ventanas, excepciones, tope y totales negativos      | Tests 17 passed
+PASS 010·C4 medallas: umbrales, Llave final, Fantasma, Redención, sin repetir, juntada de origen | Tests 9 passed
+PASS 010·C5 ranking seguro: ajena, inexistente, sin emails, orden, permisos, < 200 ms   | Tests 8 passed
+PASS 010·C6 /perfil sin sesión muestra "Entrar con Google" a 375 px sin scroll horizontal
+PASS 010·C7 Cierra solo y Con premios Disponible (.tag-ok), las otras dos Próximamente, Con premios menciona ranking
+PASS 010·C8 /privacidad: #datos nombra puntos y medallas, #uso el ranking
+PASS 010·C9 ni vista-previa/perfil ni ninguna vista-previa en .vercel/output
+PASS 010·C11 README con la sección Migración 003
+PASS 010·C12 /reglas: #suman #restan #medallas #ejemplo, 8 reglas con valor, 7 medallas, ventanas; links a /reglas
+PASS 010·C13 la base da exactamente los valores de src/lib/premios.ts; sin literales de puntos en páginas | Tests 9 passed
+PASS 010·C10.3b contraste AA de los colores de premios (9 pares, mínimo 5.74:1)
+```
+
+- C13, mutación: `te_colgaste` a -20 solo en `premios.ts` → `AssertionError: expected [ 'te_colgaste', -15 ] to deeply equal [ 'te_colgaste', -20 ]`; revertida, pasa.
+- Desvíos registrados en `decisions.md`: la base devuelve ids de medalla (no nombres); guion ASCII en los negativos; barra en dos líneas a 375 px; `wc -l` portable en `evals/run.sh`.
+
+### C10 — rúbrica
+
+Capturas (scratchpad de la sesión, fuera del repo), página completa a 375 y 1280 px: `/private/tmp/claude-501/-Users-claudio-Library-Application-Support-Claude-scratch-workspaces-7ebd45db-63c5-4a57-ac74-b93abebba1c7-21dfaaea-071b-43fb-9375-dd68e91a045a-scratch-2026-11-20-6b2add/7e43140f-88f9-4aa0-9c47-7740b63ae498/scratchpad/spec010/{votar,cerrada,perfil,reglas}-{375,1280}.png` y `/private/tmp/claude-501/-Users-claudio-Library-Application-Support-Claude-scratch-workspaces-7ebd45db-63c5-4a57-ac74-b93abebba1c7-21dfaaea-071b-43fb-9375-dd68e91a045a-scratch-2026-11-20-6b2add/7e43140f-88f9-4aa0-9c47-7740b63ae498/scratchpad/spec010/landing-solucion-{375,1280}.png`.
+
+| Ítem | Resultado | Evidencia |
+|---|---|---|
+| 1. Paleta, tipografías, medallas pixel | Pasa | Tokens de `global.css`; medallas en SVG pixel propio (`MedallaIcono.astro`, sin packs nuevos); coral `#f29e8e` ya existente, ratios en `decisions.md` |
+| 2. Primero y "yo" en dos segundos | Pasa | Posición 1 en rosa; fila propia con borde lavanda y "(vos)" |
+| 3. Medallas por ganar | Pasa | Ícono apagado y borde punteado, con la condición escrita; no parecen error |
+| 3b. Perder como juego | Pasa | "-15 Ñata se colgó" en caja punteada, sin rojo a pantalla completa; Fantasma con ícono de fantasma gris, distinto de las medallas |
+| 3c. Aviso a 375 px | Pasa | Tres líneas bajo la grilla, arriba del botón; las fechas siguen en la primera pantalla |
+| 3d. /reglas se entiende | Pasa | Qué suma / qué resta con el valor a la izquierda, tabla de ventanas, excepciones y ejemplo con Ana, Sofi y Leo |
+| 4. Grilla primero | Pasa | El ranking va después del panel de votación (también lo verifica `premios.spec.ts`) |
+| 5. Rioplatense | Pasa | "Votá", "te colgaste", "Creá tu juntada" |
+| 6. AA y 44 px | Pasa | Contrastes ≥ 5.74:1; botones de 48 px; índice de `/reglas` e historial con 44 px de alto |

@@ -195,7 +195,7 @@ section { padding: 3.5rem 1rem; }
 .tag-ok { background: var(--status-ok-bg); color: var(--status-ok-text); border: 1px solid var(--status-ok-bg); }
 .tag-soon { background: var(--status-soon-bg); color: var(--status-soon-text); border: 1px solid var(--status-soon-bg); }
 .promises-note { margin: 1rem 0 0; color: var(--text); }
-.promises-note a { color: var(--accent); }
+.promises-note a, .promises .panel a { color: var(--accent); }
 
 .lead-form { display: grid; gap: 0.5rem; }
 .lead-form label { font-size: 0.7rem; color: var(--accent); margin-top: 0.5rem; }

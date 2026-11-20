@@ -3,8 +3,8 @@
 import '../styles/global.css';
 import '../styles/app.css';
 
-interface Props { titulo: string }
-const { titulo } = Astro.props;
+interface Props { titulo: string; conSesion?: boolean }
+const { titulo, conSesion = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="es-AR">
@@ -20,7 +20,10 @@ const { titulo } = Astro.props;
     <header class="app-bar">
       <img src="/sprites/mascot.png" alt="" width="32" height="32" />
       <span class="app-brand">NOS VEMOS</span>
-      <a class="app-about" href="/">¿Qué es Nos Vemos?</a>
+      <nav class="app-links">
+        {conSesion && <a class="app-link" href="/perfil">Mi perfil</a>}
+        <a class="app-link app-about" href="/">¿Qué es Nos Vemos?</a>
+      </nav>
     </header>
     <main class="app-main">
       <slot />

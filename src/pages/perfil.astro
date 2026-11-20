@@ -1,0 +1,43 @@
+---
+// Mi perfil (spec 010). Sin sesión: "Entrar con Google". Con sesión: puntos, medallas e historial.
+import App from '../layouts/App.astro';
+import EntrarConGoogle from '../components/app/EntrarConGoogle.astro';
+import Perfil from '../components/app/Perfil.astro';
+import { textoDeError } from '../lib/errores';
+import type { MisPremios } from '../lib/premios';
+import { supabaseServidor } from '../lib/supabase';
+
+export const prerender = false;
+
+const supabase = supabaseServidor(Astro.request, Astro.cookies);
+const { data: { user } } = await supabase.auth.getUser();
+
+let premios: MisPremios | null = null;
+let falla = false;
+const error = !user && Astro.url.searchParams.get('login') === 'error' ? textoDeError({ message: 'login' }) : null;
+
+if (user) {
+  const r = await supabase.rpc('mis_premios');
+  if (r.error) { falla = true; Astro.response.status = 503; }
+  else premios = r.data as MisPremios;
+}
+const nombre = (user?.user_metadata?.full_name as string | undefined) ?? null;
+---
+<App titulo="Mi perfil" conSesion={!!user}>
+  {!user && (
+    <section class="panel">
+      <h1 class="app-title">Mi perfil</h1>
+      <p class="lead">Entrá con Google para ver tus puntos, tus medallas y tus juntadas.</p>
+      {error && <p class="alerta" role="alert">{error}</p>}
+      <EntrarConGoogle next="/perfil" />
+      <p class="nota"><a href="/reglas">¿Cómo se juega?</a></p>
+    </section>
+  )}
+  {premios && <Perfil p={premios} nombre={nombre} />}
+  {falla && (
+    <section class="panel">
+      <h1 class="app-title">GAME OVER… algo falló</h1>
+      <p class="lead">No pudimos cargar tu perfil. Probá de nuevo en un rato.</p>
+    </section>
+  )}
+</App>

@@ -1,0 +1,103 @@
+---
+// Cómo se juega (spec 010): pública y prerenderizada. Todos los valores salen de src/lib/premios.ts.
+import App from '../layouts/App.astro';
+import MedallaIcono from '../components/app/MedallaIcono.astro';
+import { MEDALLAS, RESTAN, SUMAN, VENTANAS as V, conSigno, puntosDe, regla } from '../lib/premios';
+
+const pts = (id: Parameters<typeof puntosDe>[0]) => conSigno(puntosDe(id));
+const ana = puntosDe('votar') + puntosDe('voto_rapido') + puntosDe('confirmado');
+const leo = puntosDe('te_colgaste');
+const sofi = puntosDe('votar') + puntosDe('voto_tardio') + puntosDe('cambio_ultimo_momento') * 2 + puntosDe('confirmado');
+---
+<App titulo="Cómo se juega">
+  <section class="panel">
+    <h1 class="app-title">Cómo se juega</h1>
+    <p class="lead">
+      En cada juntada sumás puntos por votar a tiempo y aparecer, y los perdés si te colgás.
+      Tus puntos son la suma de todas tus juntadas, y el total puede quedar en negativo.
+      En cada juntada hay un ranking de sus participantes.
+    </p>
+    <nav class="indice" aria-label="Secciones">
+      <a href="#suman">Qué suma</a>
+      <a href="#restan">Qué resta</a>
+      <a href="#medallas">Medallas</a>
+      <a href="#ejemplo">Un ejemplo</a>
+    </nav>
+  </section>
+
+  <section class="panel" id="suman" aria-labelledby="suman-t">
+    <h2 class="app-h2" id="suman-t">Qué suma</h2>
+    <ul class="reglas">
+      {SUMAN.map((r) => (
+        <li>
+          <span class="pts">{conSigno(r.puntos)}</span>
+          <div><strong>{r.nombre}</strong><p>{r.cuando} <span class="tope">Máximo: {r.tope}.</span></p></div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="panel" id="restan" aria-labelledby="restan-t">
+    <h2 class="app-h2" id="restan-t">Qué resta</h2>
+    <ul class="reglas">
+      {RESTAN.map((r) => (
+        <li>
+          <span class="pts neg">{conSigno(r.puntos)}</span>
+          <div><strong>{r.nombre}</strong><p>{r.cuando} <span class="tope">Máximo: {r.tope}.</span></p></div>
+        </li>
+      ))}
+    </ul>
+
+    <h3 class="app-h3">Tu primer voto, según cuándo llega</h3>
+    <table class="ventanas">
+      <thead><tr><th scope="col">Desde que se creó la juntada</th><th scope="col">Además de {pts('votar')}</th></tr></thead>
+      <tbody>
+        <tr><td>Menos de {V.horas_rapido} h</td><td class="pts">{pts('voto_rapido')}</td></tr>
+        <tr><td>De {V.horas_rapido} h a menos de {V.horas_tardio} h</td><td>0</td></tr>
+        <tr><td>{V.horas_tardio} h o más</td><td class="pts neg">{pts('voto_tardio')}</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="app-h3">Para que sea justo</h3>
+    <ul class="excepciones">
+      <li>Si te uniste menos de {V.horas_unido} h antes del cierre, no te colgaste: no tuviste tiempo de votar.</li>
+      <li>Si la juntada se cancela, nadie gana ni pierde nada. Solo resta quien la organizó.</li>
+      <li>Cambiar tu voto antes de las últimas {V.horas_ultimo_momento} h no resta nada.</li>
+      <li>Las medallas no se pierden, ni las buenas ni la de la vergüenza.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="medallas" aria-labelledby="medallas-t">
+    <h2 class="app-h2" id="medallas-t">Medallas</h2>
+    <ul class="medallas">
+      {MEDALLAS.map((m) => (
+        <li class={m.verguenza ? 'ganada verguenza' : 'ganada'}>
+          <MedallaIcono verguenza={m.verguenza} />
+          <span class="medalla-nombre">{m.nombre}</span>
+          <span class="medalla-txt">{m.condicion}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="panel" id="ejemplo" aria-labelledby="ejemplo-t">
+    <h2 class="app-h2" id="ejemplo-t">Un ejemplo</h2>
+    <p>La juntada se cierra el jueves. Así le fue a cada uno:</p>
+    <ul class="ejemplo">
+      <li>
+        <strong>Ana</strong> vota a las 3 h ({pts('votar')} {pts('voto_rapido')}) y puede en la fecha ganadora
+        ({pts('confirmado')}): <span class="pts">{conSigno(ana)}</span>.
+      </li>
+      <li>
+        <strong>Sofi</strong> vota recién a las 80 h ({pts('votar')} {pts('voto_tardio')}), cambia el voto dos veces
+        en la última hora ({pts('cambio_ultimo_momento')} {pts('cambio_ultimo_momento')}) y queda confirmada
+        ({pts('confirmado')}): <span class="pts">{conSigno(sofi)}</span>.
+      </li>
+      <li>
+        <strong>Leo</strong> se unió el lunes, no votó nunca y la juntada se cerró sin él
+        ({regla('te_colgaste')?.nombre}): <span class="pts neg">{conSigno(leo)}</span>.
+      </li>
+    </ul>
+    <a class="btn-start btn-block" href="/nueva">Creá tu juntada</a>
+  </section>
+</App>
